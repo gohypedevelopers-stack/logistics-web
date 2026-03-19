@@ -1,0 +1,240 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CREATOR
+  ADMIN
+  MANAGER
+  OPERATIONS_MANAGER
+  ACCOUNTANT
+  CUSTOMER
+}
+
+enum ShipmentStatus {
+  DRAFT
+  CREATED
+  PICKUP_SCHEDULED
+  PICKUP_COMPLETED
+  RECEIVED_AT_ORIGIN_WAREHOUSE
+  PACKAGE_VERIFICATION_COMPLETED
+  DISPATCHED_FROM_ORIGIN_WAREHOUSE
+  FLIGHT_DEPARTED
+  IN_TRANSIT
+  FLIGHT_LANDED_IN_INDIA
+  UNDER_CUSTOMS_REVIEW
+  CUSTOMS_CLEARED
+  RECEIVED_AT_DELHI_WAREHOUSE
+  PACKAGE_VERIFICATION_AT_DELHI_WAREHOUSE
+  READY_FOR_FINAL_DELIVERY
+  DELIVERED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PARTIAL
+  PAID
+  REFUNDED
+  OVERDUE
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  name          String?
+  role          Role      @default(CUSTOMER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  customerProfile CustomerProfile?
+  staffProfile    StaffProfile?
+
+  createdShipments Shipment[] @relation("CreatedBy")
+  auditLogs        AuditLog[]
+}
+
+model CustomerProfile {
+  id             String    @id @default(cuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName    String?
+  phone          String?
+  taxId          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  shipments      Shipment[]
+  addresses      Address[]
+  invoices       Invoice[]
+}
+
+model StaffProfile {
+  id             String    @id @default(cuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department     String?
+  position       String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Address {
+  id                String          @id @default(cuid())
+  customerProfileId String
+  customerProfile   CustomerProfile @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
+  label             String?         // e.g., "Home", "Warehouse"
+  name              String          // Contact person
+  phone             String?
+  street1           String
+  street2           String?
+  city              String
+  state             String?
+  postalCode        String?
+  countryId         String
+  country           Country         @relation(fields: [countryId], references: [id])
+  isDefault         Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  pickupShipments   Shipment[]      @relation("PickupAddress")
+  receiverShipments Shipment[]      @relation("ReceiverAddress")
+}
+
+model LogisticsCompany {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  description String?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  shipments   Shipment[]
+}
+
+model Country {
+  id        String   @id @default(cuid())
+  code      String   @unique // ISO code e.g. "US", "IN"
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  routesOrigin      Route[]   @relation("OriginCountry")
+  routesDestination Route[]   @relation("DestinationCountry")
+  addresses         Address[]
+}
+
+model Route {
+  id                   String     @id @default(cuid())
+  originCountryId      String
+  originCountry        Country    @relation("OriginCountry", fields: [originCountryId], references: [id])
+  destinationCountryId String
+  destinationCountry   Country    @relation("DestinationCountry", fields: [destinationCountryId], references: [id])
+  isActive             Boolean    @default(true)
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  rateCards            RateCard[]
+  shipments            Shipment[]
+}
+
+model RateCard {
+  id        String   @id @default(cuid())
+  routeId   String
+  route     Route    @relation(fields: [routeId], references: [id])
+  weightMin Float
+  weightMax Float
+  basePrice Float
+  currency  String   @default("USD")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Shipment {
+  id                  String         @id @default(cuid())
+  trackingId          String         @unique
+  awb                 String?        @unique
+  referenceNo         String?
+  
+  customerId          String
+  customer            CustomerProfile @relation(fields: [customerId], references: [id])
+  
+  createdById         String?
+  createdBy           User?          @relation("CreatedBy", fields: [createdById], references: [id])
+
+  logisticsCompanyId  String?
+  logisticsCompany    LogisticsCompany? @relation(fields: [logisticsCompanyId], references: [id])
+
+  routeId             String?
+  route               Route?          @relation(fields: [routeId], references: [id])
+
+  pickupAddressId     String?
+  pickupAddress       Address?        @relation("PickupAddress", fields: [pickupAddressId], references: [id])
+  
+  receiverAddressId   String?
+  receiverAddress     Address?        @relation("ReceiverAddress", fields: [receiverAddressId], references: [id])
+
+  weight              Float?
+  content             String?
+  amount              Float?
+  paymentStatus       PaymentStatus   @default(UNPAID)
+  status              ShipmentStatus  @default(DRAFT)
+  
+  expectedArrivalDate DateTime?
+  remarks             String?
+  
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  statusHistory       ShipmentStatusHistory[]
+  events              ShipmentEvent[]
+  invoice             Invoice?
+}
+
+model ShipmentStatusHistory {
+  id          String         @id @default(cuid())
+  shipmentId  String
+  shipment    Shipment       @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  status      ShipmentStatus
+  location    String?
+  notes       String?
+  createdAt   DateTime       @default(now())
+}
+
+model ShipmentEvent {
+  id          String    @id @default(cuid())
+  shipmentId  String
+  shipment    Shipment  @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  createdAt   DateTime  @default(now())
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  shipmentId    String        @unique
+  shipment      Shipment      @relation(fields: [shipmentId], references: [id])
+  customerId    String
+  customer      CustomerProfile @relation(fields: [customerId], references: [id])
+  amount        Float
+  dueDate       DateTime?
+  status        PaymentStatus @default(UNPAID)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  entity    String
+  entityId  String
+  details   String?
+  createdAt DateTime @default(now())
+}

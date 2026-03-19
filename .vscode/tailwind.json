@@ -1,0 +1,26 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@tailwind"
+    },
+    {
+      "name": "@theme"
+    },
+    {
+      "name": "@plugin"
+    },
+    {
+      "name": "@config"
+    },
+    {
+      "name": "@utility"
+    },
+    {
+      "name": "@custom-variant"
+    },
+    {
+      "name": "@apply"
+    }
+  ]
+}
