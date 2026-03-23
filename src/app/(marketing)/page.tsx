@@ -10,7 +10,7 @@ export default function Home() {
       <section className="relative overflow-hidden flex items-center justify-center min-h-[85vh] pt-24 pb-32">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
-          <img src="/hero-bg.png" alt="Global high-tech logistics network" className="w-full h-full object-cover object-center" />
+          <img src="/hero-bg.png" alt="Global high-tech logistics network" className="w-full h-full object-cover object-center" loading="lazy" />
           <div className="absolute inset-0 bg-[#1E1B4B]/50"></div>
           {/* Smooth fade-out at bottom connecting to next section */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#1E1B4B]/20 to-white"></div>
