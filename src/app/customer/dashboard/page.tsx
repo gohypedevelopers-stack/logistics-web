@@ -16,13 +16,22 @@ export default async function CustomerDashboard() {
   const userId = session.user.id;
   const userName = session.user.name || "User";
 
-  // Fetch customer profile and shipment counts
-  const customerProfile = await prisma.customerProfile.findUnique({
-    where: { userId },
-    include: {
-      shipments: true
-    }
-  });
+  console.log(`[DASHBOARD_PAGE] Loading data for user: ${userName} (${userId})`);
+
+  let customerProfile = null;
+  try {
+    // Fetch customer profile and shipment counts
+    customerProfile = await prisma.customerProfile.findUnique({
+      where: { userId },
+      include: {
+        shipments: true
+      }
+    });
+    console.log(`[DASHBOARD_PAGE] Successfully fetched profile. Shipments found: ${customerProfile?.shipments?.length || 0}`);
+  } catch (error: any) {
+    console.error(`[DASHBOARD_PAGE] CRITICAL ERROR fetching dashboard data:`, error);
+    // Continue with null profile to at least render the page shell
+  }
 
   const shipments = customerProfile?.shipments || [];
   
