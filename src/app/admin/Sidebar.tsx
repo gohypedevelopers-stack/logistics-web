@@ -30,12 +30,13 @@ const navigation = [
       { name: "Rates & Routes", href: "/admin/rates", icon: MapPin },
     ]
   },
-  {
-    title: "System",
-    items: [
-      { name: "Settings", href: "/admin/settings", icon: Settings },
-    ]
-  }
+   {
+     title: "System",
+     items: [
+       { name: "Staff Management", href: "/admin/settings/staff", icon: ShieldCheck },
+       { name: "Settings", href: "/admin/settings", icon: Settings },
+     ]
+   }
 ];
 
 export function AdminSidebar() {
