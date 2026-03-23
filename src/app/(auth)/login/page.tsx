@@ -36,30 +36,18 @@ function LoginForm() {
       setError("Invalid credentials. Please check your email and password.");
       setLoading(false);
     } else {
-      // Fetch session strictly to determine role for proper routing
-      const sessionRes = await fetch('/api/auth/session');
-      const session = await sessionRes.json();
-      const role = session?.user?.role;
-
-      const callback = searchParams.get("callbackUrl");
-      const isAdminRole = role && role !== "CUSTOMER";
-
-      // Strictly enforce Admin mapping
-      if (isAdminRole) {
-         if (callback && callback.includes("/admin")) {
-            router.push(callback);
-         } else {
-            router.push("/admin/dashboard");
-         }
-      } else {
-         // Customer mapping
-         if (callback && callback.includes("/customer")) {
-            router.push(callback);
-         } else {
-            router.push("/customer/dashboard");
-         }
-      }
+      // Small optimization: We can refresh and then redirect based on session presence
       router.refresh();
+      
+      // Instead of an extra fetch, we can use the callbackUrl if present, 
+      // or default to a generic dashboard which handles the role check anyway.
+      const callback = searchParams.get("callbackUrl");
+      if (callback) {
+         router.push(callback);
+      } else {
+         // This serves as a safety catch-all
+         router.push("/customer/dashboard");
+      }
     }
   };
 
