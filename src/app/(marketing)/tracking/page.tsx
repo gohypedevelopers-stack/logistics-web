@@ -54,6 +54,7 @@ export default async function TrackingPage({ searchParams }: { searchParams: Pro
             src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2000&auto=format&fit=crop"
             alt="Logistics"
             className="w-full h-full object-cover opacity-40"
+            loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#1E1B4B]/95 via-[#1E1B4B]/85 to-[#1E1B4B]/90"></div>
         </div>
@@ -216,6 +217,7 @@ export default async function TrackingPage({ searchParams }: { searchParams: Pro
                       src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=800&auto=format&fit=crop&grayscale"
                       alt="Route map"
                       className="w-full h-full object-cover opacity-40"
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="bg-[#1E1B4B] text-white text-[10px] font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-2">

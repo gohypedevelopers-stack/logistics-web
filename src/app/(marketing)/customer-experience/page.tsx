@@ -65,6 +65,7 @@ export default function CustomerExperiencePage() {
                   src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1200&auto=format&fit=crop"
                   alt="Cargo Plane"
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
               </div>
               {/* Floating badge */}
@@ -216,7 +217,7 @@ export default function CustomerExperiencePage() {
               <div key={i} className="bg-slate-50 border border-slate-100 rounded-2xl p-8 hover:shadow-md transition-all">
                 <p className="text-slate-600 font-medium text-[15px] leading-relaxed mb-8 italic">"{t.quote}"</p>
                 <div className="flex items-center gap-4">
-                  <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+                  <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" loading="lazy" />
                   <div>
                     <p className="font-black text-[#1E1B4B] text-[14px]">{t.name}</p>
                     <p className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mt-0.5">{t.role}</p>

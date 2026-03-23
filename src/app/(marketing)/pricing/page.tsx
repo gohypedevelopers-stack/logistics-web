@@ -73,6 +73,7 @@ export default function PricingPage() {
                 src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=1200&auto=format&fit=crop"
                 alt="Container port"
                 className="w-full h-full object-cover"
+                loading="lazy"
               />
             </div>
 

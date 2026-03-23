@@ -151,6 +151,7 @@ export default function AboutPage() {
                 src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1000&auto=format&fit=crop"
                 alt="Warehouse"
                 className="w-full h-full object-cover"
+                loading="lazy"
               />
             </div>
 
@@ -207,9 +208,9 @@ export default function AboutPage() {
               <div key={i} className="text-center group">
                 <div className={`w-full aspect-square rounded-2xl ${member.bg} flex items-center justify-center mb-4 overflow-hidden shadow-sm border border-slate-100 group-hover:shadow-lg transition-all`}>
                   {i === 0 ? (
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop" alt={member.name} className="w-full h-full object-cover" />
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop" alt={member.name} className="w-full h-full object-cover" loading="lazy" />
                   ) : i === 3 ? (
-                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop" alt={member.name} className="w-full h-full object-cover" />
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop" alt={member.name} className="w-full h-full object-cover" loading="lazy" />
                   ) : (
                     <span className="text-2xl font-black text-white/60 tracking-widest">{member.initials}</span>
                   )}

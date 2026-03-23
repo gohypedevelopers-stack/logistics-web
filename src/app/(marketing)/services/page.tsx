@@ -19,6 +19,7 @@ export default function ServicesPage() {
             src="https://images.unsplash.com/photo-1577705998148-6da4f3963bc8?q=80&w=2000&auto=format&fit=crop"
             alt="Container port"
             className="w-full h-full object-cover"
+            loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#0d0c2b]/90 via-[#1E1B4B]/70 to-transparent"></div>
         </div>
