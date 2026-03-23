@@ -1,6 +1,6 @@
 "use client";
 
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -33,8 +33,6 @@ function LoginForm() {
         email,
         password,
         redirect: false,
-        // Using window.location.origin as a fallback for the callback
-        callbackUrl: searchParams.get("callbackUrl") || `${window.location.origin}/customer/dashboard`,
       });
 
       console.log(`[LOGIN_FRONTEND] Received response from signIn:`, { 
@@ -45,7 +43,6 @@ function LoginForm() {
       });
 
       if (res?.error) {
-        // Detailed error messages based on NextAuth responses
         if (res.error === "CredentialsSignin") {
            setError("The email or password you entered is incorrect.");
         } else {
@@ -53,13 +50,26 @@ function LoginForm() {
         }
         setLoading(false);
       } else if (res?.ok) {
-        console.log(`[LOGIN_FRONTEND] Login successful. Pursuing HARD redirect to: ${res.url || "/customer/dashboard"}`);
+        // Fetch the session to get the user role
+        const session = await getSession();
+        const role = session?.user?.role;
+        const callbackUrl = searchParams.get("callbackUrl");
         
-        // Use the returned URL or the callbackUrl
-        const redirectUrl = res.url || searchParams.get("callbackUrl") || "/customer/dashboard";
+        console.log(`[LOGIN_FRONTEND] Login successful. Role detected: ${role}`);
+
+        let targetUrl = callbackUrl || "/customer/dashboard";
         
-        // Force a hard reload to ensure session cookies are synced and middleware is triggered
-        window.location.href = redirectUrl;
+        // If there's no specific callbackUrl, choose default based on role
+        if (!callbackUrl) {
+          if (role && role !== "CUSTOMER") {
+             targetUrl = "/admin/dashboard";
+          } else {
+             targetUrl = "/customer/dashboard";
+          }
+        }
+        
+        console.log(`[LOGIN_FRONTEND] Pursuing HARD redirect to: ${targetUrl}`);
+        window.location.href = targetUrl;
       } else {
          setError("An unexpected authentication error occurred. Please refresh and try again.");
          setLoading(false);

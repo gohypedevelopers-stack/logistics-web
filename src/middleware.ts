@@ -39,9 +39,10 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/customer/dashboard", req.url));
   }
 
-  // Customer access control (prevent admins/managers from accessing customer portal if needed)
-  // Currently, we allow admins to potentially see customer pages if they navigate there,
-  // but usually roles like ADMIN, MANAGER etc. should be handled.
+  // Admin/Staff should not be in customer portal, redirect to admin console
+  if (isCustomerRoute && token?.role && token.role !== "CUSTOMER") {
+    return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+  }
   
   return NextResponse.next();
 }
