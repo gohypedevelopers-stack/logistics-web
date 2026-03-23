@@ -53,23 +53,13 @@ function LoginForm() {
         }
         setLoading(false);
       } else if (res?.ok) {
-        console.log(`[LOGIN_FRONTEND] Login successful. Pursuing redirect to: ${res.url}`);
+        console.log(`[LOGIN_FRONTEND] Login successful. Pursuing HARD redirect to: ${res.url || "/customer/dashboard"}`);
         
         // Use the returned URL or the callbackUrl
         const redirectUrl = res.url || searchParams.get("callbackUrl") || "/customer/dashboard";
         
-        // In production, router.push can sometimes be interrupted by middleware loops.
-        // We'll try router.push first, followed by router.refresh
-        router.refresh();
-        router.push(redirectUrl);
-        
-        // Safety timeout to reset loading state if redirect takes too long
-        setTimeout(() => {
-          if (loading) {
-            console.warn("[LOGIN_FRONTEND] Redirect still pending after 5s. Forcing refresh.");
-            window.location.href = redirectUrl;
-          }
-        }, 5000);
+        // Force a hard reload to ensure session cookies are synced and middleware is triggered
+        window.location.href = redirectUrl;
       } else {
          setError("An unexpected authentication error occurred. Please refresh and try again.");
          setLoading(false);
