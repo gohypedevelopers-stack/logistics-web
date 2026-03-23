@@ -5,12 +5,18 @@ import { PrismaClient } from '@prisma/client'
 
 import "dotenv/config"
 const connectionString = process.env.DATABASE_URL
+if (connectionString) {
+  console.log(`[PRISMA] Database connection URL found (length: ${connectionString.length})`);
+} else {
+  console.error("[PRISMA] CRITICAL: DATABASE_URL is missing from environment variables.");
+}
 
 const prismaClientSingleton = () => {
   if (!connectionString) {
-    // Return a default client during build to avoid crashing the collector
+    console.warn("[PRISMA] Initializing default client (no connection string). Build mode likely.");
     return new PrismaClient();
   }
+  console.log("[PRISMA] Creating new PrismaClient instance with pool adapter...");
   const pool = new Pool({ connectionString })
   const adapter = new PrismaPg(pool as any)
   return new PrismaClient({ adapter })

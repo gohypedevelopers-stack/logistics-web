@@ -25,29 +25,59 @@ function LoginForm() {
     e.preventDefault();
     setError("");
     setLoading(true);
+    
+    console.log(`[LOGIN_FRONTEND] Starting sign-in attempt for: ${email}`);
+    
+    try {
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+        // Using window.location.origin as a fallback for the callback
+        callbackUrl: searchParams.get("callbackUrl") || `${window.location.origin}/customer/dashboard`,
+      });
 
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+      console.log(`[LOGIN_FRONTEND] Received response from signIn:`, { 
+        error: res?.error, 
+        status: res?.status, 
+        ok: res?.ok, 
+        url: res?.url 
+      });
 
-    if (res?.error) {
-      setError("Invalid credentials. Please check your email and password.");
-      setLoading(false);
-    } else {
-      // Small optimization: We can refresh and then redirect based on session presence
-      router.refresh();
-      
-      // Instead of an extra fetch, we can use the callbackUrl if present, 
-      // or default to a generic dashboard which handles the role check anyway.
-      const callback = searchParams.get("callbackUrl");
-      if (callback) {
-         router.push(callback);
+      if (res?.error) {
+        // Detailed error messages based on NextAuth responses
+        if (res.error === "CredentialsSignin") {
+           setError("The email or password you entered is incorrect.");
+        } else {
+           setError(`Authentication failed: ${res.error}. Please try again later.`);
+        }
+        setLoading(false);
+      } else if (res?.ok) {
+        console.log(`[LOGIN_FRONTEND] Login successful. Pursuing redirect to: ${res.url}`);
+        
+        // Use the returned URL or the callbackUrl
+        const redirectUrl = res.url || searchParams.get("callbackUrl") || "/customer/dashboard";
+        
+        // In production, router.push can sometimes be interrupted by middleware loops.
+        // We'll try router.push first, followed by router.refresh
+        router.refresh();
+        router.push(redirectUrl);
+        
+        // Safety timeout to reset loading state if redirect takes too long
+        setTimeout(() => {
+          if (loading) {
+            console.warn("[LOGIN_FRONTEND] Redirect still pending after 5s. Forcing refresh.");
+            window.location.href = redirectUrl;
+          }
+        }, 5000);
       } else {
-         // This serves as a safety catch-all
-         router.push("/customer/dashboard");
+         setError("An unexpected authentication error occurred. Please refresh and try again.");
+         setLoading(false);
       }
+    } catch (err: any) {
+       console.error(`[LOGIN_FRONTEND] Unexpected error during handleSubmit:`, err);
+       setError("A system error occurred. Please check your internet connection.");
+       setLoading(false);
     }
   };
 
