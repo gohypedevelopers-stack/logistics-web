@@ -8,25 +8,17 @@ import { Button } from "@/components/ui/Button";
 
 // Workflow Statuses array ensuring correct chronological order for timeline
 const WORKFLOW_STEPS = [
-  { status: 'DRAFT', label: 'Order Drafted', icon: ScrollText },
-  { status: 'CREATED', label: 'Shipment Created', icon: PackageSearch },
+  { status: 'SUBMITTED', label: 'Order Submitted', icon: ScrollText },
+  { status: 'ACCEPTED', label: 'Accepted by Admin', icon: PackageSearch },
   { status: 'PICKUP_SCHEDULED', label: 'Pickup Scheduled', icon: Timer },
-  { status: 'PICKUP_COMPLETED', label: 'Pickup Completed', icon: Truck },
-  { status: 'RECEIVED_AT_ORIGIN_WAREHOUSE', label: 'Origin Hub Processing', icon: Warehouse },
-  { status: 'PACKAGE_VERIFICATION_COMPLETED', label: 'Verified & Weighed', icon: FileCheck2 },
-  { status: 'DISPATCHED_FROM_ORIGIN_WAREHOUSE', label: 'Dispatched', icon: Truck },
-  { status: 'FLIGHT_DEPARTED', label: 'Flight Departed', icon: Plane },
+  { status: 'PICKED_UP', label: 'Picked Up', icon: Truck },
   { status: 'IN_TRANSIT', label: 'In Transit', icon: Plane },
-  { status: 'FLIGHT_LANDED_IN_INDIA', label: 'Arrived at Destination Hub', icon: Plane },
-  { status: 'UNDER_CUSTOMS_REVIEW', label: 'Customs Processing', icon: Search },
-  { status: 'CUSTOMS_CLEARED', label: 'Customs Cleared', icon: CheckCircle2 },
-  { status: 'RECEIVED_AT_DELHI_WAREHOUSE', label: 'Delhi Distribution', icon: Warehouse },
-  { status: 'PACKAGE_VERIFICATION_AT_DELHI_WAREHOUSE', label: 'Verified for Routing', icon: FileCheck2 },
-  { status: 'READY_FOR_FINAL_DELIVERY', label: 'Out for Delivery', icon: Truck },
+  { status: 'OUT_FOR_DELIVERY', label: 'Out for Delivery', icon: Truck },
   { status: 'DELIVERED', label: 'Delivered Successfully', icon: CheckCircle2 }
 ];
 
-export default async function ShipmentDetail({ params }: { params: { id: string } }) {
+export default async function ShipmentDetail({ params }: { params: Promise<{ id: string }> | { id: string } }) {
+  const resolvedParams = await params;
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -34,7 +26,7 @@ export default async function ShipmentDetail({ params }: { params: { id: string 
   }
 
   const shipment = await prisma.shipment.findUnique({
-    where: { id: params.id, 
+    where: { id: resolvedParams.id, 
              // Ensure only customer viewing their own OR an admin viewing
              ...(session.user.role === 'CUSTOMER' ? { customer: { userId: session.user.id } } : {})
            },

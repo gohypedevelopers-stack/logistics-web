@@ -1,248 +1,234 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
-import { Truck, DollarSign, Users, AlertCircle, Calendar, MapPin, MessageSquare, Anchor, Package } from "lucide-react";
+import { 
+  LayoutList, 
+  Clock, 
+  PackageOpen, 
+  Truck, 
+  CheckCircle, 
+  XCircle,
+  AlertCircle,
+  Zap,
+  Ticket,
+  Search,
+  Users,
+  Settings,
+  ArrowRight,
+  ShieldCheck
+} from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+
+export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboard() {
-  // Mock DB values corresponding to the image.
-  // In reality, these would be aggregated from Prisma
-  const activeShipments = 14285;
-  const customersCount = 892;
+  // Real Database Counts
+  const totalShipments = await prisma.shipment.count();
+  const pendingReview = await prisma.shipment.count({ where: { status: 'SUBMITTED' } });
+  const accepted = await prisma.shipment.count({ where: { status: 'ACCEPTED' } });
+  const inTransit = await prisma.shipment.count({ 
+    where: { 
+      status: { in: ['PICKED_UP', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'PICKUP_SCHEDULED', 'ACCEPTED'] } 
+    } 
+  });
+  const delivered = await prisma.shipment.count({ where: { status: 'DELIVERED' } });
+  const rejected = await prisma.shipment.count({ where: { status: 'REJECTED' } });
+  const customerCount = await prisma.customerProfile.count();
+
+  // Recent Shipments
+  const recentShipments = await prisma.shipment.findMany({
+    orderBy: { createdAt: 'desc' },
+    take: 5,
+    include: {
+      customer: true,
+      pickupAddress: true,
+      receiverAddress: true
+    }
+  });
 
   return (
-    <div className="p-8 lg:p-12 max-w-[1400px] mx-auto min-h-full pb-20">
-       
-      {/* HEADER SECTION */}
-      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-10">
-         <div>
-            <h1 className="text-[32px] font-black text-[#1E1B4B] tracking-tight mb-2">Intelligence Hub</h1>
-            <p className="text-slate-600 font-medium text-[15px]">Operational overview for <span className="font-bold text-[#1E1B4B]">June 24, 2024</span></p>
-         </div>
-         <div className="flex items-center gap-4">
-            <button className="h-10 px-5 rounded-xl bg-slate-200/50 text-slate-700 font-bold text-sm tracking-wide gap-2 flex items-center hover:bg-slate-200 transition-colors">
-               <Calendar className="w-4 h-4" /> Last 30 Days
-            </button>
-            <div className="h-10 w-10 rounded-xl bg-orange-100 border border-orange-200 overflow-hidden cursor-pointer shadow-sm">
-               {/* Dummy Avatar */}
-               <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&backgroundColor=ffdfbf" alt="User Avatar" className="w-full h-full object-cover" />
-            </div>
-         </div>
+    <div className="p-8 lg:p-10 max-w-[1600px] mx-auto min-h-full bg-[#f8f9fa] font-sans">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-[#1E293B] tracking-tight mb-4">Admin Command Center</h1>
+        
+        {/* Operations Banner */}
+        <div className="bg-[#EEF2FF] rounded-xl p-6 border border-indigo-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+             <h2 className="text-[#1E3A8A] font-bold text-lg flex items-center gap-2">
+               <ShieldCheck className="w-5 h-5" /> System Status: Operational
+             </h2>
+             <p className="text-slate-600 font-medium text-sm mt-1">Global logistics ledger is synchronized. {pendingReview} shipments require administrative review.</p>
+          </div>
+          <Link href="/admin/shipments?status=SUBMITTED" className="whitespace-nowrap bg-[#1E3A8A] hover:bg-blue-900 text-white px-6 py-2.5 rounded-lg font-bold text-sm transition-all shadow-lg shadow-blue-900/10">
+            Review Queue
+          </Link>
+        </div>
       </div>
 
-      {/* STATS ROW */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-         
-         <div className="bg-white rounded-2xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-slate-100 flex flex-col justify-between h-40">
-            <div className="flex items-start justify-between">
-               <div className="w-10 h-10 bg-[#eff2ff] rounded-xl flex items-center justify-center">
-                  <Truck className="w-5 h-5 text-[#2A377B]" />
-               </div>
-               <div className="px-2 py-0.5 bg-green-50 text-green-700 rounded-full text-[10px] font-bold tracking-wide">+12.5%</div>
-            </div>
-            <div>
-               <p className="text-[11px] font-medium text-slate-500 mb-1">Total Shipments</p>
-               <h3 className="text-3xl font-bold text-[#1E1B4B] tracking-tight">14,285</h3>
-            </div>
-         </div>
+      {/* Top Stats Row - Customer Dashboard Style */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
+        <Link href="/admin/shipments" className="bg-[#F4F7FA] rounded-2xl p-6 border border-slate-100 hover:shadow-md transition-all flex flex-col justify-between h-36">
+          <div className="flex items-center gap-3">
+             <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                <LayoutList className="w-5 h-5 text-blue-600" />
+             </div>
+             <span className="text-[#1E3A8A] font-bold text-xs uppercase tracking-wider">Total Ledger</span>
+          </div>
+          <div className="text-3xl font-black text-slate-800 tracking-tighter">{String(totalShipments).padStart(2, '0')}</div>
+        </Link>
+        
+        <Link href="/admin/shipments?status=SUBMITTED" className="bg-[#FFFDF5] rounded-2xl p-6 border border-amber-100 hover:shadow-md transition-all flex flex-col justify-between h-36">
+          <div className="flex items-center gap-3">
+             <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+                <Clock className="w-5 h-5 text-amber-600" />
+             </div>
+             <span className="text-amber-700 font-bold text-xs uppercase tracking-wider">Pending</span>
+          </div>
+          <div className="text-3xl font-black text-slate-800 tracking-tighter">{String(pendingReview).padStart(2, '0')}</div>
+        </Link>
 
-         <div className="bg-white rounded-2xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-slate-100 flex flex-col justify-between h-40">
-            <div className="flex items-start justify-between">
-               <div className="w-10 h-10 bg-[#e0f7fa] rounded-xl flex items-center justify-center">
-                  <DollarSign className="w-5 h-5 text-[#00838f]" />
-               </div>
-               <div className="px-2 py-0.5 bg-green-50 text-green-700 rounded-full text-[10px] font-bold tracking-wide">+8.2%</div>
-            </div>
-            <div>
-               <p className="text-[11px] font-medium text-slate-500 mb-1">Revenue (USD)</p>
-               <h3 className="text-3xl font-bold text-[#1E1B4B] tracking-tight">$4.2M</h3>
-            </div>
-         </div>
+        <Link href="/admin/shipments" className="bg-[#F2FCF5] rounded-2xl p-6 border border-green-100 hover:shadow-md transition-all flex flex-col justify-between h-36">
+          <div className="flex items-center gap-3">
+             <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
+                <PackageOpen className="w-5 h-5 text-green-600" />
+             </div>
+             <span className="text-green-700 font-bold text-xs uppercase tracking-wider">Accepted</span>
+          </div>
+          <div className="text-3xl font-black text-slate-800 tracking-tighter">{String(accepted).padStart(2, '0')}</div>
+        </Link>
 
-         <div className="bg-white rounded-2xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-slate-100 flex flex-col justify-between h-40">
-            <div className="flex items-start justify-between">
-               <div className="w-10 h-10 bg-[#e8eaf6] rounded-xl flex items-center justify-center">
-                  <Users className="w-5 h-5 text-[#3949ab]" />
-               </div>
-               <div className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full text-[10px] font-bold tracking-wide">Stable</div>
-            </div>
-            <div>
-               <p className="text-[11px] font-medium text-slate-500 mb-1">Active Customers</p>
-               <h3 className="text-3xl font-bold text-[#1E1B4B] tracking-tight">892</h3>
-            </div>
-         </div>
+        <Link href="/admin/shipments" className="bg-[#F5F3FF] rounded-2xl p-6 border border-purple-100 hover:shadow-md transition-all flex flex-col justify-between h-36">
+          <div className="flex items-center gap-3">
+             <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
+                <Truck className="w-5 h-5 text-purple-600" />
+             </div>
+             <span className="text-purple-700 font-bold text-xs uppercase tracking-wider">In Transit</span>
+          </div>
+          <div className="text-3xl font-black text-slate-800 tracking-tighter">{String(inTransit).padStart(2, '0')}</div>
+        </Link>
 
-         <div className="bg-white rounded-2xl p-6 shadow-[0_8px_30px_rgba(255,0,0,0.06)] border border-slate-100 flex flex-col justify-between h-40 relative overflow-hidden">
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>
-            <div className="flex items-start justify-between">
-               <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
-                  <AlertCircle className="w-5 h-5 text-red-500" />
-               </div>
-               <div className="px-2 py-0.5 bg-red-50 text-red-600 rounded-full text-[10px] font-bold tracking-wide">High</div>
-            </div>
-            <div>
-               <p className="text-[11px] font-medium text-slate-500 mb-1">Pending Clearances</p>
-               <h3 className="text-3xl font-bold text-[#1E1B4B] tracking-tight">24</h3>
-            </div>
-         </div>
+        <Link href="/admin/shipments" className="bg-[#F0FDFA] rounded-2xl p-6 border border-teal-100 hover:shadow-md transition-all flex flex-col justify-between h-36">
+          <div className="flex items-center gap-3">
+             <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-teal-600" />
+             </div>
+             <span className="text-teal-700 font-bold text-xs uppercase tracking-wider">Completed</span>
+          </div>
+          <div className="text-3xl font-black text-slate-800 tracking-tighter">{String(delivered).padStart(2, '0')}</div>
+        </Link>
 
+        <Link href="/admin/shipments" className="bg-[#FFF5F5] rounded-2xl p-6 border border-red-100 hover:shadow-md transition-all flex flex-col justify-between h-36">
+          <div className="flex items-center gap-3">
+             <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center">
+                <XCircle className="w-5 h-5 text-red-600" />
+             </div>
+             <span className="text-red-700 font-bold text-xs uppercase tracking-wider">Rejections</span>
+          </div>
+          <div className="text-3xl font-black text-slate-800 tracking-tighter">{String(rejected).padStart(2, '0')}</div>
+        </Link>
       </div>
 
-      {/* MIDDLE SECTION */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
-         
-         {/* Chart Card */}
-         <div className="lg:col-span-2 bg-white rounded-3xl p-8 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-slate-100 flex flex-col h-[400px]">
-            <div className="flex justify-between items-center mb-8">
-               <h3 className="text-[20px] font-bold text-[#1E1B4B] tracking-tight">Volume & Revenue Trend</h3>
-               <div className="flex bg-slate-50 rounded-full p-1 border border-slate-100">
-                  <button className="px-4 py-1.5 rounded-full bg-[#1E1B4B] text-xs font-bold text-white shadow-sm">Volume</button>
-                  <button className="px-4 py-1.5 rounded-full text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors">Revenue</button>
-               </div>
-            </div>
+      {/* Main Grid Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-12">
+        
+        {/* Quick Actions - Admin Version */}
+        <div className="lg:col-span-1 space-y-6">
+           <h3 className="font-bold text-[#1E293B] flex items-center gap-2">
+             <Zap className="w-4 h-4 text-amber-500" /> Administrative Actions
+           </h3>
+           <div className="grid grid-cols-1 gap-4">
+              <Link href="/admin/shipments" className="bg-white rounded-xl border border-slate-200 p-5 hover:border-blue-300 hover:bg-blue-50/10 transition-all flex items-center justify-between group">
+                 <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center border border-blue-100 group-hover:bg-blue-100">
+                       <Ticket className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                       <p className="text-sm font-bold text-slate-800 leading-tight">Manage Shipments</p>
+                       <p className="text-[11px] text-slate-500 font-medium">Review and update status</p>
+                    </div>
+                 </div>
+                 <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all" />
+              </Link>
 
-            <div className="flex-1 relative border-b border-t border-slate-100 flex items-end justify-between px-4 pb-4 pt-12">
-               {/* Dummy bars using exact sizes and colors from the mock */}
-               
-               {/* MON */}
-               <div className="w-10 h-[30%] bg-[#e6e8eff] bg-[#e2e4f0] rounded-sm"></div>
-               {/* TUE */}
-               <div className="w-10 h-[45%] bg-[#b3e0e6] rounded-sm relative"><div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[9px] font-bold tracking-widest text-[#1E1B4B]"></div></div>
-               {/* WED */}
-               <div className="w-10 h-[40%] bg-[#e2e4f0] rounded-sm"></div>
-               {/* THU */}
-               <div className="w-10 h-[80%] bg-[#2A377B] rounded-sm"></div>
-               {/* FRI */}
-               <div className="w-10 h-[70%] bg-[#e2e4f0] rounded-sm"></div>
-               {/* SAT */}
-               <div className="w-10 h-[35%] bg-[#b3e0e6] rounded-sm"></div>
-               {/* SUN */}
-               <div className="w-10 h-[75%] bg-[#1E1B4B] rounded-sm"></div>
-               {/* MON */}
-               <div className="w-10 h-[45%] bg-[#e2e4f0] rounded-sm"></div>
-               {/* TUE */}
-               <div className="w-10 h-[85%] bg-[#b3e0e6] rounded-sm"></div>
-               {/* WED */}
-               <div className="w-10 h-[65%] bg-[#2A377B] rounded-sm"></div>
-            </div>
-            
-            <div className="flex justify-between px-4 pt-4 text-[9px] font-bold tracking-widest text-slate-400 uppercase">
-               <span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span><span>MON</span><span>TUE</span><span>WED</span>
-            </div>
-         </div>
+              <Link href="/admin/customers" className="bg-white rounded-xl border border-slate-200 p-5 hover:border-purple-300 hover:bg-purple-50/10 transition-all flex items-center justify-between group">
+                 <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center border border-purple-100 group-hover:bg-purple-100">
+                       <Users className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                       <p className="text-sm font-bold text-slate-800 leading-tight">Customer Directory</p>
+                       <p className="text-[11px] text-slate-500 font-medium">{customerCount} registered accounts</p>
+                    </div>
+                 </div>
+                 <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" />
+              </Link>
 
-         {/* Sidebar Widgets */}
-         <div className="space-y-6 flex flex-col h-[400px]">
-            
-            {/* Commands Card */}
-            <div className="bg-[#1b195c] rounded-3xl p-6 border border-[#2A377B] shadow-lg flex-1">
-               <h3 className="text-white font-bold text-lg tracking-tight mb-6">Instant Commands</h3>
-               <div className="grid grid-cols-2 gap-4 h-[calc(100%-50px)]">
-                  <button className="bg-[#2A377B] hover:bg-[#3b4dbf] transition-colors rounded-2xl flex flex-col items-center justify-center gap-3 border border-[#3b4dbf]/50">
-                     <MapPin className="w-6 h-6 text-white" />
-                     <span className="text-[9px] uppercase font-bold text-white tracking-widest">Route Search</span>
-                  </button>
-                  <button className="bg-[#2A377B] hover:bg-[#3b4dbf] transition-colors rounded-2xl flex flex-col items-center justify-center gap-3 border border-[#3b4dbf]/50">
-                     <MessageSquare className="w-6 h-6 text-white" />
-                     <span className="text-[9px] uppercase font-bold text-white tracking-widest">Manage Rates</span>
-                  </button>
-               </div>
-            </div>
+              <Link href="/admin/rates" className="bg-white rounded-xl border border-slate-200 p-5 hover:border-teal-300 hover:bg-teal-50/10 transition-all flex items-center justify-between group">
+                 <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-teal-50 flex items-center justify-center border border-teal-100 group-hover:bg-teal-100">
+                       <Search className="w-5 h-5 text-teal-600" />
+                    </div>
+                    <div>
+                       <p className="text-sm font-bold text-slate-800 leading-tight">Rates & Routes</p>
+                       <p className="text-[11px] text-slate-500 font-medium">Configure global tariffs</p>
+                    </div>
+                 </div>
+                 <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-teal-500 group-hover:translate-x-1 transition-all" />
+              </Link>
 
-            {/* Alert Card */}
-            <div className="bg-[#ffecd6] rounded-3xl p-6 border border-[#ffdbbb] shadow-sm flex-1">
-               <div className="flex items-center gap-3 mb-3">
-                  <AlertCircle className="w-5 h-5 text-[#d97706]" />
-                  <h3 className="font-bold text-[#1E1B4B] text-[15px]">Clearance Alert</h3>
-               </div>
-               <p className="text-[13px] text-slate-700 font-medium leading-relaxed mb-4">
-                  Warehouse #4 in Singapore reports a 12-hour customs delay affecting 4 shipments.
-               </p>
-               <a href="#" className="text-sm font-bold text-[#1E1B4B] underline hover:no-underline decoration-2 underline-offset-4">Resolve Now</a>
-            </div>
+              <Link href="/admin/settings" className="bg-white rounded-xl border border-slate-200 p-5 hover:border-slate-400 hover:bg-slate-50 transition-all flex items-center justify-between group">
+                 <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-100 group-hover:bg-slate-100">
+                       <Settings className="w-5 h-5 text-slate-600" />
+                    </div>
+                    <div>
+                       <p className="text-sm font-bold text-slate-800 leading-tight">System Settings</p>
+                       <p className="text-[11px] text-slate-500 font-medium">Platform configuration</p>
+                    </div>
+                 </div>
+                 <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-slate-600 group-hover:translate-x-1 transition-all" />
+              </Link>
+           </div>
+        </div>
 
-         </div>
+        {/* Recent Shipments - Simplified List Version */}
+        <div className="lg:col-span-2 space-y-6">
+           <div className="flex items-center justify-between">
+              <h3 className="font-bold text-[#1E293B] flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-blue-500" /> Recent Operations
+              </h3>
+              <Link href="/admin/shipments" className="text-xs font-bold text-blue-600 hover:underline">View All</Link>
+           </div>
+
+           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+              <div className="divide-y divide-slate-100">
+                 {recentShipments.map((ship) => (
+                    <Link key={ship.id} href={`/admin/shipments/${ship.id}`} className="flex items-center justify-between p-5 hover:bg-slate-50 transition-colors group">
+                       <div className="flex items-center gap-4">
+                          <div className={cn(
+                            "w-2 h-10 rounded-full",
+                            ship.status === 'SUBMITTED' ? "bg-amber-400" : 
+                            ship.status === 'ACCEPTED' ? "bg-green-400" :
+                            ship.status === 'DELIVERED' ? "bg-teal-400" : "bg-blue-400"
+                          )} />
+                          <div>
+                             <p className="text-sm font-bold text-slate-800 leading-tight">{ship.trackingId}</p>
+                             <p className="text-[11px] text-slate-500 font-medium flex items-center gap-2 mt-1 uppercase tracking-tight">
+                               {ship.customer?.companyName || 'Guest'} <span className="text-slate-200">|</span> {ship.pickupAddress?.city} → {ship.receiverAddress?.city}
+                             </p>
+                          </div>
+                       </div>
+                       <div className="text-right">
+                          <p className="text-[10px] font-bold text-slate-800">{format(new Date(ship.createdAt), "MMM d")}</p>
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">{ship.status.replace(/_/g, ' ')}</p>
+                       </div>
+                    </Link>
+                 ))}
+              </div>
+           </div>
+        </div>
 
       </div>
-
-      {/* TERMINAL ACTIVITY */}
-      <div className="bg-white rounded-3xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-slate-100 p-8 mb-10 overflow-hidden">
-         <div className="flex justify-between items-end mb-8">
-            <h3 className="text-[20px] font-bold text-[#1E1B4B] tracking-tight">Terminal Activity</h3>
-            <span className="text-sm font-bold text-[#3b4dbf] hover:text-[#1E1B4B] cursor-pointer transition-colors">View History</span>
-         </div>
-         
-         <div className="space-y-4">
-            
-            <div className="flex items-center justify-between p-4 hover:bg-slate-50 rounded-2xl transition-colors cursor-pointer group">
-               <div className="flex items-center gap-6">
-                  <div className="w-12 h-12 rounded-2xl bg-[#eff2ff] flex items-center justify-center shrink-0">
-                     <Anchor className="w-5 h-5 text-[#3b4dbf]" />
-                  </div>
-                  <div>
-                     <h4 className="text-[15px] font-bold text-[#1E1B4B] mb-0.5">Port Arrival: MS Evergrand</h4>
-                     <p className="text-[13px] font-medium text-slate-500">Scheduled docking verified. Preparing offload protocol.</p>
-                  </div>
-               </div>
-               <div className="text-right flex items-center justify-end gap-6 shrink-0">
-                  <span className="text-[11px] font-bold text-slate-400">08:42 AM</span>
-                  <div className="w-24">
-                     <span className="px-3 py-1 bg-[#ccfbf1] text-teal-800 rounded-lg text-[9px] font-bold tracking-widest uppercase block text-center">In Transit</span>
-                  </div>
-               </div>
-            </div>
-
-            <div className="flex items-center justify-between p-4 hover:bg-slate-50 rounded-2xl transition-colors cursor-pointer group">
-               <div className="flex items-center gap-6">
-                  <div className="w-12 h-12 rounded-2xl bg-[#ffecd6] flex items-center justify-center shrink-0">
-                     <Package className="w-5 h-5 text-[#d97706]" />
-                  </div>
-                  <div>
-                     <h4 className="text-[15px] font-bold text-[#1E1B4B] mb-0.5">Inventory Restock: Berlin Hub</h4>
-                     <p className="text-[13px] font-medium text-slate-500">Automated warehouse update: 450 units of high-value electronics received.</p>
-                  </div>
-               </div>
-               <div className="text-right flex items-center justify-end gap-6 shrink-0">
-                  <span className="text-[11px] font-bold text-slate-400">07:15 AM</span>
-                  <div className="w-24">
-                     <span className="px-3 py-1 bg-slate-200/80 text-slate-600 rounded-lg text-[9px] font-bold tracking-widest uppercase block text-center">Completed</span>
-                  </div>
-               </div>
-            </div>
-
-            <div className="flex items-center justify-between p-4 hover:bg-slate-50 rounded-2xl transition-colors cursor-pointer group">
-               <div className="flex items-center gap-6">
-                  <div className="w-12 h-12 rounded-2xl bg-[#fee2e2] flex items-center justify-center shrink-0">
-                     <AlertCircle className="w-5 h-5 text-red-600" />
-                  </div>
-                  <div>
-                     <h4 className="text-[15px] font-bold text-[#1E1B4B] mb-0.5">Compliance Flag: SHP-992-K</h4>
-                     <p className="text-[13px] font-medium text-slate-500">Documentation mismatch detected for chemicals shipment. Held at Rotterdam.</p>
-                  </div>
-               </div>
-               <div className="text-right flex items-center justify-end gap-6 shrink-0">
-                  <span className="text-[11px] font-bold text-slate-400">04:30 AM</span>
-                  <div className="w-24">
-                     <span className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-[9px] font-bold tracking-widest uppercase block text-center">Critical</span>
-                  </div>
-               </div>
-            </div>
-
-         </div>
-      </div>
-
-      {/* FOOTER */}
-      <div className="border-t border-slate-200/70 pt-8 mt-4 flex flex-col md:flex-row items-center justify-between">
-         <div className="flex items-center gap-6 text-[13px]">
-            <span className="font-bold text-[#1E1B4B] text-[15px]">Global Navigator</span>
-            <span className="text-slate-400">|</span>
-            <span className="text-slate-500 font-medium">© 2024 Global Navigator Logistics. All rights reserved.</span>
-         </div>
-         <div className="flex gap-8 text-[12px] font-bold mt-4 md:mt-0">
-            <a href="#" className="text-slate-500 hover:text-[#1E1B4B] transition-colors hover:underline underline-offset-4 decoration-slate-300">Privacy Policy</a>
-            <a href="#" className="text-slate-500 hover:text-[#1E1B4B] transition-colors hover:underline underline-offset-4 decoration-slate-300">Sustainability</a>
-            <a href="#" className="text-slate-500 hover:text-[#1E1B4B] transition-colors hover:underline underline-offset-4 decoration-slate-300">Global Compliance</a>
-         </div>
-      </div>
-
     </div>
   );
 }

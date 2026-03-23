@@ -1,9 +1,11 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -16,22 +18,15 @@ enum Role {
 }
 
 enum ShipmentStatus {
-  DRAFT
-  CREATED
+  SUBMITTED
+  ACCEPTED
   PICKUP_SCHEDULED
-  PICKUP_COMPLETED
-  RECEIVED_AT_ORIGIN_WAREHOUSE
-  PACKAGE_VERIFICATION_COMPLETED
-  DISPATCHED_FROM_ORIGIN_WAREHOUSE
-  FLIGHT_DEPARTED
+  PICKED_UP
   IN_TRANSIT
-  FLIGHT_LANDED_IN_INDIA
-  UNDER_CUSTOMS_REVIEW
-  CUSTOMS_CLEARED
-  RECEIVED_AT_DELHI_WAREHOUSE
-  PACKAGE_VERIFICATION_AT_DELHI_WAREHOUSE
-  READY_FOR_FINAL_DELIVERY
+  OUT_FOR_DELIVERY
   DELIVERED
+  REJECTED
+  ON_HOLD
 }
 
 enum PaymentStatus {
@@ -182,7 +177,8 @@ model Shipment {
   content             String?
   amount              Float?
   paymentStatus       PaymentStatus   @default(UNPAID)
-  status              ShipmentStatus  @default(DRAFT)
+  status              ShipmentStatus  @default(SUBMITTED)
+  rejectionReason     String?
   
   expectedArrivalDate DateTime?
   remarks             String?

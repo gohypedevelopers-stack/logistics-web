@@ -21,7 +21,11 @@ async function main() {
   for (const staff of staffRoles) {
     await prisma.user.upsert({
       where: { email: staff.email },
-      update: {},
+      update: {
+        passwordHash,
+        name: staff.name,
+        role: staff.role,
+      },
       create: {
         email: staff.email,
         name: staff.name,
@@ -40,7 +44,11 @@ async function main() {
   // 2. Create Customer
   const customer = await prisma.user.upsert({
     where: { email: 'customer@example.com' },
-    update: {},
+    update: {
+      passwordHash,
+      name: 'Customer Demo',
+      role: Role.CUSTOMER,
+    },
     create: {
       email: 'customer@example.com',
       name: 'Customer Demo',
@@ -154,10 +162,16 @@ async function main() {
   });
 
   // 7. Create Shipments
-  const shipment = await prisma.shipment.create({
-    data: {
-      trackingId: 'TRK-1001',
-      awb: 'AWB-5001',
+  // Use a more unique tracking ID and AWB for seeding or delete existing to ensure clean seed
+  const shipment = await prisma.shipment.upsert({
+    where: { trackingId: 'TRK-SEED-1001' },
+    update: {
+      awb: 'AWB-SEED-5001',
+      status: ShipmentStatus.IN_TRANSIT,
+    },
+    create: {
+      trackingId: 'TRK-SEED-1001',
+      awb: 'AWB-SEED-5001',
       customerId: customerProfile.id,
       logisticsCompanyId: logCompanies[0].id, // DHL
       routeId: routeUStoIN.id,
@@ -173,26 +187,34 @@ async function main() {
   });
 
   // 8. Create Shipment History & Events
-  await prisma.shipmentStatusHistory.create({
-    data: {
-      shipmentId: shipment.id,
-      status: ShipmentStatus.CREATED,
-      location: 'New York, US',
-      notes: 'Shipment scheduled online.',
-    },
+  const historyCount = await prisma.shipmentStatusHistory.count({
+    where: { shipmentId: shipment.id }
   });
 
-  await prisma.shipmentEvent.create({
-    data: {
-      shipmentId: shipment.id,
-      title: 'Package Created',
-      description: 'Customer created shipment in dashboard.',
-    },
-  });
+  if (historyCount === 0) {
+    await prisma.shipmentStatusHistory.create({
+      data: {
+        shipmentId: shipment.id,
+        status: ShipmentStatus.SUBMITTED,
+        location: 'New York, US',
+        notes: 'Shipment scheduled online.',
+      },
+    });
+
+    await prisma.shipmentEvent.create({
+      data: {
+        shipmentId: shipment.id,
+        title: 'Package Created',
+        description: 'Customer created shipment in dashboard.',
+      },
+    });
+  }
 
   // 9. Create Invoice
-  await prisma.invoice.create({
-    data: {
+  await prisma.invoice.upsert({
+    where: { invoiceNumber: 'INV-1001' },
+    update: {},
+    create: {
       invoiceNumber: 'INV-1001',
       shipmentId: shipment.id,
       customerId: customerProfile.id,
