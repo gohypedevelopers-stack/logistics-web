@@ -61,9 +61,16 @@ export const authOptions: NextAuthOptions = {
             role: user.role,
           };
         } catch (dbError: any) {
-          console.error("[AUTH] CRITICAL ERROR during authorize flow:", dbError);
-          // Only throw generic message to front-end for security
-          throw new Error("Authentication failed due to a server error. Please check database connection.");
+          console.error("[AUTH] CRITICAL ERROR during authorize flow:");
+          console.error("Error Message:", dbError.message);
+          console.error("Error Code:", dbError.code);
+          console.error("Error Stack:", dbError.stack);
+          
+          if (dbError.message?.includes("timed out") || dbError.code === "ETIMEDOUT") {
+            throw new Error("Database connection timed out. The server might be under heavy load or blocked by a firewall.");
+          }
+          
+          throw new Error("Authentication failed due to a server error. Please check if your DATABASE_URL is correct in Vercel.");
         }
       },
     }),
