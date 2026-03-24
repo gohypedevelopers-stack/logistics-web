@@ -3,7 +3,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { sendStatusEmail } from "@/lib/email";
-import { unstable_after as after } from 'next/server';
+import { after } from 'next/server';
 
 export async function updateShipmentAction(formData: FormData) {
   const id = formData.get("shipmentId") as string;
