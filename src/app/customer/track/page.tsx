@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { Search, MapPin, Package, CheckCircle, Clock, XCircle, ChevronLeft } from "lucide-react";
 import { redirect } from "next/navigation";
+import { RefreshHandler } from "@/components/RefreshHandler";
 
 export default async function TrackPage({ searchParams }: { searchParams: Promise<{ id?: string }> | { id?: string } }) {
   const resolvedParams = await searchParams;
@@ -34,6 +35,7 @@ export default async function TrackPage({ searchParams }: { searchParams: Promis
 
   return (
     <div className="p-8 lg:p-10 max-w-[1200px] mx-auto min-h-full bg-[#f8f9fa]">
+      {trackingId && <RefreshHandler interval={10000} />} {/* Refresh more often on track page */}
       <div className="flex items-center gap-3 mb-8">
         <Link href="/customer/shipments" className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors shadow-sm">
           <ChevronLeft className="w-5 h-5" />

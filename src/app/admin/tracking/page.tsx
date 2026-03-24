@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { Search, MapPin, ChevronLeft, ArrowRight, Activity } from "lucide-react";
+import { RefreshHandler } from "@/components/RefreshHandler";
 
 export const dynamic = 'force-dynamic';
 
@@ -17,6 +18,7 @@ export default async function AdminTracking() {
 
   return (
     <div className="p-8 lg:p-10 max-w-[1600px] mx-auto min-h-full bg-[#f8f9fa] font-sans">
+      <RefreshHandler interval={15000} />
       {/* Header */}
       <div className="mb-10">
         <div className="flex items-center justify-between mb-4">

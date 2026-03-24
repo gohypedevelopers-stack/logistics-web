@@ -1,8 +1,9 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { sendStatusEmail } from "@/lib/email";
+import { unstable_after as after } from 'next/server';
 
 export async function updateShipmentAction(formData: FormData) {
   const id = formData.get("shipmentId") as string;
@@ -47,17 +48,31 @@ export async function updateShipmentAction(formData: FormData) {
   });
 
   if (hasStatusChanged && shipmentData.customer.user.name) {
-    await sendStatusEmail(
-      shipmentData.customer.user.name, 
-      shipmentData.trackingId, 
-      status.replace(/_/g, ' '), 
-      notes
-    );
+    after(async () => {
+      try {
+        console.log("[AFTER_HOOK] Dispatching background email notification...");
+        await sendStatusEmail(
+          shipmentData.customer.user.name!, 
+          shipmentData.trackingId, 
+          status.replace(/_/g, ' '), 
+          notes
+        );
+      } catch (err) {
+        console.error("[AFTER_HOOK] Email failed:", err);
+      }
+    });
   }
 
+  // Critical paths first for immediate UI update
   revalidatePath(`/admin/shipments/${id}`);
   revalidatePath(`/admin/shipments`);
-  revalidatePath(`/admin/dashboard`);
-  revalidatePath(`/customer/shipments`);
-  revalidatePath(`/customer/track`);
+  
+  // Secondary paths can be in the background if we want to squeeze more speed, 
+  // but for reliability of counts, we'll do them here or in after.
+  after(() => {
+    revalidatePath(`/admin/dashboard`);
+    revalidatePath(`/customer`);
+    revalidatePath(`/customer/shipments`);
+    revalidatePath(`/customer/track`);
+  });
 }

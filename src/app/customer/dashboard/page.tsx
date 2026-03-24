@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Link from "next/link";
 import { BookOpen, PackageOpen, LayoutList, Box, Send, Ticket, AlertCircle, Clock } from "lucide-react";
+import { RefreshHandler } from "@/components/RefreshHandler";
 
 export const dynamic = 'force-dynamic';
 
@@ -52,6 +53,7 @@ export default async function CustomerDashboard() {
 
   return (
     <div className="p-8 lg:p-10 max-w-[1600px] mx-auto min-h-full bg-[#f8f9fa]">
+      <RefreshHandler interval={15000} />
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#1E293B] tracking-tight mb-4">Dashboard</h1>
         

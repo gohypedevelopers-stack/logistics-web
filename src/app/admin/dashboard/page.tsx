@@ -18,36 +18,46 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { RefreshHandler } from "@/components/RefreshHandler";
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboard() {
-  // Real Database Counts
-  const totalShipments = await prisma.shipment.count();
-  const pendingReview = await prisma.shipment.count({ where: { status: 'SUBMITTED' } });
-  const accepted = await prisma.shipment.count({ where: { status: 'ACCEPTED' } });
-  const inTransit = await prisma.shipment.count({ 
-    where: { 
-      status: { in: ['PICKED_UP', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'PICKUP_SCHEDULED', 'ACCEPTED'] } 
-    } 
-  });
-  const delivered = await prisma.shipment.count({ where: { status: 'DELIVERED' } });
-  const rejected = await prisma.shipment.count({ where: { status: 'REJECTED' } });
-  const customerCount = await prisma.customerProfile.count();
-
-  // Recent Shipments
-  const recentShipments = await prisma.shipment.findMany({
-    orderBy: { createdAt: 'desc' },
-    take: 5,
-    include: {
-      customer: true,
-      pickupAddress: true,
-      receiverAddress: true
-    }
-  });
+  const [
+    totalShipments,
+    pendingReview,
+    accepted,
+    inTransit,
+    delivered,
+    rejected,
+    customerCount,
+    recentShipments
+  ] = await Promise.all([
+    prisma.shipment.count(),
+    prisma.shipment.count({ where: { status: 'SUBMITTED' } }),
+    prisma.shipment.count({ where: { status: 'ACCEPTED' } }),
+    prisma.shipment.count({ 
+      where: { 
+        status: { in: ['PICKED_UP', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'PICKUP_SCHEDULED', 'ACCEPTED'] } 
+      } 
+    }),
+    prisma.shipment.count({ where: { status: 'DELIVERED' } }),
+    prisma.shipment.count({ where: { status: 'REJECTED' } }),
+    prisma.customerProfile.count(),
+    prisma.shipment.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      include: {
+        customer: true,
+        pickupAddress: true,
+        receiverAddress: true
+      }
+    })
+  ]);
 
   return (
     <div className="p-8 lg:p-10 max-w-[1600px] mx-auto min-h-full bg-[#f8f9fa] font-sans">
+      <RefreshHandler interval={15000} />
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-[#1E293B] tracking-tight mb-4">Admin Command Center</h1>
         

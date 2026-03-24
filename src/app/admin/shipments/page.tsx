@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search, ChevronLeft, Plus, LayoutList, Clock, PackageOpen, Truck, CheckCircle, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { RefreshHandler } from "@/components/RefreshHandler";
 
 export const dynamic = 'force-dynamic';
 
@@ -33,15 +34,22 @@ export default async function AdminShipments({ searchParams }: { searchParams: P
     }
   });
 
-  const counts: Record<string, number> = {
-    all: await prisma.shipment.count(),
-    PENDING: await prisma.shipment.count({ where: { status: 'SUBMITTED' } }),
-    ACTIVE: await prisma.shipment.count({ 
+  const [allCount, pendingCount, activeCount, deliveredCount] = await Promise.all([
+    prisma.shipment.count(),
+    prisma.shipment.count({ where: { status: 'SUBMITTED' } }),
+    prisma.shipment.count({ 
       where: { 
         status: { in: ['ACCEPTED', 'PICKUP_SCHEDULED', 'PICKED_UP', 'IN_TRANSIT', 'OUT_FOR_DELIVERY'] } 
       } 
     }),
-    DELIVERED: await prisma.shipment.count({ where: { status: 'DELIVERED' } }),
+    prisma.shipment.count({ where: { status: 'DELIVERED' } }),
+  ]);
+
+  const counts: Record<string, number> = {
+    all: allCount,
+    PENDING: pendingCount,
+    ACTIVE: activeCount,
+    DELIVERED: deliveredCount,
   };
 
   const tabs = [
@@ -53,6 +61,7 @@ export default async function AdminShipments({ searchParams }: { searchParams: P
 
   return (
     <div className="flex flex-col h-full bg-[#f8f9fa] min-h-screen font-sans">
+      <RefreshHandler interval={15000} />
       <div className="p-8 pb-0">
         <div className="flex items-center justify-between mb-4">
           <div>

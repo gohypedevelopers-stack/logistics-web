@@ -23,6 +23,12 @@ import { updateShipmentAction } from "./actions";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
+// New Client Components
+import { StatusUpdateForm } from "./StatusUpdateForm";
+import { QuickActions } from "./QuickActions";
+import { BillingInfo } from "./BillingInfo";
+import { RefreshHandler } from "@/components/RefreshHandler";
+
 export const dynamic = 'force-dynamic';
 
 const ALL_STATUSES = [
@@ -63,6 +69,7 @@ export default async function AdminShipmentDetail({ params }: { params: Promise<
 
   return (
     <div className="p-8 lg:p-10 max-w-[1400px] mx-auto min-h-full bg-[#f8f9fa] font-sans">
+      <RefreshHandler interval={15000} /> {/* Dynamic refresh every 15s */}
       {/* Header / Breadcrumb */}
       <div className="mb-8">
         <div className="flex items-center gap-3 text-slate-500 mb-4 text-sm font-medium">
@@ -255,108 +262,24 @@ export default async function AdminShipmentDetail({ params }: { params: Promise<
            
            {/* Quick Actions (Accept/Reject) */}
            {isPending && (
-             <div className="bg-white rounded-2xl p-8 border border-amber-200 shadow-lg shadow-amber-900/5">
-                <div className="flex items-center gap-3 mb-6">
-                   <ShieldAlert className="w-5 h-5 text-amber-500" />
-                   <h3 className="font-bold text-[#1E293B]">Action Required</h3>
-                </div>
-                <div className="grid grid-cols-1 gap-3">
-                   <form action={updateShipmentAction}>
-                      <input type="hidden" name="shipmentId" value={shipment.id} />
-                      <input type="hidden" name="status" value="ACCEPTED" />
-                      <button type="submit" className="w-full flex items-center justify-center gap-3 py-4 bg-[#1E1B4B] hover:bg-slate-900 text-white rounded-xl font-bold text-xs transition-all">
-                         <CheckCircle2 className="w-4 h-4" /> ACCEPT SHIPMENT
-                      </button>
-                   </form>
-                   <form action={updateShipmentAction}>
-                      <input type="hidden" name="shipmentId" value={shipment.id} />
-                      <input type="hidden" name="status" value="REJECTED" />
-                      <button type="submit" className="w-full flex items-center justify-center gap-3 py-4 bg-white border border-red-200 text-red-600 hover:bg-red-50 rounded-xl font-bold text-xs transition-all">
-                         <XCircle className="w-4 h-4" /> REJECT / BLOCK
-                      </button>
-                   </form>
-                </div>
-             </div>
+              <QuickActions shipmentId={shipment.id} />
            )}
 
            {/* Full Controls */}
-           <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm overflow-hidden">
-              <h3 className="font-bold text-[#1E293B] mb-6 flex items-center gap-2">
-                 <Edit3 className="w-4 h-4 text-blue-500" /> Update Status
-              </h3>
-              
-              <form action={updateShipmentAction} className="space-y-6">
-                 <input type="hidden" name="shipmentId" value={shipment.id} />
-                 
-                 <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">New Status</label>
-                    <select name="status" defaultValue={shipment.status} className="w-full h-12 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 outline-none focus:border-blue-400 transition-all">
-                       {ALL_STATUSES.map(s => (
-                         <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>
-                       ))}
-                    </select>
-                 </div>
-
-                 <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Assign AWB / Tracking</label>
-                    <input 
-                      name="awb" 
-                      type="text" 
-                      defaultValue={shipment.awb || ""} 
-                      placeholder="e.g. DHL-901-X"
-                      className="w-full h-12 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 outline-none focus:border-blue-400 transition-all"
-                    />
-                 </div>
-
-                 <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Current Location</label>
-                    <input 
-                      name="location" 
-                      type="text" 
-                      placeholder="e.g. Heathrow Gateway"
-                      className="w-full h-12 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 outline-none focus:border-blue-400 transition-all"
-                    />
-                 </div>
-
-                 <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Notes / Instructions</label>
-                    <textarea 
-                      name="notes" 
-                      placeholder="Add an update for the customer..." 
-                      rows={4}
-                      className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 outline-none focus:border-blue-400 transition-all resize-none"
-                    />
-                 </div>
-
-                 <button type="submit" className="w-full flex items-center justify-center gap-3 py-4 bg-[#1E1B4B] hover:bg-slate-900 text-white rounded-xl font-bold text-xs transition-all shadow-lg hover:scale-[1.02] active:scale-[0.98]">
-                    <Send className="w-4 h-4" /> SAVE CHANGES
-                 </button>
-              </form>
-           </div>
+           <StatusUpdateForm 
+              shipmentId={shipment.id}
+              currentStatus={shipment.status}
+              currentAwb={shipment.awb || ""}
+              allStatuses={ALL_STATUSES}
+           />
 
            {/* Secondary Controls - Payment Status etc */}
-           <div className="bg-[#f8f9fa] rounded-2xl p-6 border border-slate-200">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                 <CreditCard className="w-3 h-3" /> Billing Info
-              </h3>
-              <form action={updateShipmentAction} className="space-y-4">
-                 <input type="hidden" name="shipmentId" value={shipment.id} />
-                 <input type="hidden" name="status" value={shipment.status} />
-                 <select 
-                    name="paymentStatus" 
-                    defaultValue={shipment.paymentStatus} 
-                    className="w-full h-11 px-4 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-800 outline-none"
-                 >
-                    {['UNPAID', 'PARTIAL', 'PAID', 'OVERDUE'].map(ps => (
-                      <option key={ps} value={ps}>{ps}</option>
-                    ))}
-                 </select>
-                 <button type="submit" className="w-full text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors uppercase py-2">
-                    Update Payment
-                 </button>
-              </form>
-           </div>
-        </div>
+           <BillingInfo 
+              shipmentId={shipment.id}
+              currentStatus={shipment.status}
+              paymentStatus={shipment.paymentStatus}
+           />
+       </div>
       </div>
     </div>
   );

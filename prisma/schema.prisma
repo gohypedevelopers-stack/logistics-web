@@ -189,6 +189,11 @@ model Shipment {
   statusHistory       ShipmentStatusHistory[]
   events              ShipmentEvent[]
   invoice             Invoice?
+
+  @@index([customerId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([trackingId])
 }
 
 model ShipmentStatusHistory {
@@ -199,6 +204,9 @@ model ShipmentStatusHistory {
   location    String?
   notes       String?
   createdAt   DateTime       @default(now())
+
+  @@index([shipmentId])
+  @@index([createdAt])
 }
 
 model ShipmentEvent {
@@ -208,6 +216,9 @@ model ShipmentEvent {
   title       String
   description String?
   createdAt   DateTime  @default(now())
+
+  @@index([shipmentId])
+  @@index([createdAt])
 }
 
 model Invoice {
@@ -233,4 +244,8 @@ model AuditLog {
   entityId  String
   details   String?
   createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([entityId])
+  @@index([createdAt])
 }
