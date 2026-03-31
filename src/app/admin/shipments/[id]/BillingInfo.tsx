@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition, useState } from "react";
+import { useRouter } from "next/navigation";
 import { CreditCard, Loader2, CheckCircle2 } from "lucide-react";
 import { updateShipmentAction } from "./actions";
 import { cn } from "@/lib/utils";
@@ -14,12 +15,14 @@ interface BillingInfoProps {
 export function BillingInfo({ shipmentId, currentStatus, paymentStatus }: BillingInfoProps) {
   const [isPending, startTransition] = useTransition();
   const [success, setSuccess] = useState(false);
+  const router = useRouter();
 
   async function handlePaymentUpdate(formData: FormData) {
     setSuccess(false);
     startTransition(async () => {
       try {
         await updateShipmentAction(formData);
+        router.refresh();
         setSuccess(true);
         setTimeout(() => setSuccess(false), 2000);
       } catch (error) {
@@ -29,8 +32,8 @@ export function BillingInfo({ shipmentId, currentStatus, paymentStatus }: Billin
   }
 
   return (
-    <div className="bg-[#f8f9fa] rounded-2xl p-6 border border-slate-200">
-       <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+    <div className="app-card p-6">
+       <h3 className="mb-4 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
           <CreditCard className="w-3 h-3" /> Billing Info
        </h3>
        <form action={handlePaymentUpdate} className="space-y-4">
@@ -40,7 +43,7 @@ export function BillingInfo({ shipmentId, currentStatus, paymentStatus }: Billin
              name="paymentStatus" 
              defaultValue={paymentStatus} 
              disabled={isPending}
-             className="w-full h-11 px-4 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-800 outline-none disabled:opacity-50"
+             className="app-input w-full px-4 text-sm font-medium disabled:opacity-50"
           >
              {['UNPAID', 'PARTIAL', 'PAID', 'OVERDUE'].map(ps => (
                <option key={ps} value={ps}>{ps}</option>
@@ -50,7 +53,7 @@ export function BillingInfo({ shipmentId, currentStatus, paymentStatus }: Billin
             type="submit" 
             disabled={isPending}
             className={cn(
-               "w-full text-xs font-bold transition-all uppercase py-2 flex items-center justify-center gap-2",
+               "flex w-full items-center justify-center gap-2 py-3 text-xs font-semibold uppercase transition-all",
                isPending ? "text-slate-400" : 
                success ? "text-teal-600" : "text-blue-600 hover:text-blue-800"
             )}

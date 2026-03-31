@@ -3,15 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, MapPin, PlusSquare, Contact, Calculator, Rocket } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 
-export function CustomerSidebar() {
+export function CustomerSidebar({ userName }: { userName?: string | null }) {
   const pathname = usePathname();
-  const { data: session } = useSession();
-
-  const userName = session?.user?.name || "Customer Account";
-  const initials = userName
+  const resolvedUserName = userName || "Customer Account";
+  const initials = resolvedUserName
     .split(" ")
     .map((n) => n[0])
     .join("")
@@ -27,20 +24,20 @@ export function CustomerSidebar() {
   ];
 
   return (
-    <aside className="w-[260px] bg-white border-r border-slate-200 flex flex-col hidden md:flex h-full relative z-20 font-sans">
-      <div className="p-8 pb-10">
+    <aside className="hidden h-full w-[278px] flex-col border-r border-slate-200/80 bg-white/80 backdrop-blur-xl md:flex">
+      <div className="border-b border-slate-200/80 px-6 pb-6 pt-7">
          <div className="flex gap-3 items-center">
-           <div className="w-10 h-10 bg-[#1E1B4B] rounded-xl flex items-center justify-center shrink-0">
-              <Rocket className="w-6 h-6 text-white" />
+           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-100 shrink-0">
+              <Rocket className="w-6 h-6 text-blue-700" />
            </div>
            <div>
-             <h1 className="font-bold text-[#1E1B4B] text-lg leading-tight tracking-tight">Logistics Intel</h1>
-             <p className="text-[9px] font-bold text-slate-400 tracking-[0.2em] uppercase">Enterprise Tier</p>
+             <h1 className="text-lg font-semibold leading-tight tracking-tight text-slate-900">Logistics Intel</h1>
+             <p className="text-[10px] font-semibold text-slate-400 tracking-[0.22em] uppercase">Enterprise Tier</p>
            </div>
          </div>
       </div>
       
-      <nav className="flex-1 px-4 space-y-1">
+      <nav className="flex-1 px-4 py-6 space-y-1.5">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/customer/dashboard");
           const Icon = item.icon;
@@ -50,31 +47,33 @@ export function CustomerSidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-4 px-5 py-3.5 rounded-xl font-medium transition-all group",
+                "group relative flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all",
                 isActive 
-                  ? "bg-blue-50 text-[#1E1B4B] font-bold" 
-                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                  ? "bg-blue-100 text-blue-800 shadow-sm" 
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               )}
             >
-              <Icon className={cn("w-5 h-5 transition-colors", isActive ? "text-[#1E1B4B]" : "text-slate-400 group-hover:text-slate-600")} />
-              <span className="text-sm tracking-tight">{item.name}</span>
+              {isActive ? (
+                <span className="absolute bottom-2 left-0 top-2 w-1 rounded-r-full bg-blue-600" />
+              ) : null}
+              <Icon className={cn("h-5 w-5 transition-colors", isActive ? "text-blue-800" : "text-slate-400 group-hover:text-slate-700")} />
+              <span className="tracking-tight">{item.name}</span>
             </Link>
           );
         })}
       </nav>
       
-      {/* Profile Section */}
-      <div className="p-6 mt-auto">
-        <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+      <div className="mt-auto p-4 pt-2">
+        <div className="rounded-[18px] border border-slate-200 bg-slate-50 p-3.5">
            <div className="flex items-center gap-3">
-              {/* Profile Initials Circle */}
-              <Link href="/customer/profile" className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[#1E1B4B] font-bold text-xs hover:border-blue-400 transition-all shrink-0">
+              <Link href="/customer/profile" className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-slate-200 text-blue-700 font-bold text-xs hover:border-blue-300 transition-all shrink-0">
                  {initials || "C"}
               </Link>
               <div className="flex-1 min-w-0">
-                 <Link href="/customer/profile" className="block text-xs font-bold text-slate-900 truncate hover:text-blue-600 transition-colors uppercase tracking-tight">
-                    {userName}
+                 <Link href="/customer/profile" className="block truncate text-sm font-semibold text-slate-900 hover:text-blue-600 transition-colors tracking-tight">
+                    {resolvedUserName}
                  </Link>
+                 <p className="mt-0.5 text-xs text-slate-500">Customer account</p>
               </div>
            </div>
         </div>

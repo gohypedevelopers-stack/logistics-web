@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { Role } from "@prisma/client";
 import { 
   Users, 
   ShieldCheck, 
@@ -12,8 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { createStaffAction, deleteStaffAction } from "./actions";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export default async function StaffManagementPage() {
   const staffUsers = await prisma.user.findMany({

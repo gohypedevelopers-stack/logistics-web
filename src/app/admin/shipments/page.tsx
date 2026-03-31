@@ -1,190 +1,343 @@
 import prisma from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import Link from "next/link";
-import { Search, ChevronLeft, Plus, LayoutList, Clock, PackageOpen, Truck, CheckCircle, XCircle } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight, Eye, Search } from "lucide-react";
 import { RefreshHandler } from "@/components/RefreshHandler";
+import { StatusBadge } from "@/components/admin/StatusBadge";
+import type { Prisma } from "@prisma/client";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-export default async function AdminShipments({ searchParams }: { searchParams: Promise<{ status?: string }> | { status?: string } }) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) return <div>Unauthorized</div>;
+const PAGE_SIZE = 15;
 
-  const resolvedSearchParams = await searchParams;
-  const filterStatus = resolvedSearchParams.status || 'all';
+function buildStatusWhere(status: string): Prisma.ShipmentWhereInput | undefined {
+  if (!status || status === "all") return undefined;
 
-  // Fetch data directly from the DB
-  const filter: any = {};
-  if (filterStatus !== 'all') {
-    if (filterStatus === 'PENDING') filter.status = 'SUBMITTED';
-    else if (filterStatus === 'ACTIVE') filter.status = { in: ['ACCEPTED', 'PICKUP_SCHEDULED', 'PICKED_UP', 'IN_TRANSIT', 'OUT_FOR_DELIVERY'] };
-    else filter.status = filterStatus;
+  if (status === "waiting") {
+    return { status: { in: ["CREATED", "WAITING", "SUBMITTED", "ON_HOLD"] } as any };
   }
 
-  const shipments = await prisma.shipment.findMany({
-    where: filter,
-    orderBy: { createdAt: 'desc' },
-    include: {
-      customer: true,
-      pickupAddress: true,
-      receiverAddress: true,
-    }
-  });
+  if (status === "in_transit") {
+    return {
+      status: {
+        in: [
+          "ACCEPTED",
+          "PICKUP_SCHEDULED",
+          "PICKED_UP",
+          "AT_WAREHOUSE",
+          "PROCESSING",
+          "IN_TRANSIT",
+          "OUT_FOR_DELIVERY",
+        ],
+      } as any,
+    };
+  }
 
-  const [allCount, pendingCount, activeCount, deliveredCount] = await Promise.all([
-    prisma.shipment.count(),
-    prisma.shipment.count({ where: { status: 'SUBMITTED' } }),
-    prisma.shipment.count({ 
-      where: { 
-        status: { in: ['ACCEPTED', 'PICKUP_SCHEDULED', 'PICKED_UP', 'IN_TRANSIT', 'OUT_FOR_DELIVERY'] } 
-      } 
-    }),
-    prisma.shipment.count({ where: { status: 'DELIVERED' } }),
-  ]);
+  if (status === "delivered") {
+    return { status: { in: ["DELIVERED"] } as any };
+  }
 
-  const counts: Record<string, number> = {
-    all: allCount,
-    PENDING: pendingCount,
-    ACTIVE: activeCount,
-    DELIVERED: deliveredCount,
+  if (status === "closed") {
+    return { status: { in: ["DELIVERED", "CANCELLED", "REJECTED"] } as any };
+  }
+
+  return { status: status.toUpperCase() as any };
+}
+
+export default async function AdminShipments({
+  searchParams,
+}: {
+  searchParams:
+    | Promise<{
+        status?: string;
+        country?: string;
+        from?: string;
+        to?: string;
+        q?: string;
+        page?: string;
+      }>
+    | {
+        status?: string;
+        country?: string;
+        from?: string;
+        to?: string;
+        q?: string;
+        page?: string;
+      };
+}) {
+  const resolvedSearchParams = await searchParams;
+  const status = resolvedSearchParams.status || "all";
+  const country = resolvedSearchParams.country || "";
+  const query = resolvedSearchParams.q?.trim() || "";
+  const from = resolvedSearchParams.from || "";
+  const to = resolvedSearchParams.to || "";
+  const page = Math.max(Number(resolvedSearchParams.page || "1"), 1);
+
+  const where: Prisma.ShipmentWhereInput = {
+    ...(buildStatusWhere(status) ?? {}),
+    ...(country ? { countryId: country } : {}),
+    ...(from || to
+      ? {
+          createdAt: {
+            ...(from ? { gte: new Date(`${from}T00:00:00.000Z`) } : {}),
+            ...(to ? { lte: new Date(`${to}T23:59:59.999Z`) } : {}),
+          },
+        }
+      : {}),
+    ...(query
+      ? {
+          OR: [
+            { trackingId: { contains: query, mode: "insensitive" } },
+            { awb: { contains: query, mode: "insensitive" } },
+            { referenceNo: { contains: query, mode: "insensitive" } },
+            { receiverName: { contains: query, mode: "insensitive" } },
+            { customer: { companyName: { contains: query, mode: "insensitive" } } },
+            { customer: { user: { name: { contains: query, mode: "insensitive" } } } },
+          ],
+        }
+      : {}),
   };
 
-  const tabs = [
-    { label: "All Records", value: "all", count: counts.all, icon: LayoutList },
-    { label: "Pending", value: "PENDING", count: counts.PENDING, icon: Clock },
-    { label: "Active", value: "ACTIVE", count: counts.ACTIVE, icon: Truck },
-    { label: "Delivered", value: "DELIVERED", count: counts.DELIVERED, icon: CheckCircle },
+  const [countries, totalCount, shipments, waitingCount, inTransitCount, deliveredCount] =
+    await Promise.all([
+      prisma.country.findMany({
+        where: { isActive: true },
+        orderBy: [{ displayOrder: "asc" }, { name: "asc" }],
+        select: { id: true, name: true, code: true },
+      }),
+      prisma.shipment.count({ where }),
+      prisma.shipment.findMany({
+        where,
+        include: {
+          customer: {
+            include: {
+              user: true,
+            },
+          },
+          country: true,
+        },
+        orderBy: { createdAt: "desc" },
+        take: PAGE_SIZE,
+        skip: (page - 1) * PAGE_SIZE,
+      }),
+      prisma.shipment.count({
+        where: {
+          status: { in: ["CREATED", "WAITING", "SUBMITTED", "ON_HOLD"] } as any,
+        },
+      }),
+      prisma.shipment.count({
+        where: {
+          status: {
+            in: [
+              "ACCEPTED",
+              "PICKUP_SCHEDULED",
+              "PICKED_UP",
+              "AT_WAREHOUSE",
+              "PROCESSING",
+              "IN_TRANSIT",
+              "OUT_FOR_DELIVERY",
+            ],
+          } as any,
+        },
+      }),
+      prisma.shipment.count({
+        where: {
+          status: "DELIVERED",
+        },
+      }),
+    ]);
+
+  const totalPages = Math.max(Math.ceil(totalCount / PAGE_SIZE), 1);
+
+  function buildPageHref(nextPage: number) {
+    const params = new URLSearchParams();
+    if (status && status !== "all") params.set("status", status);
+    if (country) params.set("country", country);
+    if (from) params.set("from", from);
+    if (to) params.set("to", to);
+    if (query) params.set("q", query);
+    if (nextPage > 1) params.set("page", String(nextPage));
+    return `/admin/shipments?${params.toString()}`;
+  }
+
+  const stats = [
+    { label: "Total Shipments", value: totalCount, href: buildPageHref(1) },
+    { label: "Waiting", value: waitingCount, href: `/admin/shipments?status=waiting` },
+    { label: "In Transit", value: inTransitCount, href: `/admin/shipments?status=in_transit` },
+    { label: "Delivered", value: deliveredCount, href: `/admin/shipments?status=delivered` },
   ];
 
   return (
-    <div className="flex flex-col h-full bg-[#f8f9fa] min-h-screen font-sans">
-      <RefreshHandler interval={15000} />
-      <div className="p-8 pb-0">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <div className="flex items-center gap-2 text-xl font-bold text-[#1E293B]">
-              <Link href="/admin/dashboard" className="w-6 h-6 rounded-full bg-[#1E1B4B] text-white flex items-center justify-center hover:bg-slate-900 transition-colors">
-                <ChevronLeft className="w-4 h-4" />
-              </Link>
-              Universal Shipment Ledger
-            </div>
-            <div className="text-sm font-medium text-slate-500 mt-1 pl-8">
-              Monitor and manage all global logistics operations.
-            </div>
-          </div>
-          <div className="flex gap-3">
-             <button className="px-5 h-11 bg-[#1E1B4B] text-white rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-slate-900 transition-all shadow-md">
-                <Plus className="w-4 h-4" /> Manual Entry
-             </button>
-          </div>
-        </div>
+    <div className="mx-auto flex min-h-full max-w-[1600px] flex-col p-6 lg:p-8">
+      <RefreshHandler interval={45000} />
 
-        {/* Tabs */}
-        <div className="flex border-b border-slate-200 mt-8 overflow-x-auto no-scrollbar gap-10">
-          {tabs.map((tab) => (
+      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <div className="flex items-center gap-3">
             <Link
-              key={tab.value}
-              href={`/admin/shipments?status=${tab.value}`}
-              className={`pb-4 text-sm font-bold whitespace-nowrap transition-all relative flex items-center gap-2.5 ${
-                filterStatus === tab.value
-                  ? "text-[#1E1B4B]"
-                  : "text-slate-400 hover:text-slate-600"
-              }`}
+              href="/admin/dashboard"
+              className="app-button-secondary flex h-10 w-10 items-center justify-center"
             >
-              {tab.label}
-              <span className={cn(
-                "px-2 py-0.5 rounded-md text-[10px] font-black border transition-all",
-                filterStatus === tab.value 
-                  ? "bg-[#1E1B4B] text-white border-[#1E1B4B]" 
-                  : "bg-slate-100 text-slate-400 border-slate-200"
-              )}>
-                {tab.count}
-              </span>
-              {filterStatus === tab.value && (
-                <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#1E1B4B] rounded-t-full" />
-              )}
+              <ChevronLeft className="h-4 w-4" />
             </Link>
-          ))}
+            <div>
+              <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
+                Shipment Operations
+              </h1>
+              <p className="mt-1 text-sm text-slate-500">
+                Search and manage shipments by status, country, client, and date.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="p-8 flex-1">
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col h-full min-h-[600px] overflow-hidden">
-          {/* Toolbar */}
-          <div className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-50">
-            <div className="relative w-full sm:w-80">
-              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search Tracking ID or Customer..."
-                className="w-full text-sm font-medium pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-400/5 transition-all"
-              />
-            </div>
+      <div className="mb-8 grid gap-4 md:grid-cols-4">
+        {stats.map((stat) => (
+          <Link key={stat.label} href={stat.href} className="app-card px-5 py-5 transition-colors hover:border-blue-200">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+              {stat.label}
+            </p>
+            <p className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">{stat.value}</p>
+          </Link>
+        ))}
+      </div>
+
+      <div className="app-card overflow-hidden">
+        <form className="grid gap-4 border-b border-slate-200/80 p-6 lg:grid-cols-[1.2fr_repeat(4,minmax(0,1fr))]">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              name="q"
+              defaultValue={query}
+              placeholder="Search AWB, tracking ID, reference, client"
+              className="app-input w-full pl-11 pr-4 text-sm"
+            />
           </div>
 
-          {/* Table Content */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-[#f8f9fa] border-b border-slate-100 text-slate-500 font-bold text-[11px] uppercase tracking-wider">
-                  <th className="pl-8 py-4 w-[20%]">Tracking / AWB</th>
-                  <th className="px-6 py-4 w-[20%] text-center">Entity Node</th>
-                  <th className="px-6 py-4 w-[20%] text-center">Route Flow</th>
-                  <th className="px-6 py-4 w-[20%] text-center">Status</th>
-                  <th className="pr-8 py-4 text-right">Database Ops</th>
+          <select name="status" defaultValue={status} className="app-input w-full px-4 text-sm">
+            <option value="all">All statuses</option>
+            <option value="waiting">Waiting</option>
+            <option value="accepted">Accepted</option>
+            <option value="pickup_scheduled">Pickup scheduled</option>
+            <option value="in_transit">In transit</option>
+            <option value="delivered">Delivered</option>
+            <option value="rejected">Rejected</option>
+            <option value="on_hold">On hold</option>
+            <option value="closed">Closed</option>
+          </select>
+
+          <select name="country" defaultValue={country} className="app-input w-full px-4 text-sm">
+            <option value="">All countries</option>
+            {countries.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.name} ({item.code})
+              </option>
+            ))}
+          </select>
+
+          <input type="date" name="from" defaultValue={from} className="app-input w-full px-4 text-sm" />
+
+          <div className="flex gap-3">
+            <input type="date" name="to" defaultValue={to} className="app-input min-w-0 flex-1 px-4 text-sm" />
+            <button type="submit" className="app-button-primary px-5 text-sm font-semibold">
+              Apply
+            </button>
+          </div>
+        </form>
+
+        <div className="overflow-x-auto">
+          <table className="app-table w-full min-w-[1100px]">
+            <thead className="border-b border-slate-200/70">
+              <tr className="text-left text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                <th className="px-6 py-4">AWB / Tracking</th>
+                <th className="px-6 py-4">Reference</th>
+                <th className="px-6 py-4">Client</th>
+                <th className="px-6 py-4">Country</th>
+                <th className="px-6 py-4">Date</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {shipments.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-20 text-center text-sm text-slate-400">
+                    No shipments match the current filters.
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {shipments.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="py-32 text-center text-slate-400 font-bold italic opacity-60">
-                      No records found in this partition.
+              ) : (
+                shipments.map((shipment) => (
+                  <tr key={shipment.id}>
+                    <td className="px-6 py-5">
+                      <div className="font-semibold text-slate-900">{shipment.awb || "Pending AWB"}</div>
+                      <div className="mt-1 text-sm text-slate-500">{shipment.trackingId}</div>
+                    </td>
+                    <td className="px-6 py-5 text-sm text-slate-700">
+                      {shipment.referenceNo || "Not assigned"}
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="font-medium text-slate-900">
+                        {shipment.customer.companyName || shipment.customer.user?.name || "Private customer"}
+                      </div>
+                      <div className="mt-1 text-sm text-slate-500">
+                        {shipment.customer.user?.email || "No email"}
+                      </div>
+                    </td>
+                    <td className="px-6 py-5 text-sm text-slate-700">
+                      {shipment.country?.name || "Not assigned"}
+                    </td>
+                    <td className="px-6 py-5 text-sm text-slate-700">
+                      {format(new Date(shipment.createdAt), "dd MMM yyyy")}
+                    </td>
+                    <td className="px-6 py-5">
+                      <StatusBadge status={shipment.status} />
+                    </td>
+                    <td className="px-6 py-5 text-right">
+                      <Link
+                        href={`/admin/shipments/${shipment.id}`}
+                        className="app-button-secondary inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold"
+                      >
+                        <Eye className="h-4 w-4" />
+                        View
+                      </Link>
                     </td>
                   </tr>
-                ) : (
-                  shipments.map((ship) => (
-                    <tr key={ship.id} className="group hover:bg-slate-50 transition-colors cursor-default">
-                      <td className="pl-8 py-6">
-                        <div className="font-extrabold text-[#1E1B4B] group-hover:text-blue-700 transition-colors uppercase tracking-tight">{ship.trackingId}</div>
-                        <div className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">{ship.awb || "Wait AWB"}</div>
-                      </td>
-                      <td className="px-6 py-6 text-center">
-                        <div className="font-bold text-slate-800 text-sm">{ship.customer?.companyName || "Private"}</div>
-                        <div className="text-[10px] font-medium text-slate-400 mt-1">{ship.customer?.phone || "N/A"}</div>
-                      </td>
-                      <td className="px-6 py-6 text-center">
-                        <div className="inline-flex items-center gap-2 font-bold text-slate-700 text-xs bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
-                          {ship.pickupAddress?.city || '-'} 
-                          <span className="text-slate-300">→</span>
-                          {ship.receiverAddress?.city || '-'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-6 text-center">
-                        <span className={`px-2.5 py-1 text-[10px] font-extrabold rounded-lg uppercase tracking-wider border
-                          ${ship.status === 'REJECTED' ? 'bg-red-50 text-red-700 border-red-200' : ''}
-                          ${ship.status === 'DELIVERED' ? 'bg-teal-50 text-teal-700 border-teal-200' : ''}
-                          ${ship.status === 'SUBMITTED' ? 'bg-amber-50 text-amber-700 border-amber-200' : ''}
-                          ${!['REJECTED', 'DELIVERED', 'SUBMITTED'].includes(ship.status) ? 'bg-blue-50 text-blue-700 border-blue-200' : ''}
-                        `}>
-                          {ship.status.replace(/_/g, ' ')}
-                        </span>
-                      </td>
-                      <td className="pr-8 py-6 text-right">
-                        <Link 
-                          href={`/admin/shipments/${ship.id}`} 
-                          className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 hover:bg-[#1E1B4B] hover:text-white hover:border-[#1E1B4B] transition-all shadow-sm"
-                        >
-                          OPEN BRIDGE
-                        </Link>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="flex flex-col gap-4 border-t border-slate-200/80 px-6 py-5 md:flex-row md:items-center md:justify-between">
+          <p className="text-sm text-slate-500">
+            Page {page} of {totalPages}. Waiting: <span className="font-semibold text-slate-900">{waitingCount}</span>, in transit:{" "}
+            <span className="font-semibold text-slate-900">{inTransitCount}</span>, delivered:{" "}
+            <span className="font-semibold text-slate-900">{deliveredCount}</span>.
+          </p>
+
+          <div className="flex items-center gap-2">
+            <Link
+              href={buildPageHref(Math.max(page - 1, 1))}
+              className={`flex h-10 w-10 items-center justify-center rounded-2xl border transition-colors ${
+                page === 1
+                  ? "pointer-events-none border-slate-100 text-slate-300"
+                  : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+              }`}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Link>
+            <Link
+              href={buildPageHref(Math.min(page + 1, totalPages))}
+              className={`flex h-10 w-10 items-center justify-center rounded-2xl border transition-colors ${
+                page >= totalPages
+                  ? "pointer-events-none border-slate-100 text-slate-300"
+                  : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+              }`}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       </div>

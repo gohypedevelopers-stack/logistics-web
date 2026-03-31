@@ -1,19 +1,23 @@
 import { AdminSidebar } from "./Sidebar";
+import { AppTopbar } from "@/components/layout/AppTopbar";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="flex bg-[#F8FAFC] font-sans h-screen overflow-hidden">
-      {/* Fixed Sidebar */}
-      <AdminSidebar />
+  const session = await getServerSession(authOptions);
+  const userName = session?.user?.name || "Admin Account";
 
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden relative z-10 w-full">
-        {/* Scrollable Page Content */}
-        <div className="flex-1 overflow-y-auto w-full scroll-smooth">
+  return (
+    <div className="app-shell flex h-screen overflow-hidden font-sans">
+      <AdminSidebar userName={userName} />
+
+      <main className="relative z-10 flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
+        <AppTopbar variant="admin" userName={userName} />
+        <div className="flex-1 overflow-y-auto scroll-smooth">
           {children}
         </div>
       </main>

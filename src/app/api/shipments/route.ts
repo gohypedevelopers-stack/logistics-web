@@ -1,139 +1,264 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { z } from "zod";
+import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
+import {
+  buildReferenceNumber,
+  buildShipmentTrackingId,
+  createTrackingSummary,
+} from "@/lib/shipment-utils";
 import { sendStatusEmail } from "@/lib/email";
+
+const createShipmentSchema = z.object({
+  collectionType: z.enum(["PICKUP", "WAREHOUSE_DROP"]).default("PICKUP"),
+  pickupCountryId: z.string().min(1, "Pickup country is required."),
+  destinationCountryId: z.string().min(1, "Destination country is required."),
+  warehouseId: z.string().optional().nullable(),
+  pickupLocation: z.string().trim().optional().nullable(),
+  pickupCity: z.string().trim().optional().nullable(),
+  destinationLocation: z.string().trim().optional().nullable(),
+  destinationCity: z.string().trim().optional().nullable(),
+  pickupDate: z.string().optional().nullable(),
+  pcs: z.coerce.number().int().positive("PCS must be greater than zero."),
+  weight: z.coerce.number().positive("Weight must be greater than zero."),
+  description: z.string().trim().min(3, "Description is required."),
+  declaredValue: z.coerce.number().min(0, "Declared value cannot be negative."),
+  referenceNo: z.string().trim().optional().nullable(),
+  receiverName: z.string().trim().optional().nullable(),
+  receiverPhone: z.string().trim().optional().nullable(),
+});
 
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    // Verify the user actually exists in DB (protects against stale JWT sessions)
-    console.log("SESSION DEBUG:", JSON.stringify({ id: session.user.id, email: session.user.email, name: session.user.name }));
-    
-    let dbUser = await prisma.user.findUnique({ where: { id: session.user.id } });
-    
-    // Fallback: if user ID is stale (e.g. after DB reset), try to find by email
-    if (!dbUser && session.user.email) {
-      console.log("ID lookup failed, trying email fallback:", session.user.email);
-      dbUser = await prisma.user.findUnique({ where: { email: session.user.email } });
-    }
-    
-    // Last resort: find first user in the system (single-admin startup mode)
-    if (!dbUser) {
-      console.log("Email fallback also failed. Trying to find any matching user...");
-      const allUsers = await prisma.user.findMany({ take: 5, select: { id: true, email: true } });
-      console.log("Available users:", JSON.stringify(allUsers));
-      // Try matching by name if email is not in session
-      if (session.user.name) {
-        dbUser = await prisma.user.findFirst({ where: { name: session.user.name } });
-      }
-    }
-    
-    if (!dbUser) {
-      return NextResponse.json(
-        { error: "Your session is stale. Please log out and log in again." },
-        { status: 401 }
-      );
-    }
-
-    let customer = await prisma.customerProfile.findUnique({
-      where: { userId: dbUser.id }
-    });
-
-    if (!customer) {
-       customer = await prisma.customerProfile.create({
-          data: { userId: dbUser.id }
-       });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
-    const { originCountry, pickupDate, fullPickupAddress, weight, content, amount, receiverName, receiverPin, receiverCity, receiverAddress, carrier } = body;
+    const parsed = createShipmentSchema.safeParse(body);
 
-    // Get or create India country
-    let ind = await prisma.country.findFirst({ where: { code: "IN" } });
-    if (!ind) {
-       try {
-         ind = await prisma.country.create({ data: { code: "IN", name: "India" }});
-       } catch {
-         ind = await prisma.country.findFirst({ where: { code: "IN" } });
-       }
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Invalid shipment payload." },
+        { status: 400 },
+      );
     }
-    if (!ind) return NextResponse.json({ error: "Could not resolve destination country" }, { status: 500 });
 
-    const recAddress = await prisma.address.create({
-      data: {
-        customerProfileId: customer.id,
-        name: receiverName || "Receiver",
-        street1: receiverAddress || "N/A",
-        city: receiverCity || "Delhi",
-        countryId: ind.id,
-        postalCode: receiverPin || "000000"
-      }
+    const dbUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      include: { customerProfile: true },
     });
 
-    // Get or create origin country
-    const originLabel = originCountry || "United Kingdom (UK)";
-    const originCode = originLabel.includes("US") ? "US" : originLabel.includes("DE") ? "DE" : "UK";
-    let originCtry = await prisma.country.findFirst({ where: { code: originCode } });
-    if (!originCtry) {
-       try {
-         originCtry = await prisma.country.create({ data: { code: originCode, name: originLabel }});
-       } catch {
-         originCtry = await prisma.country.findFirst({ where: { code: originCode } });
-       }
+    if (!dbUser) {
+      return NextResponse.json(
+        { error: "Your session is stale. Please log in again." },
+        { status: 401 },
+      );
     }
-    if (!originCtry) return NextResponse.json({ error: "Could not resolve origin country" }, { status: 500 });
 
-    const pickupAddr = await prisma.address.create({
-      data: {
-        customerProfileId: customer.id,
-        name: dbUser.name || "Sender",
-        street1: fullPickupAddress || "N/A",
-        city: originLabel,
-        countryId: originCtry.id,
-        postalCode: "N/A"
+    const payload = parsed.data;
+
+    if (payload.collectionType === "PICKUP") {
+      if (!payload.pickupLocation || payload.pickupLocation.trim().length < 5) {
+        return NextResponse.json(
+          { error: "Pickup location is required." },
+          { status: 400 },
+        );
       }
+
+      if (!payload.pickupCity || payload.pickupCity.trim().length < 2) {
+        return NextResponse.json(
+          { error: "Pickup city is required." },
+          { status: 400 },
+        );
+      }
+
+      if (!payload.receiverName || payload.receiverName.trim().length < 2) {
+        return NextResponse.json(
+          { error: "Receiver name is required." },
+          { status: 400 },
+        );
+      }
+
+      if (!payload.receiverPhone || payload.receiverPhone.trim().length < 5) {
+        return NextResponse.json(
+          { error: "Receiver phone is required." },
+          { status: 400 },
+        );
+      }
+    }
+
+    const [pickupCountry, destinationCountry] = await Promise.all([
+      prisma.country.findFirst({
+        where: { id: payload.pickupCountryId, isActive: true },
+      }),
+      prisma.country.findFirst({
+        where: { id: payload.destinationCountryId, isActive: true },
+      }),
+    ]);
+
+    if (!pickupCountry || !destinationCountry) {
+      return NextResponse.json(
+        { error: "Selected country is not currently supported." },
+        { status: 400 },
+      );
+    }
+
+    const route = await prisma.route.findFirst({
+      where: {
+        originCountryId: payload.pickupCountryId,
+        destinationCountryId: payload.destinationCountryId,
+        isActive: true,
+      },
+      orderBy: [{ transitDays: "asc" }, { createdAt: "asc" }],
     });
 
-    const trackingId = `TRK${Date.now()}`;
+    const warehouse =
+      payload.collectionType === "WAREHOUSE_DROP"
+        ? await prisma.warehouse.findFirst({
+            where: {
+              id: payload.warehouseId ?? undefined,
+              countryId: payload.pickupCountryId,
+              isActive: true,
+            },
+          })
+        : null;
 
-    const shipment = await prisma.shipment.create({
-      data: {
-        trackingId,
-        customerId: customer.id,
-        createdById: dbUser.id,
-        weight: parseFloat(weight) || 1,
-        content: content || "General Goods",
-        amount: parseFloat(amount) || 0,
-        status: "SUBMITTED" as any,
-        paymentStatus: "UNPAID",
-        pickupAddressId: pickupAddr.id,
-        receiverAddressId: recAddress.id,
-        expectedArrivalDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-      }
+    if (payload.collectionType === "WAREHOUSE_DROP" && !warehouse) {
+      return NextResponse.json(
+        { error: "Please select a valid warehouse for warehouse drop." },
+        { status: 400 },
+      );
+    }
+
+    const customerProfile =
+      dbUser.customerProfile ??
+      (await prisma.customerProfile.create({
+        data: {
+          userId: dbUser.id,
+          companyName: dbUser.name ?? undefined,
+        },
+      }));
+
+    const pickupDate = payload.pickupDate ? new Date(payload.pickupDate) : null;
+    const trackingId = buildShipmentTrackingId();
+    const referenceNo = payload.referenceNo || buildReferenceNumber();
+    const status = "CREATED";
+
+    const shipment = await prisma.$transaction(async (tx) => {
+      const pickupAddress = await tx.address.create({
+        data:
+          payload.collectionType === "WAREHOUSE_DROP" && warehouse
+            ? {
+                customerProfileId: customerProfile.id,
+                label: `Warehouse Drop - ${warehouse.code}`,
+                name: warehouse.name,
+                phone: warehouse.phone,
+                street1: warehouse.street1,
+                street2: warehouse.street2,
+                city: warehouse.city,
+                state: warehouse.state,
+                postalCode: warehouse.postalCode,
+                countryId: warehouse.countryId,
+              }
+            : {
+                customerProfileId: customerProfile.id,
+                label: "Shipment Pickup",
+                name: dbUser.name || customerProfile.companyName || "Sender",
+                street1: payload.pickupLocation!,
+                city: payload.pickupCity!,
+                countryId: pickupCountry.id,
+              },
+      });
+
+      const receiverAddress = await tx.address.create({
+        data: {
+          customerProfileId: customerProfile.id,
+          label: "Shipment Receiver",
+          name: payload.receiverName || "Receiver details pending",
+          phone: payload.receiverPhone || null,
+          street1: payload.destinationLocation || `${destinationCountry.name} delivery details pending`,
+          city: payload.destinationCity || destinationCountry.name,
+          countryId: destinationCountry.id,
+        },
+      });
+
+      return tx.shipment.create({
+        data: {
+          trackingId,
+          referenceNo,
+          collectionType: payload.collectionType,
+          customerId: customerProfile.id,
+          createdById: dbUser.id,
+          routeId: route?.id,
+          warehouseId: warehouse?.id,
+          countryId: destinationCountry.id,
+          pickupAddressId: pickupAddress.id,
+          receiverAddressId: receiverAddress.id,
+          receiverName: payload.receiverName || null,
+          receiverPhone: payload.receiverPhone || null,
+          pickupDate,
+          pcs: payload.pcs,
+          weight: payload.weight,
+          content: payload.description,
+          amount: payload.declaredValue,
+          status,
+          paymentStatus: "UNPAID",
+          statusHistory: {
+            create: {
+              status,
+              location: warehouse?.city ?? payload.pickupCity ?? pickupCountry.name,
+              notes:
+                payload.collectionType === "WAREHOUSE_DROP" && warehouse
+                  ? `${createTrackingSummary(status)} Warehouse drop selected at ${warehouse.name}.`
+                  : !route
+                    ? `${createTrackingSummary(status)} Route assignment is pending review by operations.`
+                    : createTrackingSummary(status),
+            },
+          },
+        },
+        include: {
+          country: true,
+          route: {
+            include: {
+              originCountry: true,
+              destinationCountry: true,
+            },
+          },
+        },
+      });
     });
 
-    await prisma.shipmentStatusHistory.create({
-       data: {
-          shipmentId: shipment.id,
-          status: "SUBMITTED" as any,
-          notes: "Shipment submitted successfully. Awaiting admin review."
-       }
-    });
+    revalidatePath("/customer/dashboard");
+    revalidatePath("/customer/shipments");
+    revalidatePath("/customer/track");
+    revalidatePath("/admin/dashboard");
+    revalidatePath("/admin/shipments");
 
-    try {
-      if (dbUser.name) {
-         await sendStatusEmail(dbUser.name, trackingId, "SUBMITTED", "Your tracking number has been generated. Pending admin review.");
+    if (dbUser.name) {
+      try {
+        await sendStatusEmail(
+          dbUser.name,
+          trackingId,
+          "Shipment created",
+          createTrackingSummary(status),
+        );
+      } catch (error) {
+        console.error("[SHIPMENTS_POST] Non-blocking email failure", error);
       }
-    } catch (emailErr) {
-      console.error("Email dispatch failed (non-blocking):", emailErr);
     }
 
     return NextResponse.json({ success: true, shipment });
-  } catch (error: any) {
-    console.error("SHIPMENT CREATION ERROR:", error);
-    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+  } catch (error) {
+    console.error("[SHIPMENTS_POST] Failed to create shipment", error);
+
+    return NextResponse.json(
+      { error: "Unable to create shipment right now." },
+      { status: 500 },
+    );
   }
 }

@@ -1,78 +1,176 @@
 "use server";
 
+import { after } from "next/server";
+import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
-import { revalidatePath, revalidateTag } from "next/cache";
 import { sendStatusEmail } from "@/lib/email";
-import { after } from 'next/server';
+import {
+  createTrackingSummary,
+  createTrackingTitle,
+  normalizeShipmentStatus,
+} from "@/lib/shipment-utils";
+
+function cleanValue(value: FormDataEntryValue | null) {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed.length ? trimmed : null;
+}
+
+function revalidateShipmentViews(id: string) {
+  revalidatePath("/admin/dashboard");
+  revalidatePath("/admin/shipments");
+  revalidatePath(`/admin/shipments/${id}`);
+  revalidatePath("/customer/dashboard");
+  revalidatePath("/customer/shipments");
+  revalidatePath(`/customer/shipments/${id}`);
+  revalidatePath("/customer/track");
+}
 
 export async function updateShipmentAction(formData: FormData) {
-  const id = formData.get("shipmentId") as string;
-  const status = formData.get("status") as any;
-  const paymentStatus = formData.get("paymentStatus") as any;
-  const notes = formData.get("notes") as string;
-  const location = formData.get("location") as string;
-  const awb = formData.get("awb") as string;
-  const rejectionReason = formData.get("rejectionReason") as string;
+  const shipmentId = cleanValue(formData.get("shipmentId"));
+  const requestedStatus = cleanValue(formData.get("status"));
+  const paymentStatus = cleanValue(formData.get("paymentStatus"));
+  const notes = cleanValue(formData.get("notes"));
+  const location = cleanValue(formData.get("location"));
+  const awb = cleanValue(formData.get("awb"));
+  const referenceNo = cleanValue(formData.get("referenceNo"));
+  const rejectionReason = cleanValue(formData.get("rejectionReason"));
 
-  if (!id || !status) return;
+  if (!shipmentId) {
+    throw new Error("Shipment ID is required.");
+  }
 
-  console.log(`ADMIN ACTION: Updating shipment ${id} to status: ${status}, payment: ${paymentStatus}`);
-
-  const shipmentData = await prisma.shipment.findUnique({
-    where: { id },
-    include: { customer: { include: { user: true } } }
+  const shipment = await prisma.shipment.findUnique({
+    where: { id: shipmentId },
+    include: {
+      customer: {
+        include: {
+          user: true,
+        },
+      },
+    },
   });
 
-  if (!shipmentData) return;
+  if (!shipment) {
+    throw new Error("Shipment not found.");
+  }
 
-  const hasStatusChanged = shipmentData.status !== status;
-  const hasUpdates = notes || location;
+  const nextStatus = normalizeShipmentStatus(requestedStatus ?? shipment.status);
+  const previousStatus = normalizeShipmentStatus(shipment.status);
+  const hasStatusChanged = nextStatus !== previousStatus;
+  const shouldWriteHistory = hasStatusChanged || Boolean(notes) || Boolean(location);
 
-  await prisma.shipment.update({
-    where: { id },
-    data: { 
-      status, 
-      paymentStatus: paymentStatus || "UNPAID",
-      rejectionReason: status === "REJECTED" ? rejectionReason : null,
-      awb: awb || undefined,
-      ...( (hasStatusChanged || hasUpdates) ? {
-        statusHistory: {
-          create: {
-            status: status,
-            notes: notes || null,
-            location: location || null
-          }
-        }
-      } : {})
-    } as any
+  await prisma.$transaction(async (tx) => {
+    await tx.shipment.update({
+      where: { id: shipmentId },
+      data: {
+        status: nextStatus as any,
+        paymentStatus: (paymentStatus ?? shipment.paymentStatus) as any,
+        ...(formData.has("awb") ? { awb } : {}),
+        ...(formData.has("referenceNo") ? { referenceNo } : {}),
+        ...(formData.has("rejectionReason")
+          ? {
+              rejectionReason:
+                nextStatus === "REJECTED" ? rejectionReason : null,
+            }
+          : {}),
+      },
+    });
+
+    if (shouldWriteHistory) {
+      await tx.shipmentStatusHistory.create({
+        data: {
+          shipmentId,
+          status: nextStatus as any,
+          location,
+          notes: notes ?? createTrackingSummary(nextStatus),
+        },
+      });
+    }
   });
 
-  if (hasStatusChanged && shipmentData.customer.user.name) {
+  revalidateShipmentViews(shipmentId);
+
+  if (hasStatusChanged && shipment.customer.user?.name) {
     after(async () => {
       try {
-        console.log("[AFTER_HOOK] Dispatching background email notification...");
         await sendStatusEmail(
-          shipmentData.customer.user.name!, 
-          shipmentData.trackingId, 
-          status.replace(/_/g, ' '), 
-          notes
+          shipment.customer.user.name!,
+          shipment.trackingId,
+          nextStatus.replace(/_/g, " "),
+          notes ?? createTrackingSummary(nextStatus),
         );
-      } catch (err) {
-        console.error("[AFTER_HOOK] Email failed:", err);
+      } catch (error) {
+        console.error("[UPDATE_SHIPMENT_ACTION] Email dispatch failed", error);
       }
     });
   }
 
-  // Critical paths first for immediate UI update
-  revalidatePath(`/admin/shipments/${id}`);
-  revalidatePath(`/admin/shipments`);
-  
-  // Secondary paths can be in the background if we want to squeeze more speed, 
-  // but for reliability of counts, we'll do them here or in after.
-  after(() => {
-    revalidatePath(`/admin/dashboard`);
-    revalidatePath(`/customer`);
-    revalidatePath(`/customer/shipments`);
-    revalidatePath(`/customer/track`);
+  return { success: true };
+}
+
+export async function addTrackingEventAction(formData: FormData) {
+  const shipmentId = cleanValue(formData.get("shipmentId"));
+  const title = cleanValue(formData.get("title"));
+  const note = cleanValue(formData.get("note"));
+  const location = cleanValue(formData.get("location"));
+  const requestedStatus = cleanValue(formData.get("status"));
+
+  if (!shipmentId) {
+    throw new Error("Shipment ID is required.");
+  }
+
+  const shipment = await prisma.shipment.findUnique({
+    where: { id: shipmentId },
+    select: {
+      id: true,
+      status: true,
+    },
   });
+
+  if (!shipment) {
+    throw new Error("Shipment not found.");
+  }
+
+  const nextStatus = requestedStatus
+    ? normalizeShipmentStatus(requestedStatus)
+    : null;
+  const effectiveStatus = nextStatus ?? normalizeShipmentStatus(shipment.status);
+  const shouldCreateEvent = Boolean(title || note || location);
+
+  await prisma.$transaction(async (tx) => {
+    if (nextStatus && nextStatus !== normalizeShipmentStatus(shipment.status)) {
+      await tx.shipment.update({
+        where: { id: shipmentId },
+        data: {
+          status: nextStatus as any,
+        },
+      });
+
+      await tx.shipmentStatusHistory.create({
+        data: {
+          shipmentId,
+          status: nextStatus as any,
+          location,
+          notes: note ?? createTrackingSummary(nextStatus),
+        },
+      });
+    }
+
+    if (shouldCreateEvent) {
+      await tx.shipmentEvent.create({
+        data: {
+          shipmentId,
+          title: title ?? createTrackingTitle(effectiveStatus),
+          status: effectiveStatus as any,
+          location,
+          note: note ?? createTrackingSummary(effectiveStatus),
+        },
+      });
+    }
+  });
+
+  revalidateShipmentViews(shipmentId);
+
+  return { success: true };
 }

@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --primary: #2D3480;
-  --secondary: #C4E9EC;
+  --background: #f5f7fb;
+  --foreground: #102033;
+  --primary: #1f4ed8;
+  --secondary: #d9e7ff;
+  --teal-accent: #0f766e;
+  --neutral-surface: #f7f9fc;
 }
 
 
@@ -14,4 +16,160 @@ body {
   font-family: var(--font-sans, Arial, sans-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-shell {
+  background:
+    radial-gradient(circle at top left, rgba(191, 219, 254, 0.34), transparent 22%),
+    radial-gradient(circle at bottom right, rgba(204, 251, 241, 0.24), transparent 20%),
+    linear-gradient(180deg, #fcfdff 0%, #f5f7fb 100%);
+}
+
+.app-card {
+  background: rgba(255, 255, 255, 0.99);
+  border: 1px solid rgba(203, 213, 225, 0.96);
+  border-radius: 5px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.app-card-subtle {
+  background: #f7f9fc;
+  border: 1px solid #d6dee9;
+  border-radius: 5px;
+}
+
+.app-input {
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid #c9d4e3;
+  background: #ffffff;
+  color: #102033;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.app-input:focus,
+.app-input:focus-visible {
+  outline: none;
+  border-color: #1f4ed8;
+  box-shadow: 0 0 0 4px rgba(31, 78, 216, 0.12);
+}
+
+.app-textarea {
+  border-radius: 16px;
+  border: 1px solid #c9d4e3;
+  background: #fff;
+  color: #102033;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.app-textarea:focus,
+.app-textarea:focus-visible {
+  outline: none;
+  border-color: #1f4ed8;
+  box-shadow: 0 0 0 4px rgba(31, 78, 216, 0.12);
+}
+
+.app-button-primary {
+  border-radius: 14px;
+  background: #1f4ed8;
+  color: #fff;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.app-button-primary:hover {
+  background: #1b43bb;
+}
+
+.app-button-secondary {
+  border-radius: 14px;
+  border: 1px solid #d2dae6;
+  background: #fff;
+  color: #334155;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.app-button-secondary:hover {
+  background: #f8fafc;
+  border-color: #bfc9d8;
+  color: #0f172a;
+}
+
+.app-table thead {
+  background: #f8fafc;
+}
+
+.app-table tbody tr {
+  transition: background 0.18s ease;
+}
+
+.app-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.courier-loop-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(31, 78, 216, 0.12), rgba(31, 78, 216, 0.45), rgba(15, 118, 110, 0.14));
+}
+
+.courier-loop-dot {
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #1f4ed8;
+  box-shadow: 0 0 0 6px rgba(31, 78, 216, 0.14);
+  transform: translateY(-50%);
+}
+
+.courier-loop-dot-a {
+  left: 32px;
+  animation: courier-loop 5s linear infinite;
+}
+
+.courier-loop-dot-b {
+  left: 32px;
+  background: #0f766e;
+  box-shadow: 0 0 0 6px rgba(15, 118, 110, 0.12);
+  animation: courier-loop 5s linear infinite 2.5s;
+}
+
+@keyframes courier-loop {
+  0% {
+    transform: translate(0, -50%);
+    opacity: 0.2;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(calc(100% - 64px), -50%);
+    opacity: 0.2;
+  }
 }

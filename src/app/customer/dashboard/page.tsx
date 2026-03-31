@@ -2,178 +2,376 @@ import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Link from "next/link";
-import { BookOpen, PackageOpen, LayoutList, Box, Send, Ticket, AlertCircle, Clock } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import {
+  ArrowRight,
+  CalendarDays,
+  FileText,
+  MapPin,
+  Package2,
+  Receipt,
+  Truck,
+} from "lucide-react";
 import { RefreshHandler } from "@/components/RefreshHandler";
+import { StatusBadge } from "@/components/admin/StatusBadge";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export default async function CustomerDashboard() {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return <div>Unauthorized. Please log in.</div>;
   }
 
-  const userId = session.user.id;
-  const userName = session.user.name || "User";
+  const customer = await prisma.customerProfile.findUnique({
+    where: { userId: session.user.id },
+    include: {
+      shipments: {
+        orderBy: { updatedAt: "desc" },
+        take: 5,
+        include: {
+          country: true,
+          pickupAddress: true,
+          receiverAddress: true,
+        },
+      },
+      invoices: true,
+      quotations: true,
+    },
+  });
 
-  console.log(`[DASHBOARD_PAGE] Loading data for user: ${userName} (${userId})`);
+  const shipments = customer?.shipments || [];
+  const invoices = customer?.invoices || [];
 
-  let customerProfile = null;
-  try {
-    // Fetch customer profile and shipment counts
-    customerProfile = await prisma.customerProfile.findUnique({
-      where: { userId },
-      include: {
-        shipments: true
-      }
-    });
-    console.log(`[DASHBOARD_PAGE] Successfully fetched profile. Shipments found: ${customerProfile?.shipments?.length || 0}`);
-  } catch (error: any) {
-    console.error(`[DASHBOARD_PAGE] CRITICAL ERROR fetching dashboard data:`, error);
-    // Continue with null profile to at least render the page shell
-  }
+  const [ongoingShipments, completedShipments, outstandingBills, activeQuotations] = customer
+    ? await Promise.all([
+        prisma.shipment.count({
+          where: {
+            customerId: customer.id,
+            status: {
+              in: [
+                "CREATED",
+                "WAITING",
+                "SUBMITTED",
+                "ON_HOLD",
+                "ACCEPTED",
+                "PICKUP_SCHEDULED",
+                "PICKED_UP",
+                "AT_WAREHOUSE",
+                "PROCESSING",
+                "IN_TRANSIT",
+                "OUT_FOR_DELIVERY",
+              ],
+            } as any,
+          },
+        }),
+        prisma.shipment.count({
+          where: {
+            customerId: customer.id,
+            status: "DELIVERED",
+          },
+        }),
+        prisma.invoice.count({
+          where: {
+            customerId: customer.id,
+            status: {
+              in: ["UNPAID", "PARTIAL", "OVERDUE"],
+            },
+          },
+        }),
+        prisma.quotation.count({
+          where: {
+            customerId: customer.id,
+            status: {
+              in: ["DRAFT", "SENT"],
+            },
+          },
+        }),
+      ])
+    : [0, 0, 0, 0];
 
-  const shipments = customerProfile?.shipments || [];
-  
-  // Logic for dynamic counts
-  const allCount = shipments.length;
-  const submittedCount = shipments.filter(s => (s.status as any) === 'SUBMITTED').length;
-  const acceptedCount = shipments.filter(s => ['ACCEPTED', 'PICKUP_SCHEDULED'].includes(s.status as any)).length;
-  const packedCount = shipments.filter(s => (s.status as any) === 'PICKUP_SCHEDULED').length;
-  const dispatchedCount = shipments.filter(s => 
-    ['PICKED_UP', 'IN_TRANSIT', 'OUT_FOR_DELIVERY'].includes(s.status as any)
-  ).length;
-  
-  const pickupsInCount = shipments.filter(s => 
-    (s.status as any) === 'PICKUP_SCHEDULED' || (s.status as any) === 'PICKED_UP'
-  ).length;
-  const disputedCount = shipments.filter(s => (s.status as any) === 'REJECTED').length;
-  const onHoldCount = shipments.filter(s => (s.status as any) === 'ON_HOLD').length;
+  const cards = [
+    {
+      label: "Active Quotations",
+      value: activeQuotations,
+      href: "/customer/rates",
+      icon: FileText,
+      tone: "bg-indigo-50 text-indigo-700 border-indigo-100",
+    },
+    {
+      label: "Ongoing Shipments",
+      value: ongoingShipments,
+      href: "/customer/shipments?tab=ongoing",
+      icon: Truck,
+      tone: "bg-blue-50 text-blue-700 border-blue-100",
+    },
+    {
+      label: "Completed Shipments",
+      value: completedShipments,
+      href: "/customer/shipments?tab=completed",
+      icon: Package2,
+      tone: "bg-emerald-50 text-emerald-700 border-emerald-100",
+    },
+    {
+      label: "Outstanding Bills",
+      value: outstandingBills,
+      href: "/customer/shipments",
+      icon: Receipt,
+      tone: "bg-orange-50 text-orange-700 border-orange-100",
+    },
+  ];
+
+  const featuredShipment = shipments[0] ?? null;
+  const shipmentCalendar = shipments
+    .filter((shipment) => shipment.pickupDate)
+    .sort((a, b) => new Date(a.pickupDate as Date).getTime() - new Date(b.pickupDate as Date).getTime())
+    .slice(0, 5);
 
   return (
-    <div className="p-8 lg:p-10 max-w-[1600px] mx-auto min-h-full bg-[#f8f9fa]">
-      <RefreshHandler interval={15000} />
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#1E293B] tracking-tight mb-4">Dashboard</h1>
-        
-        {/* Welcome Banner */}
-        <div className="bg-[#FFF4EB] rounded-xl p-5 border border-orange-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div>
-             <h2 className="text-[#D97706] font-bold text-lg">Welcome {userName} !!</h2>
-             <p className="text-slate-600 font-medium text-sm mt-1">We are excited to have you on board. Start your journey with us by completing your KYC!</p>
-          </div>
-          <button className="whitespace-nowrap bg-[#1E3A8A] hover:bg-blue-900 text-white px-6 py-2.5 rounded-md font-medium text-sm transition-colors">
-            Complete KYC
-          </button>
-        </div>
-      </div>
+    <div className="mx-auto min-h-full max-w-[1500px] p-6 lg:p-8">
+      <RefreshHandler />
 
-      {/* Top Cards Row */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-        <Link href="/customer/shipments?tab=all" className="bg-[#F4F7FA] rounded-xl p-5 border border-slate-100 hover:shadow-md transition-all flex flex-col justify-between h-32">
-          <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                <LayoutList className="w-5 h-5 text-blue-600" />
-             </div>
-             <span className="text-[#1E3A8A] font-medium text-sm">All Orders</span>
-          </div>
-          <div className="text-2xl font-bold text-slate-800">{String(allCount).padStart(2, '0')}</div>
-        </Link>
-        
-        <Link href="/customer/shipments?tab=submitted" className="bg-[#FFFDF5] rounded-xl p-5 border border-amber-100 hover:shadow-md transition-all flex flex-col justify-between h-32">
-          <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-                <BookOpen className="w-5 h-5 text-amber-600" />
-             </div>
-             <span className="text-amber-700 font-medium text-sm">Pending Review</span>
-          </div>
-          <div className="text-2xl font-bold text-slate-800">{String(submittedCount).padStart(2, '0')}</div>
-        </Link>
-
-        <Link href="/customer/shipments?tab=accepted" className="bg-[#F2FCF5] rounded-xl p-5 border border-green-100 hover:shadow-md transition-all flex flex-col justify-between h-32">
-          <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                <PackageOpen className="w-5 h-5 text-green-600" />
-             </div>
-             <span className="text-green-700 font-medium text-sm">Accepted</span>
-          </div>
-          <div className="text-2xl font-bold text-slate-800">{String(acceptedCount).padStart(2, '0')}</div>
-        </Link>
-
-        <Link href="/customer/shipments?tab=packed" className="bg-[#FFF5F5] rounded-xl p-5 border border-red-100 hover:shadow-md transition-all flex flex-col justify-between h-32">
-          <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                <Box className="w-5 h-5 text-red-600" />
-             </div>
-             <span className="text-red-700 font-medium text-sm">Packed Orders</span>
-          </div>
-          <div className="text-2xl font-bold text-slate-800">{String(packedCount).padStart(2, '0')}</div>
-        </Link>
-
-        <Link href="/customer/shipments?tab=in_transit" className="bg-[#F5F3FF] rounded-xl p-5 border border-purple-100 hover:shadow-md transition-all flex flex-col justify-between h-32">
-          <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                <Send className="w-5 h-5 text-purple-600" />
-             </div>
-             <span className="text-purple-700 font-medium text-sm">Dispatched Orders</span>
-          </div>
-          <div className="text-2xl font-bold text-slate-800">{String(dispatchedCount).padStart(2, '0')}</div>
-        </Link>
-      </div>
-
-      {/* Middle Section */}
-      <div className="grid grid-cols-1 gap-6">
-        
-        {/* Actions Cards */}
+      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-           <h3 className="font-bold text-[#1E293B] mb-4">Actions</h3>
-           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Link href="/customer/shipments?tab=packed" className="bg-white rounded-xl border border-slate-200 p-5 hover:border-slate-300 transition-colors flex flex-col justify-between h-[120px]">
-                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-md bg-purple-50 flex items-center justify-center border border-purple-100">
-                       <Ticket className="w-4 h-4 text-purple-600" />
-                    </div>
-                    <span className="text-xl font-bold text-slate-800">{String(pickupsInCount).padStart(2, '0')}</span>
-                 </div>
-                 <p className="text-sm text-slate-500 font-medium">Pickups In Progress</p>
-              </Link>
-              
-              <Link href="/customer/shipments?tab=all" className="bg-white rounded-xl border border-slate-200 p-5 hover:border-slate-300 transition-colors flex flex-col justify-between h-[120px]">
-                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-md bg-blue-50 flex items-center justify-center border border-blue-100">
-                       <Ticket className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <span className="text-xl font-bold text-slate-800">00</span>
-                 </div>
-                 <p className="text-sm text-slate-500 font-medium">Open Manifests</p>
-              </Link>
-
-              <Link href="/customer/shipments?tab=rejected" className="bg-white rounded-xl border border-slate-200 p-5 hover:border-slate-300 transition-colors flex flex-col justify-between h-[120px]">
-                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-md bg-red-50 flex items-center justify-center border border-red-100">
-                       <AlertCircle className="w-4 h-4 text-red-600" />
-                    </div>
-                    <span className="text-xl font-bold text-slate-800">{String(disputedCount).padStart(2, '0')}</span>
-                 </div>
-                 <p className="text-sm text-slate-500 font-medium">Disputed Orders</p>
-              </Link>
-
-              <Link href="/customer/shipments?tab=on_hold" className="bg-white rounded-xl border border-slate-200 p-5 hover:border-slate-300 transition-colors flex flex-col justify-between h-[120px]">
-                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-md bg-green-50 flex items-center justify-center border border-green-100">
-                       <Clock className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-xl font-bold text-slate-800">{String(onHoldCount).padStart(2, '0')}</span>
-                 </div>
-                 <p className="text-sm text-slate-500 font-medium">OnHold Orders</p>
-              </Link>
-           </div>
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
+            Customer Dashboard
+          </h1>
+          <p className="mt-2 text-sm text-slate-500">
+            Your live view of shipments, tracking progress, quotations, and billing.
+          </p>
         </div>
 
-
+        <Link
+          href="/customer/shipments/new"
+          className="app-button-primary inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold"
+        >
+          Create Shipment <ArrowRight className="h-4 w-4" />
+        </Link>
       </div>
 
+      <div className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {cards.map((card) => {
+          const Icon = card.icon;
+          return (
+            <Link
+              key={card.label}
+              href={card.href}
+              className="app-card p-6 transition-all hover:-translate-y-0.5 hover:border-blue-200"
+            >
+              <div className={`flex h-11 w-11 items-center justify-center rounded-[5px] border ${card.tone}`}>
+                <Icon className="h-5 w-5" />
+              </div>
+              <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                {card.label}
+              </p>
+              <p className="mt-3 text-4xl font-semibold tracking-tight text-slate-900">{card.value}</p>
+            </Link>
+          );
+        })}
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <section className="app-card p-8">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-slate-900">Recent Shipments</h2>
+              <p className="mt-1 text-sm text-slate-500">Latest updates from your shipment activity.</p>
+            </div>
+            <Link href="/customer/shipments" className="text-sm font-semibold text-blue-600">
+              View all
+            </Link>
+          </div>
+
+          <div className="space-y-4">
+            {shipments.length === 0 ? (
+              <div className="rounded-[5px] border border-dashed border-slate-300 p-6 text-sm text-slate-500">
+                No shipments yet. Create your first shipment to start tracking.
+              </div>
+            ) : (
+              shipments.map((shipment) => (
+                <Link
+                  key={shipment.id}
+                  href={`/customer/shipments/${shipment.id}`}
+                  className="block rounded-[5px] border border-slate-200 bg-slate-50/90 p-5 transition-colors hover:border-blue-200 hover:bg-white"
+                >
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <p className="font-semibold text-slate-900">{shipment.trackingId}</p>
+                      <p className="mt-1 text-sm text-slate-500">
+                        {shipment.country?.name || "Destination pending"} ·{" "}
+                        {formatDistanceToNow(new Date(shipment.updatedAt), { addSuffix: true })}
+                      </p>
+                    </div>
+                    <StatusBadge status={shipment.status} />
+                  </div>
+                </Link>
+              ))
+            )}
+          </div>
+        </section>
+
+        <div className="space-y-8">
+          <section className="app-card p-8">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[5px] bg-blue-50 text-blue-600">
+                <CalendarDays className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-slate-900">Shipment Calendar</h2>
+                <p className="text-sm text-slate-500">Upcoming scheduled shipment dates from your live orders.</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {shipmentCalendar.length === 0 ? (
+                <div className="rounded-[5px] border border-dashed border-slate-300 p-6 text-sm text-slate-500">
+                  No scheduled shipment dates available yet.
+                </div>
+              ) : (
+                shipmentCalendar.map((shipment) => (
+                  <div key={shipment.id} className="app-card-subtle p-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-medium text-slate-900">{shipment.trackingId}</p>
+                        <p className="mt-1 text-sm text-slate-500">
+                          {shipment.pickupAddress?.city || "Pickup"} to {shipment.receiverAddress?.city || "Destination"}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-semibold text-slate-900">
+                          {new Date(shipment.pickupDate as Date).toLocaleDateString("en-GB")}
+                        </p>
+                        <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                          Pickup
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
+
+          <section className="app-card p-8">
+            <h2 className="mb-6 text-xl font-semibold text-slate-900">Billing Snapshot</h2>
+
+            <div className="space-y-4">
+              {invoices.length === 0 ? (
+                <div className="rounded-[5px] border border-dashed border-slate-300 p-6 text-sm text-slate-500">
+                  No invoices available.
+                </div>
+              ) : (
+                invoices.slice(0, 5).map((invoice) => (
+                  <div key={invoice.id} className="app-card-subtle p-5">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="font-medium text-slate-900">{invoice.invoiceNumber}</p>
+                        <p className="mt-1 text-sm text-slate-500">${invoice.amount}</p>
+                      </div>
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                        {invoice.status}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_1fr]">
+        <section className="app-card relative overflow-hidden p-8">
+          <div className="absolute inset-0 opacity-70">
+            <div className="courier-loop-track absolute left-8 right-8 top-1/2 -translate-y-1/2" />
+            <div className="courier-loop-dot courier-loop-dot-a" />
+            <div className="courier-loop-dot courier-loop-dot-b" />
+          </div>
+
+          <div className="relative z-10">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+              Courier Loop
+            </p>
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900">
+              Live shipment lane preview
+            </h2>
+            <p className="mt-3 max-w-xl text-sm text-slate-500">
+              Animated shipment lane preview driven by your latest order details.
+            </p>
+
+            <div className="mt-8 grid gap-6 sm:grid-cols-2">
+              <div className="rounded-[5px] border border-slate-200 bg-white/90 px-5 py-4 backdrop-blur">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Pickup</p>
+                <p className="mt-2 font-medium text-slate-900">{featuredShipment?.pickupAddress?.city || "No pickup city"}</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  {featuredShipment?.pickupAddress?.street1 || "No shipment selected"}
+                </p>
+              </div>
+              <div className="rounded-[5px] border border-slate-200 bg-white/90 px-5 py-4 backdrop-blur">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Drop</p>
+                <p className="mt-2 font-medium text-slate-900">{featuredShipment?.receiverAddress?.city || "No destination city"}</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  {featuredShipment?.receiverAddress?.street1 || "No shipment selected"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="app-card p-8">
+          <div className="mb-6 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-[5px] bg-indigo-50 text-indigo-600">
+              <Package2 className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-slate-900">Order Details</h2>
+              <p className="text-sm text-slate-500">Latest shipment details from live database records.</p>
+            </div>
+          </div>
+
+          {featuredShipment ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="app-card-subtle p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">PCS</p>
+                <p className="mt-2 text-xl font-semibold text-slate-900">{featuredShipment.pcs ?? "-"}</p>
+              </div>
+              <div className="app-card-subtle p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Weight</p>
+                <p className="mt-2 text-xl font-semibold text-slate-900">
+                  {featuredShipment.weight ? `${featuredShipment.weight} KG` : "-"}
+                </p>
+              </div>
+              <div className="app-card-subtle p-4 sm:col-span-2">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Description</p>
+                <p className="mt-2 text-sm text-slate-700">{featuredShipment.content || "No description"}</p>
+              </div>
+              <div className="app-card-subtle p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Value</p>
+                <p className="mt-2 text-xl font-semibold text-slate-900">
+                  {featuredShipment.amount != null ? `$${featuredShipment.amount}` : "-"}
+                </p>
+              </div>
+              <div className="app-card-subtle p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Pickup / Warehouse Drop
+                </p>
+                <p className="mt-2 flex items-start gap-2 text-sm text-slate-700">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+                  <span>
+                    {featuredShipment.pickupAddress?.city || "Pickup"} to{" "}
+                    {featuredShipment.receiverAddress?.city || "Drop"}
+                  </span>
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-[5px] border border-dashed border-slate-300 p-6 text-sm text-slate-500">
+              No shipment details available yet.
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

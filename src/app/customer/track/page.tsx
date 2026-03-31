@@ -1,195 +1,194 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
-import { Search, MapPin, Package, CheckCircle, Clock, XCircle, ChevronLeft } from "lucide-react";
 import { redirect } from "next/navigation";
+import { format } from "date-fns";
+import { ChevronLeft, Search, Truck } from "lucide-react";
 import { RefreshHandler } from "@/components/RefreshHandler";
+import { StatusBadge } from "@/components/admin/StatusBadge";
+import {
+  buildShipmentTimeline,
+  formatShipmentStatus,
+  getShipmentStatusMeta,
+} from "@/lib/shipment-utils";
 
-export default async function TrackPage({ searchParams }: { searchParams: Promise<{ id?: string }> | { id?: string } }) {
+export const dynamic = "force-dynamic";
+
+export default async function TrackPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ id?: string }> | { id?: string };
+}) {
   const resolvedParams = await searchParams;
-  const trackingId = resolvedParams.id;
+  const trackingQuery = resolvedParams.id?.trim();
 
   let shipment = null;
-  if (trackingId) {
+
+  if (trackingQuery) {
     shipment = await prisma.shipment.findFirst({
       where: {
-        OR: [
-          { trackingId },
-          { awb: trackingId }
-        ]
+        OR: [{ trackingId: trackingQuery }, { awb: trackingQuery }],
       },
       include: {
-        customer: true,
-        receiverAddress: { include: { country: true } },
-        pickupAddress: { include: { country: true } },
-        statusHistory: { orderBy: { createdAt: 'desc' } }
-      }
+        country: true,
+        receiverAddress: {
+          include: {
+            country: true,
+          },
+        },
+        pickupAddress: {
+          include: {
+            country: true,
+          },
+        },
+        statusHistory: {
+          orderBy: { createdAt: "desc" },
+        },
+        events: {
+          orderBy: { createdAt: "desc" },
+        },
+      },
     });
   }
 
-  // Create a proper server action if they submit the simple form
   async function trackAction(formData: FormData) {
     "use server";
+
     const id = formData.get("trackingId");
-    if (id) redirect(`/customer/track?id=${id}`);
+    if (id) {
+      redirect(`/customer/track?id=${id}`);
+    }
   }
 
+  const timeline = shipment ? buildShipmentTimeline(shipment.statusHistory, shipment.events) : [];
+  const meta = shipment ? getShipmentStatusMeta(shipment.status) : null;
+
   return (
-    <div className="p-8 lg:p-10 max-w-[1200px] mx-auto min-h-full bg-[#f8f9fa]">
-      {trackingId && <RefreshHandler interval={10000} />} {/* Refresh more often on track page */}
-      <div className="flex items-center gap-3 mb-8">
-        <Link href="/customer/shipments" className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors shadow-sm">
-          <ChevronLeft className="w-5 h-5" />
+    <div className="mx-auto min-h-full max-w-[1200px] p-6 lg:p-8">
+      {trackingQuery ? <RefreshHandler interval={30000} /> : null}
+
+      <div className="mb-8 flex items-center gap-3">
+        <Link href="/customer/shipments" className="app-button-secondary flex h-10 w-10 items-center justify-center">
+          <ChevronLeft className="h-4 w-4" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-[#1E293B]">Track Shipment</h1>
-          <p className="text-sm font-medium text-slate-500">View real-time status and timeline updates.</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Track Shipment</h1>
+          <p className="text-sm text-slate-500">
+            Enter an AWB or tracking ID to view the live shipment timeline.
+          </p>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center mb-8 relative z-10">
-        <form action={trackAction} className="max-w-xl mx-auto flex flex-col sm:flex-row gap-4">
+      <div className="app-card mb-8 p-8">
+        <form action={trackAction} className="mx-auto flex max-w-2xl flex-col gap-4 sm:flex-row">
           <div className="relative flex-1">
-            <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-            <input 
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+            <input
               name="trackingId"
-              type="text" 
-              defaultValue={trackingId || ""}
-              placeholder="Enter Tracking ID (e.g. TRK...)" 
-              className="w-full h-14 pl-12 pr-4 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-slate-800 shadow-inner"
+              type="text"
+              defaultValue={trackingQuery || ""}
+              placeholder="Enter tracking ID or AWB"
+              className="app-input h-14 w-full pl-12 pr-4 text-sm font-medium"
             />
           </div>
-          <button type="submit" className="h-14 px-8 bg-[#1E3A8A] text-white font-bold rounded-xl hover:bg-blue-900 transition-colors shadow-md">
-            Track Node
+          <button type="submit" className="app-button-primary h-14 px-8 text-sm font-semibold">
+            Track
           </button>
         </form>
       </div>
 
-      {trackingId && !shipment && (
-        <div className="bg-white border border-red-100 rounded-2xl p-12 text-center shadow-lg">
-          <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <XCircle className="w-8 h-8" />
-          </div>
-          <h2 className="text-xl font-bold text-[#1E293B] mb-2">Shipment Not Found</h2>
-          <p className="text-slate-500 font-medium">We couldn't locate any active shipment with the ID <strong>{trackingId}</strong>.</p>
+      {trackingQuery && !shipment ? (
+        <div className="app-card p-12 text-center">
+          <h2 className="text-xl font-semibold text-slate-900">Shipment Not Found</h2>
+          <p className="mt-2 text-slate-500">
+            No shipment matched <strong>{trackingQuery}</strong>.
+          </p>
         </div>
-      )}
+      ) : null}
 
-      {trackingId && shipment && (
-        <div className="grid lg:grid-cols-2 gap-8">
-          
-          {/* Timeline side */}
-          <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-8">
-             <h2 className="text-lg font-black text-[#1E293B] mb-8 flex items-center gap-3 border-b border-slate-100 pb-4 tracking-tight">
-               <ActivitySquareIcon className="w-5 h-5 text-blue-600" />
-               Status Timeline
-             </h2>
-             
-             <div className="relative pl-6 space-y-8 before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-[2px] before:bg-gradient-to-b before:from-blue-200 before:to-transparent">
-               
-               {shipment.statusHistory.map((history: any, i: number) => {
-                 const isLatest = i === 0;
-                 return (
-                   <div key={history.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                     <div className={`flex items-center justify-center w-6 h-6 rounded-full border-4 border-white ${isLatest ? 'bg-blue-600 ring-4 ring-blue-100 shadow-md' : 'bg-slate-300'} absolute -left-[35px] md:relative md:left-auto md:mx-auto shrink-0 z-10 transition-colors`}>
-                     </div>
-                     <div className="w-[calc(100%-1rem)] md:w-[calc(50%-2rem)] p-4 rounded-xl border border-slate-100 shadow-sm bg-white hover:border-blue-200 transition-colors relative z-10">
-                       <div className="flex items-center justify-between space-x-2 mb-2">
-                         <div className="font-bold text-slate-800 text-[13px] uppercase tracking-wide">
-                           {history.status.replace(/_/g, ' ')}
-                         </div>
-                         <time className="font-bold text-[10px] text-slate-400 tracking-widest">{new Date(history.createdAt).toLocaleString()}</time>
-                       </div>
-                       {history.notes && <div className="text-slate-600 text-[13px] font-medium leading-relaxed">{history.notes}</div>}
-                     </div>
-                   </div>
-                 )
-               })}
+      {trackingQuery && shipment ? (
+        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+          <section className="app-card p-8">
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-semibold text-slate-900">{shipment.trackingId}</h2>
+                <p className="mt-1 text-sm text-slate-500">{meta?.summary}</p>
+              </div>
+              <StatusBadge status={shipment.status} />
+            </div>
 
-             </div>
-          </div>
-
-          {/* Details Side */}
-          <div className="space-y-8">
-             {/* General Card */}
-             <div className="bg-gradient-to-br from-[#1E293B] to-[#2A377B] rounded-2xl p-8 shadow-xl text-white relative overflow-hidden">
-                <div className="absolute right-0 top-0 translate-x-1/4 -translate-y-1/4 opacity-10">
-                   <Package className="w-48 h-48" />
-                </div>
-                <h3 className="text-sm font-bold text-indigo-300 uppercase tracking-widest mb-2 relative z-10">Delivery Node</h3>
-                <h2 className="text-3xl font-black mb-6 relative z-10">{shipment.trackingId}</h2>
-                
-                {shipment.awb && (
-                  <div className="mb-6 relative z-10">
-                    <span className="bg-white/10 px-3 py-1 rounded text-xs font-bold tracking-widest uppercase">AWB: {shipment.awb}</span>
-                  </div>
-                )}
-
-                {(shipment as any).status === 'REJECTED' && (shipment as any).rejectionReason && (
-                   <div className="bg-red-500/20 border border-red-500/50 p-4 rounded-xl mt-4 relative z-10 text-sm">
-                      <strong className="block text-red-200 mb-1">Reason for Rejection:</strong>
-                      <span className="text-red-100">{(shipment as any).rejectionReason}</span>
-                   </div>
-                )}
-             </div>
-
-             {/* Specifics Card */}
-             <div className="bg-white rounded-2xl p-8 shadow-xl border border-slate-100">
-                <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6 border-b border-slate-100 pb-4">Consignment Data</h3>
-                
-                <div className="grid grid-cols-2 gap-6 mb-6">
-                   <div>
-                      <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Current Status</span>
-                      <span className="font-black text-slate-800 uppercase text-sm block">{shipment.status.replace(/_/g, ' ')}</span>
-                   </div>
-                   <div>
-                      <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Declared Weight</span>
-                      <span className="font-black text-slate-800 uppercase text-sm">{shipment.weight} KG</span>
-                   </div>
-                   <div className="col-span-2">
-                      <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Contents</span>
-                      <span className="font-medium text-slate-700 text-sm">{shipment.content || 'N/A'}</span>
-                   </div>
-                </div>
-
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                   <div className="flex items-start gap-3">
-                      <MapPin className="w-5 h-5 text-blue-600 mt-1 shrink-0" />
-                      <div>
-                         <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Destination</span>
-                         <span className="font-black text-slate-800 text-sm block mb-1">{shipment.receiverAddress?.name}</span>
-                         <span className="font-medium text-slate-600 text-xs block leading-relaxed max-w-[200px]">
-                           {shipment.receiverAddress?.street1}<br/>
-                           {shipment.receiverAddress?.city}, {shipment.receiverAddress?.country?.name} {shipment.receiverAddress?.postalCode}
-                         </span>
+            {timeline.length === 0 ? (
+              <div className="rounded-[18px] border border-dashed border-slate-300 p-6 text-sm text-slate-500">
+                No tracking updates available yet.
+              </div>
+            ) : (
+              <div className="relative space-y-5 pl-8">
+                <div className="absolute bottom-2 left-[15px] top-2 w-px bg-slate-200" />
+                {timeline.map((entry) => (
+                  <div key={entry.id} className="relative">
+                    <div className="absolute left-[-30px] top-6 h-3.5 w-3.5 rounded-full border-2 border-white bg-indigo-600 shadow-sm" />
+                    <div className="rounded-[18px] border border-slate-200 bg-slate-50/90 p-5">
+                      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                        <div>
+                          <p className="font-medium text-slate-900">{entry.title}</p>
+                          {entry.status ? (
+                            <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                              {formatShipmentStatus(entry.status)}
+                            </p>
+                          ) : null}
+                          {entry.note ? <p className="mt-3 text-sm text-slate-600">{entry.note}</p> : null}
+                          {entry.location ? (
+                            <p className="mt-3 text-sm font-medium text-slate-700">{entry.location}</p>
+                          ) : null}
+                        </div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                          {format(entry.createdAt, "dd MMM yyyy, h:mm a")}
+                        </p>
                       </div>
-                   </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section className="space-y-8">
+            <div className="app-card p-8">
+              <div className="mb-5 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+                  <Truck className="h-5 w-5" />
                 </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                    Shipment Snapshot
+                  </p>
+                  <h3 className="text-lg font-semibold text-slate-900">Current shipment overview</h3>
+                </div>
+              </div>
 
-             </div>
-          </div>
+              <div className="space-y-4 text-sm text-slate-700">
+                <p><span className="font-semibold text-slate-500">AWB:</span> {shipment.awb || "Pending"}</p>
+                <p><span className="font-semibold text-slate-500">Reference:</span> {shipment.referenceNo || "Not assigned"}</p>
+                <p>
+                  <span className="font-semibold text-slate-500">Destination:</span>{" "}
+                  {shipment.receiverAddress?.city || "-"},{" "}
+                  {shipment.receiverAddress?.country?.name || shipment.country?.name || "-"}
+                </p>
+              </div>
+            </div>
 
+            <div className="app-card p-8">
+              <h3 className="mb-5 text-lg font-semibold text-slate-900">Shipment Details</h3>
+
+              <div className="space-y-4 text-sm text-slate-700">
+                <p><span className="font-semibold text-slate-500">Description:</span> {shipment.content || "No description"}</p>
+                <p><span className="font-semibold text-slate-500">PCS:</span> {shipment.pcs ?? "-"}</p>
+                <p><span className="font-semibold text-slate-500">Weight:</span> {shipment.weight ? `${shipment.weight} KG` : "-"}</p>
+                <p><span className="font-semibold text-slate-500">Receiver:</span> {shipment.receiverName || shipment.receiverAddress?.name || "-"}</p>
+              </div>
+            </div>
+          </section>
         </div>
-      )}
+      ) : null}
     </div>
   );
-}
-
-function ActivitySquareIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="18" height="18" x="3" y="3" rx="2" />
-      <path d="M17 12h-2l-2 5-2-10-2 5H7" />
-    </svg>
-  )
 }

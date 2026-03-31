@@ -5,8 +5,9 @@ import type { NextRequest } from "next/server";
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const secret = process.env.NEXTAUTH_SECRET;
+  const debugMiddleware = process.env.DEBUG_MIDDLEWARE === "true";
   
-  if (!secret) {
+  if (!secret && debugMiddleware) {
     console.warn(`[MIDDLEWARE] CRITICAL: NEXTAUTH_SECRET is not defined in environment variables.`);
   }
 
@@ -15,11 +16,11 @@ export async function middleware(req: NextRequest) {
     secret 
   });
   
-  if (token) {
+  if (token && debugMiddleware) {
     console.log(`[MIDDLEWARE] User "${token.name}" (${token.role}) accessing: ${path}`);
   } else {
     // Only log if it's a protected route
-    if (path.startsWith("/admin") || path.startsWith("/customer")) {
+    if (debugMiddleware && (path.startsWith("/admin") || path.startsWith("/customer"))) {
        console.log(`[MIDDLEWARE] UNAUTHORIZED access attempt to: ${path}. Redirecting to /login.`);
     }
   }

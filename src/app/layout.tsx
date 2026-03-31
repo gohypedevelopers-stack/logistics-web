@@ -1,24 +1,25 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
-
-const inter = Inter({ subsets: ["latin"] });
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "BrandName Logistics",
   description: "Premium International Logistics Platform",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
-        <Providers>{children}</Providers>
+      <body className="font-sans" suppressHydrationWarning>
+        <Providers session={session}>{children}</Providers>
       </body>
     </html>
   );

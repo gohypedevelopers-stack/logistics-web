@@ -1,4 +1,4 @@
-import { PrismaClient, Role, ShipmentStatus, PaymentStatus } from '@prisma/client';
+import { PrismaClient, Role, ShipmentStatus, PaymentStatus, ShipmentCollectionType } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -102,6 +102,37 @@ async function main() {
     },
   });
 
+  const warehouseNewYork = await prisma.warehouse.upsert({
+    where: { code: 'WH-NY-01' },
+    update: {},
+    create: {
+      name: 'New York Consolidation Hub',
+      code: 'WH-NY-01',
+      phone: '+1 555-1100',
+      street1: '80 Logistics Ave',
+      city: 'New York',
+      state: 'NY',
+      postalCode: '10018',
+      countryId: countryUSA.id,
+      isActive: true,
+    },
+  });
+
+  await prisma.warehouse.upsert({
+    where: { code: 'WH-UK-01' },
+    update: {},
+    create: {
+      name: 'London Freight Warehouse',
+      code: 'WH-UK-01',
+      phone: '+44 20 7000 1000',
+      street1: '14 Heathrow Cargo Park',
+      city: 'London',
+      postalCode: 'TW6 3UA',
+      countryId: countryUK.id,
+      isActive: true,
+    },
+  });
+
   // 4. Create Logistics Companies
   const companies = ['DHL', 'FedEx', 'UPS', 'Aramex', 'BlueDart'];
   const logCompanies = [];
@@ -172,11 +203,19 @@ async function main() {
     create: {
       trackingId: 'TRK-SEED-1001',
       awb: 'AWB-SEED-5001',
+      referenceNo: 'REF-SEED-1001',
+      collectionType: ShipmentCollectionType.WAREHOUSE_DROP,
       customerId: customerProfile.id,
+      countryId: countryIndia.id,
       logisticsCompanyId: logCompanies[0].id, // DHL
       routeId: routeUStoIN.id,
+      warehouseId: warehouseNewYork.id,
       pickupAddressId: pickupAddress.id,
       receiverAddressId: receiverAddress.id,
+      receiverName: 'Raj Patil',
+      receiverPhone: '+91 9876543210',
+      pcs: 2,
+      pickupDate: new Date(),
       weight: 2.5,
       content: 'Electronics Demo',
       amount: 120.0,
@@ -195,7 +234,7 @@ async function main() {
     await prisma.shipmentStatusHistory.create({
       data: {
         shipmentId: shipment.id,
-        status: ShipmentStatus.SUBMITTED,
+        status: ShipmentStatus.CREATED,
         location: 'New York, US',
         notes: 'Shipment scheduled online.',
       },
@@ -205,7 +244,9 @@ async function main() {
       data: {
         shipmentId: shipment.id,
         title: 'Package Created',
-        description: 'Customer created shipment in dashboard.',
+        status: ShipmentStatus.CREATED,
+        location: 'New York, US',
+        note: 'Customer created shipment in dashboard.',
       },
     });
   }

@@ -15,7 +15,8 @@ export default async function CustomerOrdersPage() {
     include: {
       shipments: {
         include: {
-          receiverAddress: { include: { country: true } }
+          receiverAddress: { include: { country: true } },
+          country: true,
         },
         orderBy: { createdAt: "desc" }
       }

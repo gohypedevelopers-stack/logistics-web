@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ShieldAlert, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { updateShipmentAction } from "./actions";
 import { cn } from "@/lib/utils";
@@ -12,6 +13,7 @@ interface QuickActionsProps {
 export function QuickActions({ shipmentId }: QuickActionsProps) {
   const [isPending, startTransition] = useTransition();
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
+  const router = useRouter();
 
   async function handleAction(status: string) {
     setSelectedAction(status);
@@ -22,6 +24,7 @@ export function QuickActions({ shipmentId }: QuickActionsProps) {
     startTransition(async () => {
       try {
         await updateShipmentAction(formData);
+        router.refresh();
       } catch (error) {
         console.error("Action failed", error);
       } finally {
@@ -31,17 +34,19 @@ export function QuickActions({ shipmentId }: QuickActionsProps) {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-8 border border-amber-200 shadow-lg shadow-amber-900/5">
+    <div className="app-card p-8">
        <div className="flex items-center gap-3 mb-6">
-          <ShieldAlert className="w-5 h-5 text-amber-500" />
-          <h3 className="font-bold text-[#1E293B]">Action Required</h3>
+          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
+            <ShieldAlert className="w-5 h-5" />
+          </div>
+          <h3 className="font-semibold text-slate-900">Action Required</h3>
        </div>
        <div className="grid grid-cols-1 gap-3">
              <button 
                 onClick={() => handleAction('ACCEPTED')}
                 disabled={isPending}
                 className={cn(
-                  "w-full flex items-center justify-center gap-3 py-4 bg-[#1E1B4B] hover:bg-slate-900 text-white rounded-xl font-bold text-xs transition-all disabled:opacity-50",
+                  "w-full flex items-center justify-center gap-3 rounded-xl bg-[#3146d3] py-4 text-xs font-bold text-white transition-all hover:bg-[#2537b8] disabled:opacity-50",
                   selectedAction === 'ACCEPTED' && isPending ? "cursor-wait" : ""
                 )}
              >
@@ -57,7 +62,7 @@ export function QuickActions({ shipmentId }: QuickActionsProps) {
                 onClick={() => handleAction('REJECTED')}
                 disabled={isPending}
                 className={cn(
-                  "w-full flex items-center justify-center gap-3 py-4 bg-white border border-red-200 text-red-600 hover:bg-red-50 rounded-xl font-bold text-xs transition-all disabled:opacity-50",
+                  "w-full flex items-center justify-center gap-3 rounded-xl border border-red-200 bg-white py-4 text-xs font-bold text-red-600 transition-all hover:bg-red-50 disabled:opacity-50",
                   selectedAction === 'REJECTED' && isPending ? "cursor-wait" : ""
                 )}
              >

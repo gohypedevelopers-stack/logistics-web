@@ -2,22 +2,30 @@ import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Link from "next/link";
-import { ArrowLeft, Box, CheckCircle2, PackageSearch, Plane, ScrollText, Timer, Truck, FileCheck2, Warehouse, Search, MapPin } from "lucide-react";
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
+import { format } from "date-fns";
+import {
+  ArrowLeft,
+  CalendarDays,
+  MapPin,
+  Package2,
+  Phone,
+  UserRound,
+} from "lucide-react";
+import { RefreshHandler } from "@/components/RefreshHandler";
+import { StatusBadge } from "@/components/admin/StatusBadge";
+import {
+  buildShipmentTimeline,
+  formatShipmentStatus,
+  getShipmentStatusMeta,
+} from "@/lib/shipment-utils";
 
-// Workflow Statuses array ensuring correct chronological order for timeline
-const WORKFLOW_STEPS = [
-  { status: 'SUBMITTED', label: 'Order Submitted', icon: ScrollText },
-  { status: 'ACCEPTED', label: 'Accepted by Admin', icon: PackageSearch },
-  { status: 'PICKUP_SCHEDULED', label: 'Pickup Scheduled', icon: Timer },
-  { status: 'PICKED_UP', label: 'Picked Up', icon: Truck },
-  { status: 'IN_TRANSIT', label: 'In Transit', icon: Plane },
-  { status: 'OUT_FOR_DELIVERY', label: 'Out for Delivery', icon: Truck },
-  { status: 'DELIVERED', label: 'Delivered Successfully', icon: CheckCircle2 }
-];
+export const dynamic = "force-dynamic";
 
-export default async function ShipmentDetail({ params }: { params: Promise<{ id: string }> | { id: string } }) {
+export default async function ShipmentDetail({
+  params,
+}: {
+  params: Promise<{ id: string }> | { id: string };
+}) {
   const resolvedParams = await params;
   const session = await getServerSession(authOptions);
 
@@ -25,176 +33,233 @@ export default async function ShipmentDetail({ params }: { params: Promise<{ id:
     return <div>Unauthorized</div>;
   }
 
-  const shipment = await prisma.shipment.findUnique({
-    where: { id: resolvedParams.id, 
-             // Ensure only customer viewing their own OR an admin viewing
-             ...(session.user.role === 'CUSTOMER' ? { customer: { userId: session.user.id } } : {})
-           },
+  const shipment = await prisma.shipment.findFirst({
+    where: {
+      id: resolvedParams.id,
+      ...(session.user.role === "CUSTOMER" ? { customer: { userId: session.user.id } } : {}),
+    },
     include: {
-      pickupAddress: true,
-      receiverAddress: true,
-      logisticsCompany: true,
-      statusHistory: { orderBy: { createdAt: 'desc' } },
-      events: { orderBy: { createdAt: 'desc' } }
-    }
+      country: true,
+      route: {
+        include: {
+          originCountry: true,
+          destinationCountry: true,
+        },
+      },
+      warehouse: {
+        include: {
+          country: true,
+        },
+      },
+      pickupAddress: {
+        include: {
+          country: true,
+        },
+      },
+      receiverAddress: {
+        include: {
+          country: true,
+        },
+      },
+      statusHistory: {
+        orderBy: { createdAt: "desc" },
+      },
+      events: {
+        orderBy: { createdAt: "desc" },
+      },
+      invoice: true,
+    },
   });
 
   if (!shipment) {
-    return <div className="p-16 text-center text-slate-500 font-bold bg-white rounded-xl shadow-lg border border-slate-100 mt-10 max-w-2xl mx-auto">Shipment tracking record not found or inaccessible.</div>;
+    return (
+      <div className="mx-auto mt-10 max-w-2xl rounded-[20px] border border-slate-200 bg-white p-16 text-center text-slate-500 shadow-sm">
+        Shipment record not found or inaccessible.
+      </div>
+    );
   }
 
-  // Determine Current Step Index for timeline rendering
-  const currentStepIndex = WORKFLOW_STEPS.findIndex(s => s.status === shipment.status) || 0;
+  const timeline = buildShipmentTimeline(shipment.statusHistory, shipment.events);
+  const statusMeta = getShipmentStatusMeta(shipment.status);
 
   return (
-    <div className="space-y-10 max-w-6xl mx-auto pb-24">
-      {/* HEADER SECTION */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 bg-white p-8 rounded-3xl shadow-lg border border-slate-100 relative overflow-hidden">
-        <div className="absolute right-0 top-0 translate-x-1/2 -translate-y-1/2 opacity-5">
-           <PackageSearch className="w-96 h-96" />
-        </div>
-        
-        <div className="flex items-center gap-6 relative z-10">
-          <Link href="/customer/shipments">
-            <Button variant="ghost" size="icon" className="rounded-full w-12 h-12 bg-slate-50 hover:bg-slate-200">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tight flex items-center gap-4">
-               {shipment.trackingId}
-               <Badge className="bg-primary hover:bg-indigo-800 uppercase tracking-widest text-[10px] shadow-md px-3 py-1">
-                 {shipment.status.replace(/_/g, ' ')}
-               </Badge>
-            </h1>
-            <p className="text-lg font-bold text-slate-400 tracking-widest uppercase mt-2">
-               AWB: {shipment.awb || 'Pending Generation'}
-            </p>
-          </div>
-        </div>
+    <div className="mx-auto max-w-6xl space-y-8 px-6 pb-24 pt-6 lg:px-8">
+      <RefreshHandler interval={30000} />
 
-        <div className="flex gap-4 relative z-10">
-          <Button variant="outline" className="h-12 border-slate-300 font-bold px-6 shadow-sm rounded-xl" disabled>Download Waybill</Button>
-          <Button variant="outline" className="h-12 border-slate-300 font-bold px-6 shadow-sm rounded-xl" disabled>View Commercial Invoice</Button>
+      <div className="app-card p-8">
+        <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-3">
+            <Link
+              href="/customer/shipments"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-900"
+            >
+              <ArrowLeft className="h-4 w-4" /> Back to shipments
+            </Link>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
+                {shipment.trackingId}
+              </h1>
+              <StatusBadge status={shipment.status} />
+            </div>
+
+            <p className="text-sm text-slate-500">{statusMeta.summary}</p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 md:w-[380px]">
+            <div className="app-card-subtle px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">AWB</p>
+              <p className="mt-1 text-sm font-semibold text-slate-900">{shipment.awb || "Pending assignment"}</p>
+            </div>
+            <div className="app-card-subtle px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Reference</p>
+              <p className="mt-1 text-sm font-semibold text-slate-900">{shipment.referenceNo || "Not assigned"}</p>
+            </div>
+            <div className="app-card-subtle px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Country</p>
+              <p className="mt-1 text-sm font-semibold text-slate-900">
+                {shipment.country?.name || shipment.receiverAddress?.country?.name || "Not assigned"}
+              </p>
+            </div>
+            <div className="app-card-subtle px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Payment</p>
+              <p className="mt-1 text-sm font-semibold text-slate-900">
+                {shipment.invoice ? shipment.invoice.status : shipment.paymentStatus}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-         {/* LEFT COLUMN: MAIN TIMELINE */}
-         <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white p-8 md:p-12 rounded-3xl shadow-xl border border-slate-100 flex flex-col items-center">
-               <h3 className="text-xl font-black text-slate-900 tracking-tight mb-12 self-start w-full border-b border-slate-100 pb-6 uppercase">Tracking Timeline</h3>
-               
-               <div className="w-full relative px-4 md:px-8">
-                  {/* Timeline Line */}
-                  <div className="absolute left-8 md:left-12 top-0 bottom-0 w-1 bg-slate-100 rounded-full"></div>
-                  
-                  {WORKFLOW_STEPS.map((step, idx) => {
-                     const isCompleted = idx <= currentStepIndex;
-                     const isCurrent = idx === currentStepIndex;
-                     const Icon = step.icon;
+      <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+        <section className="app-card p-8">
+          <h2 className="mb-6 text-xl font-semibold text-slate-900">Tracking Timeline</h2>
 
-                     // Verify if it exists in DB history to fetch real date
-                     const historyLog = shipment.statusHistory.find((h: any) => h.status === step.status);
-
-                     return (
-                        <div key={idx} className={`relative flex items-center mb-12 last:mb-0 transition-opacity duration-500 ${!isCompleted ? 'opacity-40' : 'opacity-100'}`}>
-                           <div className={`relative z-10 w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-lg ${isCompleted ? 'bg-primary text-white ring-4 ring-indigo-50' : 'bg-white text-slate-300 border-2 border-slate-200'}`}>
-                              <Icon className={isCurrent ? 'w-6 h-6 animate-pulse' : 'w-5 h-5'} />
-                           </div>
-                           
-                           <div className="ml-6 md:ml-10">
-                              <h4 className={`text-xl font-bold tracking-tight ${isCurrent ? 'text-primary' : 'text-slate-800'}`}>
-                                 {step.label} {isCurrent && <span className="text-[10px] uppercase font-black tracking-widest bg-yellow-100 text-yellow-800 px-2 py-1 rounded ml-2 align-middle">Current Event</span>}
-                              </h4>
-                              {isCompleted && historyLog && (
-                                 <div className="flex gap-4 mt-2">
-                                     <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">{new Date(historyLog.createdAt).toLocaleString()}</span>
-                                     {historyLog.location && <span className="text-sm font-semibold text-slate-500 flex items-center gap-1"><MapPin className="w-3 h-3"/> {historyLog.location}</span>}
-                                 </div>
-                              )}
-                              {isCompleted && historyLog?.notes && (
-                                 <p className="mt-3 text-sm text-slate-500 bg-slate-50 p-4 rounded-xl border border-slate-100 font-medium">"{historyLog.notes}"</p>
-                              )}
-                           </div>
-                        </div>
-                     );
-                  })}
-               </div>
+          {timeline.length === 0 ? (
+            <div className="rounded-[18px] border border-dashed border-slate-300 p-6 text-sm text-slate-500">
+              No tracking updates available yet.
             </div>
-         </div>
+          ) : (
+            <div className="relative space-y-5 pl-8">
+              <div className="absolute bottom-2 left-[15px] top-2 w-px bg-slate-200" />
+              {timeline.map((entry) => (
+                <div key={entry.id} className="relative">
+                  <div className="absolute left-[-30px] top-6 h-3.5 w-3.5 rounded-full border-2 border-white bg-indigo-600 shadow-sm" />
+                  <div className="rounded-[18px] border border-slate-200 bg-slate-50/90 p-5">
+                    <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                      <div>
+                        <p className="font-medium text-slate-900">{entry.title}</p>
+                        {entry.status ? (
+                          <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                            {formatShipmentStatus(entry.status)}
+                          </p>
+                        ) : null}
+                        {entry.note ? <p className="mt-3 text-sm leading-relaxed text-slate-600">{entry.note}</p> : null}
+                        {entry.location ? (
+                          <p className="mt-3 flex items-center gap-2 text-sm font-medium text-slate-700">
+                            <MapPin className="h-4 w-4 text-slate-400" />
+                            {entry.location}
+                          </p>
+                        ) : null}
+                      </div>
+                      <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                        <CalendarDays className="h-4 w-4" />
+                        {format(entry.createdAt, "dd MMM yyyy, h:mm a")}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
 
-         {/* RIGHT COLUMN: CARGO & ROUTES DATA */}
-         <div className="space-y-8">
-            {/* Cargo Meta */}
-            <div className="bg-slate-900 rounded-3xl shadow-xl border border-slate-800 p-8 text-white relative overflow-hidden">
-               <div className="absolute right-0 top-0 w-48 h-48 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-               <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6 border-b border-slate-800 pb-4">Consignment Info</h3>
-               
-               <div className="space-y-6 relative z-10">
-                  <div>
-                    <div className="text-xs font-bold text-slate-500 tracking-wider">Commodity</div>
-                    <div className="text-xl font-black">{shipment.content || 'N/A'}</div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                     <div>
-                       <div className="text-xs font-bold text-slate-500 tracking-wider">Weight</div>
-                       <div className="text-xl font-black font-mono bg-slate-800 px-3 py-1 rounded-lg inline-block">{shipment.weight ? `${shipment.weight} KG` : '-'}</div>
-                     </div>
-                     <div>
-                       <div className="text-xs font-bold text-slate-500 tracking-wider">Value</div>
-                       <div className="text-xl font-black font-mono bg-slate-800 px-3 py-1 rounded-lg inline-block">{shipment.amount ? `$${shipment.amount}` : '-'}</div>
-                     </div>
-                  </div>
-
-                  <div>
-                    <div className="text-xs font-bold text-slate-500 tracking-wider">Internal Reference</div>
-                    <div className="font-bold text-slate-300">{shipment.referenceNo || 'None'}</div>
-                  </div>
-               </div>
+        <div className="space-y-8">
+          <section className="app-card p-8">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+                <Package2 className="h-5 w-5" />
+              </div>
+              <h2 className="font-semibold text-slate-900">Shipment Summary</h2>
             </div>
 
-            {/* Entities */}
-            <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8">
-               <h3 className="text-sm font-bold text-primary uppercase tracking-widest mb-6 border-b border-slate-100 pb-4">Entities & Routing</h3>
-               
-               <div className="space-y-8">
-                  {/* Carrier */}
-                  <div>
-                     <div className="flex items-center gap-3 mb-2">
-                        <Truck className="w-5 h-5 text-slate-400" />
-                        <span className="font-bold text-slate-400 uppercase tracking-widest text-xs">Assigned Carrier</span>
-                     </div>
-                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 font-black text-slate-800">
-                        {shipment.logisticsCompany?.name || 'Pending Assignment'}
-                     </div>
-                  </div>
-
-                  {/* Consignee */}
-                  <div>
-                     <div className="flex items-center gap-3 mb-2">
-                        <Box className="w-5 h-5 text-secondary stroke-2" />
-                        <span className="font-bold text-slate-400 uppercase tracking-widest text-xs">Final Consignee in India</span>
-                     </div>
-                     <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 font-medium">
-                        {shipment.receiverAddress ? (
-                           <>
-                             <div className="font-black text-slate-900 mb-1">{shipment.receiverAddress.name}</div>
-                             <div className="text-slate-600 text-sm leading-relaxed">
-                                {shipment.receiverAddress.street1}<br/>
-                                {shipment.receiverAddress.street2 && <>{shipment.receiverAddress.street2}<br/></>}
-                                {shipment.receiverAddress.city}, {shipment.receiverAddress.state} {shipment.receiverAddress.postalCode}<br/>
-                                <span className="font-bold mt-2 block">Phone: {shipment.receiverAddress.phone || 'N/A'}</span>
-                             </div>
-                           </>
-                        ) : 'Unassigned'}
-                     </div>
-                  </div>
-               </div>
+            <div className="grid gap-4 sm:grid-cols-2 text-sm">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">PCS</p>
+                <p className="mt-1 font-medium text-slate-900">{shipment.pcs ?? "-"}</p>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Weight</p>
+                <p className="mt-1 font-medium text-slate-900">{shipment.weight ? `${shipment.weight} KG` : "-"}</p>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Declared Value</p>
+                <p className="mt-1 font-medium text-slate-900">
+                  {shipment.amount != null ? `$${shipment.amount}` : "-"}
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Collection Type</p>
+                <p className="mt-1 font-medium text-slate-900">
+                  {shipment.collectionType === "WAREHOUSE_DROP" ? "Warehouse Drop" : "Pickup"}
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Pickup Date</p>
+                <p className="mt-1 font-medium text-slate-900">
+                  {shipment.pickupDate ? format(new Date(shipment.pickupDate), "PPP") : "-"}
+                </p>
+              </div>
             </div>
 
-         </div>
+            <div className="mt-5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Description</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-700">
+                {shipment.content || "No description supplied."}
+              </p>
+            </div>
+          </section>
+
+          <section className="app-card p-8">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+                <UserRound className="h-5 w-5" />
+              </div>
+              <h2 className="font-semibold text-slate-900">Receiver</h2>
+            </div>
+
+            <div className="space-y-3 text-sm">
+              <p className="font-medium text-slate-900">
+                {shipment.receiverName || shipment.receiverAddress?.name || "Receiver"}
+              </p>
+              <p className="leading-relaxed text-slate-600">
+                {shipment.receiverAddress?.street1 || "No destination address"}
+              </p>
+              <p className="text-slate-600">
+                {shipment.receiverAddress?.city || "-"},{" "}
+                {shipment.receiverAddress?.country?.name || shipment.country?.name || "-"}
+              </p>
+              <p className="flex items-center gap-2 font-medium text-slate-700">
+                <Phone className="h-4 w-4 text-slate-400" />
+                {shipment.receiverPhone || shipment.receiverAddress?.phone || "No phone"}
+              </p>
+
+              {shipment.warehouse ? (
+                <div className="app-card-subtle mt-4 p-4">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                    Selected Warehouse
+                  </p>
+                  <p className="mt-2 font-medium text-slate-900">
+                    {shipment.warehouse.name} ({shipment.warehouse.code})
+                  </p>
+                  <p className="mt-1 text-slate-600">
+                    {shipment.warehouse.street1}, {shipment.warehouse.city}, {shipment.warehouse.country.name}
+                  </p>
+                </div>
+              ) : null}
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   );

@@ -18,7 +18,7 @@ export default async function AdminTracking() {
 
   return (
     <div className="p-8 lg:p-10 max-w-[1600px] mx-auto min-h-full bg-[#f8f9fa] font-sans">
-      <RefreshHandler interval={15000} />
+      <RefreshHandler interval={45000} />
       {/* Header */}
       <div className="mb-10">
         <div className="flex items-center justify-between mb-4">

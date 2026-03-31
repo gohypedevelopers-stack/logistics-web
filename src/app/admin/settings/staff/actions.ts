@@ -1,10 +1,9 @@
 "use server";
 
-import { PrismaClient, Role } from "@prisma/client";
+import { Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export async function createStaffAction(formData: FormData) {
   const email = formData.get("email") as string;

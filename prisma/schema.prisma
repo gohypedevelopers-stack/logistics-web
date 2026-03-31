@@ -18,13 +18,18 @@ enum Role {
 }
 
 enum ShipmentStatus {
+  CREATED
+  WAITING
   SUBMITTED
   ACCEPTED
   PICKUP_SCHEDULED
   PICKED_UP
+  AT_WAREHOUSE
+  PROCESSING
   IN_TRANSIT
   OUT_FOR_DELIVERY
   DELIVERED
+  CANCELLED
   REJECTED
   ON_HOLD
 }
@@ -35,6 +40,20 @@ enum PaymentStatus {
   PAID
   REFUNDED
   OVERDUE
+}
+
+enum QuotationStatus {
+  DRAFT
+  SENT
+  APPROVED
+  REJECTED
+  EXPIRED
+  CONVERTED
+}
+
+enum ShipmentCollectionType {
+  PICKUP
+  WAREHOUSE_DROP
 }
 
 model User {
@@ -66,6 +85,7 @@ model CustomerProfile {
   shipments      Shipment[]
   addresses      Address[]
   invoices       Invoice[]
+  quotations     Quotation[]
 }
 
 model StaffProfile {
@@ -115,12 +135,18 @@ model Country {
   id        String   @id @default(cuid())
   code      String   @unique // ISO code e.g. "US", "IN"
   name      String
+  isActive  Boolean  @default(true)
+  displayOrder Int   @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   routesOrigin      Route[]   @relation("OriginCountry")
   routesDestination Route[]   @relation("DestinationCountry")
   addresses         Address[]
+  shipments         Shipment[]
+  warehouses        Warehouse[]
+
+  @@index([isActive, displayOrder])
 }
 
 model Route {
@@ -129,12 +155,40 @@ model Route {
   originCountry        Country    @relation("OriginCountry", fields: [originCountryId], references: [id])
   destinationCountryId String
   destinationCountry   Country    @relation("DestinationCountry", fields: [destinationCountryId], references: [id])
+  name                 String?
+  serviceLevel         String?
+  transitDays          Int?
+  notes                String?
   isActive             Boolean    @default(true)
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
 
   rateCards            RateCard[]
   shipments            Shipment[]
+
+  @@index([isActive])
+  @@index([originCountryId, destinationCountryId])
+}
+
+model Warehouse {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique
+  phone       String?
+  street1     String
+  street2     String?
+  city        String
+  state       String?
+  postalCode  String?
+  countryId   String
+  country     Country  @relation(fields: [countryId], references: [id])
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  shipments   Shipment[]
+
+  @@index([countryId, isActive])
 }
 
 model RateCard {
@@ -154,9 +208,14 @@ model Shipment {
   trackingId          String         @unique
   awb                 String?        @unique
   referenceNo         String?
+  pcs                 Int?
+  collectionType      ShipmentCollectionType @default(PICKUP)
   
   customerId          String
   customer            CustomerProfile @relation(fields: [customerId], references: [id])
+
+  countryId           String?
+  country             Country?       @relation(fields: [countryId], references: [id])
   
   createdById         String?
   createdBy           User?          @relation("CreatedBy", fields: [createdById], references: [id])
@@ -167,17 +226,23 @@ model Shipment {
   routeId             String?
   route               Route?          @relation(fields: [routeId], references: [id])
 
+  warehouseId         String?
+  warehouse           Warehouse?      @relation(fields: [warehouseId], references: [id])
+
   pickupAddressId     String?
   pickupAddress       Address?        @relation("PickupAddress", fields: [pickupAddressId], references: [id])
   
   receiverAddressId   String?
   receiverAddress     Address?        @relation("ReceiverAddress", fields: [receiverAddressId], references: [id])
+  receiverName        String?
+  receiverPhone       String?
 
+  pickupDate          DateTime?
   weight              Float?
   content             String?
   amount              Float?
   paymentStatus       PaymentStatus   @default(UNPAID)
-  status              ShipmentStatus  @default(SUBMITTED)
+  status              ShipmentStatus  @default(CREATED)
   rejectionReason     String?
   
   expectedArrivalDate DateTime?
@@ -191,9 +256,15 @@ model Shipment {
   invoice             Invoice?
 
   @@index([customerId])
+  @@index([countryId])
   @@index([status])
   @@index([createdAt])
   @@index([trackingId])
+  @@index([awb])
+  @@index([referenceNo])
+  @@index([customerId, status])
+  @@index([createdAt, status])
+  @@index([warehouseId])
 }
 
 model ShipmentStatusHistory {
@@ -214,11 +285,14 @@ model ShipmentEvent {
   shipmentId  String
   shipment    Shipment  @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
   title       String
-  description String?
+  status      ShipmentStatus?
+  location    String?
+  note        String?   @map("description")
   createdAt   DateTime  @default(now())
 
   @@index([shipmentId])
   @@index([createdAt])
+  @@index([status])
 }
 
 model Invoice {
@@ -233,6 +307,23 @@ model Invoice {
   status        PaymentStatus @default(UNPAID)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+
+  @@index([customerId, status])
+}
+
+model Quotation {
+  id           String          @id @default(cuid())
+  quoteNumber  String          @unique
+  customerId   String
+  customer     CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  description  String?
+  weight       Float?
+  amount       Float?
+  status       QuotationStatus @default(DRAFT)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@index([customerId, status])
 }
 
 model AuditLog {
