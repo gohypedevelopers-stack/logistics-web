@@ -6,10 +6,13 @@ import { usePathname } from "next/navigation";
 function getPageLabel(pathname: string, variant: "admin" | "customer") {
   const map: Array<[string, string]> = [
     [`/${variant}/dashboard`, "Overview"],
-    [`/${variant}/shipments/new`, "Create Shipment"],
+    [`/${variant}/schedule`, "Schedule Shipment"],
+    [`/${variant}/shipments/new`, variant === "admin" ? "Create Shipment" : "Create Shipment"],
     [`/${variant}/shipments`, "Shipments"],
+    [`/${variant}/tracking`, "Tracking"],
     [`/${variant}/track`, "Tracking"],
-    [`/${variant}/rates`, variant === "admin" ? "Countries & Routes" : "Rates"],
+    [`/${variant}/routes`, variant === "admin" ? "Routes" : "Routes"],
+    [`/${variant}/rates`, variant === "admin" ? "Rates" : "Rates"],
     [`/${variant}/customers`, "Customers"],
     [`/${variant}/settings`, "Settings"],
     [`/${variant}/addresses`, "Addresses"],
@@ -67,17 +70,17 @@ export function AppTopbar({
             <Bell className="h-4 w-4" />
           </button>
 
-          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-800">
-              {initials || "U"}
+          {variant === "admin" ? (
+            <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-800">
+                {initials || "U"}
+              </div>
+              <div className="hidden text-left sm:block">
+                <p className="text-sm font-semibold text-slate-900">{resolvedUserName}</p>
+                <p className="text-xs text-slate-500">Administrator</p>
+              </div>
             </div>
-            <div className="hidden text-left sm:block">
-              <p className="text-sm font-semibold text-slate-900">{resolvedUserName}</p>
-              <p className="text-xs text-slate-500">
-                {variant === "admin" ? "Administrator" : "Customer"}
-              </p>
-            </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </header>

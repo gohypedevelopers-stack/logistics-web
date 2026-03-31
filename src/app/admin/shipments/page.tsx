@@ -1,10 +1,11 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { format } from "date-fns";
-import { ChevronLeft, ChevronRight, Eye, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import { RefreshHandler } from "@/components/RefreshHandler";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import type { Prisma } from "@prisma/client";
+import { AdminShipmentsFilters } from "./AdminShipmentsFilters";
 
 export const dynamic = "force-dynamic";
 
@@ -91,8 +92,13 @@ export default async function AdminShipments({
             { awb: { contains: query, mode: "insensitive" } },
             { referenceNo: { contains: query, mode: "insensitive" } },
             { receiverName: { contains: query, mode: "insensitive" } },
+            { country: { name: { contains: query, mode: "insensitive" } } },
+            { country: { code: { contains: query, mode: "insensitive" } } },
             { customer: { companyName: { contains: query, mode: "insensitive" } } },
             { customer: { user: { name: { contains: query, mode: "insensitive" } } } },
+            { customer: { user: { email: { contains: query, mode: "insensitive" } } } },
+            { pickupAddress: { city: { contains: query, mode: "insensitive" } } },
+            { receiverAddress: { city: { contains: query, mode: "insensitive" } } },
           ],
         }
       : {}),
@@ -204,48 +210,14 @@ export default async function AdminShipments({
       </div>
 
       <div className="app-card overflow-hidden">
-        <form className="grid gap-4 border-b border-slate-200/80 p-6 lg:grid-cols-[1.2fr_repeat(4,minmax(0,1fr))]">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              name="q"
-              defaultValue={query}
-              placeholder="Search AWB, tracking ID, reference, client"
-              className="app-input w-full pl-11 pr-4 text-sm"
-            />
-          </div>
-
-          <select name="status" defaultValue={status} className="app-input w-full px-4 text-sm">
-            <option value="all">All statuses</option>
-            <option value="waiting">Waiting</option>
-            <option value="accepted">Accepted</option>
-            <option value="pickup_scheduled">Pickup scheduled</option>
-            <option value="in_transit">In transit</option>
-            <option value="delivered">Delivered</option>
-            <option value="rejected">Rejected</option>
-            <option value="on_hold">On hold</option>
-            <option value="closed">Closed</option>
-          </select>
-
-          <select name="country" defaultValue={country} className="app-input w-full px-4 text-sm">
-            <option value="">All countries</option>
-            {countries.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name} ({item.code})
-              </option>
-            ))}
-          </select>
-
-          <input type="date" name="from" defaultValue={from} className="app-input w-full px-4 text-sm" />
-
-          <div className="flex gap-3">
-            <input type="date" name="to" defaultValue={to} className="app-input min-w-0 flex-1 px-4 text-sm" />
-            <button type="submit" className="app-button-primary px-5 text-sm font-semibold">
-              Apply
-            </button>
-          </div>
-        </form>
+        <AdminShipmentsFilters
+          countries={countries}
+          initialStatus={status}
+          initialCountry={country}
+          initialFrom={from}
+          initialTo={to}
+          initialQuery={query}
+        />
 
         <div className="overflow-x-auto">
           <table className="app-table w-full min-w-[1100px]">

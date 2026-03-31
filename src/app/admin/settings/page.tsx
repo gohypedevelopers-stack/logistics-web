@@ -1,7 +1,6 @@
 import { 
   Settings, 
   MapPin, 
-  ShieldCheck, 
   Bell, 
   CreditCard, 
   Database,
@@ -20,9 +19,8 @@ const settingGroups = [
     ]
   },
   {
-    title: "Security & Users",
+    title: "Security",
     items: [
-      { name: "Staff Access", desc: "Manage IAM and permission levels.", icon: ShieldCheck },
       { name: "System Notifications", desc: "Global notification and audit configuration.", icon: Bell },
     ]
   },
@@ -62,7 +60,7 @@ export default function AdminSettings() {
               <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest pl-1">{group.title}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                  {group.items.map((item) => (
-                   <Link key={item.name} href={item.name === "Staff Access" ? "/admin/settings/staff" : "#"} className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm hover:border-blue-300 hover:shadow-md transition-all group flex items-start gap-6">
+                   <Link key={item.name} href="#" className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm hover:border-blue-300 hover:shadow-md transition-all group flex items-start gap-6">
                       <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-[#1E1B4B] group-hover:text-white transition-all">
                          <item.icon className="w-6 h-6" />
                       </div>

@@ -1,12 +1,14 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, MapPin, PlusSquare, Contact, Calculator, Rocket } from "lucide-react";
+import { LayoutDashboard, CalendarPlus, MapPin, PlusSquare, Contact, Calculator, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function CustomerSidebar({ userName }: { userName?: string | null }) {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
   const resolvedUserName = userName || "Customer Account";
   const initials = resolvedUserName
     .split(" ")
@@ -15,9 +17,14 @@ export function CustomerSidebar({ userName }: { userName?: string | null }) {
     .substring(0, 2)
     .toUpperCase();
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const navItems = [
     { name: "Overview", href: "/customer/dashboard", icon: LayoutDashboard },
-    { name: "Create shipment", href: "/customer/shipments/new", icon: PlusSquare },
+    { name: "Create Shipment", href: "/customer/shipments/new", icon: PlusSquare },
+    { name: "Schedule Shipment", href: "/customer/schedule", icon: CalendarPlus },
     { name: "Address", href: "/customer/addresses", icon: Contact },
     { name: "Rates", href: "/customer/rates", icon: Calculator },
     { name: "Track", href: "/customer/track", icon: MapPin },
@@ -38,7 +45,19 @@ export function CustomerSidebar({ userName }: { userName?: string | null }) {
       </div>
       
       <nav className="flex-1 px-4 py-6 space-y-1.5">
-        {navItems.map((item) => {
+        {(mounted ? navItems : navItems.map(({ name, href }) => ({ name, href, icon: null as any }))).map((item) => {
+          if (!mounted) {
+            return (
+              <div
+                key={item.href}
+                className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-slate-400"
+              >
+                <span className="h-5 w-5 rounded-md bg-slate-100" />
+                <span className="tracking-tight">{item.name}</span>
+              </div>
+            );
+          }
+
           const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/customer/dashboard");
           const Icon = item.icon;
 

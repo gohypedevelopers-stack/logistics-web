@@ -157,7 +157,7 @@ export default async function AdminDashboard() {
           href="/admin/rates"
           className="app-button-primary inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold"
         >
-          Manage Countries & Routes <ArrowRight className="h-4 w-4" />
+          Manage Rates <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
 

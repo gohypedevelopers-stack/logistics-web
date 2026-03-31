@@ -1,10 +1,10 @@
 import prisma from "@/lib/prisma";
-import { CreateShipmentForm } from "./CreateShipmentForm";
 import { ensureDefaultWarehouses } from "@/lib/logistics-bootstrap";
+import { CreateShipmentForm } from "../shipments/new/CreateShipmentForm";
 
 export const dynamic = "force-dynamic";
 
-export default async function CreateShipmentPage() {
+export default async function ScheduleShipmentPage() {
   await ensureDefaultWarehouses();
 
   const [countries, routes, warehouses] = await Promise.all([
@@ -59,5 +59,5 @@ export default async function CreateShipmentPage() {
     }),
   ]);
 
-  return <CreateShipmentForm countries={countries} routes={routes} warehouses={warehouses} mode="create" />;
+  return <CreateShipmentForm countries={countries} routes={routes} warehouses={warehouses} mode="schedule" />;
 }

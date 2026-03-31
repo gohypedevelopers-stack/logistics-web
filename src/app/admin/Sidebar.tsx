@@ -7,7 +7,8 @@ import {
   Truck, 
   Search, 
   Users, 
-  MapPin, 
+  Contact,
+  BadgeDollarSign,
   Settings, 
   ShieldCheck,
 } from "lucide-react";
@@ -26,16 +27,16 @@ const navigation = [
     title: "Management",
     items: [
       { name: "Customers", href: "/admin/customers", icon: Users },
-      { name: "Countries & Routes", href: "/admin/rates", icon: MapPin },
+      { name: "Addresses", href: "/admin/addresses", icon: Contact },
+      { name: "Rates", href: "/admin/rates", icon: BadgeDollarSign },
     ]
   },
-   {
-     title: "System",
-     items: [
-       { name: "Staff Management", href: "/admin/settings/staff", icon: ShieldCheck },
-       { name: "Settings", href: "/admin/settings", icon: Settings },
-     ]
-   }
+  {
+    title: "System",
+    items: [
+      { name: "Settings", href: "/admin/settings", icon: Settings },
+    ]
+  }
 ];
 
 export function AdminSidebar({ userName }: { userName?: string | null }) {
