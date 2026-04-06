@@ -322,18 +322,13 @@ export default async function CustomerDashboard({
           </div>
 
           <div className="overflow-hidden rounded-[5px] border border-slate-200 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_100%)]">
-            <object
-              data="/courier-loop-whiteboard.svg"
-              type="image/svg+xml"
-              aria-label="Courier loop whiteboard animation"
+            <img
+              src="/loop.gif"
+              alt="Courier loop animation"
               className="block h-auto w-full"
-            >
-              <img
-                src="/courier-loop-whiteboard.svg"
-                alt="Courier loop whiteboard animation"
-                className="h-auto w-full"
-              />
-            </object>
+              loading="lazy"
+              decoding="async"
+            />
           </div>
 
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
