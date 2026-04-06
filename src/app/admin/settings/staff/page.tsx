@@ -104,9 +104,9 @@ export default async function StaffManagementPage() {
                   <Briefcase className="w-4 h-4" />
                 </div>
                 <div className="text-sm font-medium">
-                   {user.staffProfile?.position || "Not Assigned"} 
+                   {user.staffProfile?.position || "Not assigned"} 
                    <span className="text-slate-300 mx-1.5 font-light">|</span>
-                   <span className="text-slate-400 italic">{user.staffProfile?.department || "No Dept"}</span>
+                   <span className="text-slate-400 italic">{user.staffProfile?.department || "No department"}</span>
                 </div>
               </div>
 
@@ -127,7 +127,7 @@ export default async function StaffManagementPage() {
               </div>
               <h3 className="text-xl font-bold text-slate-800">No staff accounts found</h3>
               <p className="text-slate-500 max-w-sm mt-2 text-sm">
-                Provision new internal access keys to start managing the platform.
+                Create a staff account to begin managing internal platform access.
               </p>
            </div>
         )}

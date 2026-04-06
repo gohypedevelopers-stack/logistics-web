@@ -4,7 +4,7 @@ import Link from "next/link";
 const faqs = [
   { q: "How do I track my international shipment?", a: "You can track your shipment in real-time through our tracking portal using your unique tracking ID provided at booking." },
   { q: "Do you handle hazardous materials on the ITAR list?", a: "We operate within strict compliance frameworks. Certain restricted goods require pre-approval and documentation. Contact our compliance team for specifics." },
-  { q: "What is the insurance options for high-value goods?", a: "We offer full cargo insurance through our GlobalNavigator Trust program, covering declared values up to $50,000 per shipment." },
+  { q: "What insurance options are available for high-value goods?", a: "We offer cargo insurance through our GlobalNavigator Trust program, covering declared values up to $50,000 per shipment." },
 ];
 
 export default function ServicesPage() {
@@ -33,7 +33,7 @@ export default function ServicesPage() {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#818CF8] to-teal-300">Intelligence</span>
           </h1>
           <p className="text-indigo-100/90 font-medium text-lg max-w-xl leading-relaxed mb-10">
-            Navigating global supply chains precisely engineered and refined. From last-mile freight to intelligent clearance systems, we simplify your supply chain.
+            From final-mile delivery to customs coordination, we simplify complex supply chains with clear visibility and dependable execution.
           </p>
           <Link href="/contact">
             <button className="h-12 px-8 bg-white text-[#1E1B4B] font-black text-sm rounded-xl hover:bg-indigo-50 transition-colors shadow-lg flex items-center gap-2">
@@ -48,7 +48,7 @@ export default function ServicesPage() {
         <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
           <div className="mb-14">
             <h2 className="text-3xl font-black text-[#1E1B4B] tracking-tight mb-3">Our Core Capabilities</h2>
-            <p className="text-slate-500 font-medium text-base max-w-lg">Your platform is designed to move your business between continents with precision and efficiency.</p>
+            <p className="text-slate-500 font-medium text-base max-w-lg">Our network is designed to move your business across borders with precision and efficiency.</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -63,7 +63,7 @@ export default function ServicesPage() {
               </div>
               <h3 className="text-[20px] font-black text-[#1E1B4B] mb-3 tracking-tight">Air Freight</h3>
               <p className="text-slate-500 font-medium text-sm leading-relaxed mb-6">
-                Priority cargo dispatch on the world's largest commercial networks. We offer expedited solutions with door-to-door intelligence for your most time-precious shipments.
+                Priority cargo movement across major commercial networks with door-to-door visibility for time-sensitive shipments.
               </p>
               <button className="flex items-center gap-2 text-[#1E1B4B] font-bold text-sm hover:gap-3 transition-all">
                 Learn More <ArrowRight className="w-4 h-4" />
@@ -121,7 +121,7 @@ export default function ServicesPage() {
                 </div>
                 <h3 className="text-[20px] font-black text-white mb-3 tracking-tight">Customs Brokerage</h3>
                 <p className="text-teal-50/80 font-medium text-sm leading-relaxed mb-6">
-                  Our licensed brokers ensure compliant entry for all regulated goods with filing to Indian customs authorities and clearance up to ₹5Cr valuation.
+                  Our licensed brokers support compliant entry for regulated goods, including customs filing and clearance coordination for high-value commercial shipments.
                 </p>
                 <button className="h-10 px-6 bg-white text-teal-700 font-black text-sm rounded-xl hover:bg-teal-50 transition-colors shadow-sm flex items-center gap-2 w-max">
                   Contact a Broker <ArrowRight className="w-4 h-4" />
@@ -145,7 +145,7 @@ export default function ServicesPage() {
                 Next-Gen<br />Visibility Engine
               </h2>
               <p className="text-slate-500 font-medium leading-relaxed text-base mb-8">
-                Real-time status tracking of "last-known location" data. Our intelligent logistics engine continuously predicts delays, recalculates routes, and updates ETA across your network.
+                Real-time shipment visibility with predictive ETA updates, route adjustments, and milestone alerts across your network.
               </p>
               <div className="space-y-4">
                 {[
@@ -181,7 +181,7 @@ export default function ServicesPage() {
                 <div className="p-5 space-y-3">
                   <div className="h-8 bg-slate-50 border border-slate-100 rounded-lg flex items-center px-3 gap-2">
                     <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                    <span className="text-[10px] font-bold text-slate-500">GN-94821 — In Transit — ETA Oct 24</span>
+                    <span className="text-[10px] font-bold text-slate-500">GN-94821 | In Transit | ETA Oct 24</span>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     {['Air: 84', 'Ocean: 58', 'Docs: 24'].map((s, i) => (
@@ -191,7 +191,7 @@ export default function ServicesPage() {
                     ))}
                   </div>
                   <div className="space-y-2">
-                    {['LHR → DEL • Flight BA-214 • On Time', 'SOU → BOM • Vessel Evergrand • Day 12', 'JFK → CCU • FedEx Int. • Customs Hold'].map((r, i) => (
+                    {['LHR to DEL | Flight BA-214 | On Time', 'SOU to BOM | Vessel Evergrand | Day 12', 'JFK to CCU | FedEx International | Customs Hold'].map((r, i) => (
                       <div key={i} className="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2 border border-slate-100">
                         <span className="text-[10px] font-medium text-slate-600">{r}</span>
                         <div className={`w-1.5 h-1.5 rounded-full ${i === 2 ? 'bg-red-500' : 'bg-green-500'}`}></div>
@@ -211,7 +211,7 @@ export default function ServicesPage() {
       <section className="py-24 bg-white">
         <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
           <div className="text-center mb-14">
-            <h2 className="text-3xl font-black text-[#1E1B4B] tracking-tight mb-3">Unrivalled Global Coverage</h2>
+            <h2 className="text-3xl font-black text-[#1E1B4B] tracking-tight mb-3">Global Coverage</h2>
             <p className="text-slate-500 font-medium max-w-xl mx-auto leading-relaxed">Our operations combine elite partnerships and deep regional expertise right across every major trade lane.</p>
           </div>
 
@@ -251,7 +251,7 @@ export default function ServicesPage() {
         <div className="container mx-auto px-6 lg:px-16 max-w-3xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-black text-[#1E1B4B] tracking-tight mb-3">Common Inquiries</h2>
-            <p className="text-slate-500 font-medium">Answering your most frequent logistical questions.</p>
+            <p className="text-slate-500 font-medium">Answers to common logistics and shipping questions.</p>
           </div>
 
           <div className="space-y-4">
@@ -284,7 +284,7 @@ export default function ServicesPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/register">
                   <button className="h-13 px-8 py-4 bg-white text-[#1E1B4B] font-black text-sm rounded-2xl hover:bg-indigo-50 transition-colors shadow-lg">
-                    Get A Quote
+                    Get a Quote
                   </button>
                 </Link>
                 <Link href="/contact">

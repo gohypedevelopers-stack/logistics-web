@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "BrandName Logistics",
-  description: "Premium International Logistics Platform",
+  description: "Global logistics platform for shipment management, tracking, rates, and operations.",
 };
 
 export default async function RootLayout({

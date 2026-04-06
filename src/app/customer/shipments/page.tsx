@@ -7,7 +7,7 @@ export default async function CustomerOrdersPage() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    return <div>Unauthorized. Please log in.</div>;
+    return <div>Access denied. Please sign in.</div>;
   }
 
   const customerProfile = await prisma.customerProfile.findUnique({

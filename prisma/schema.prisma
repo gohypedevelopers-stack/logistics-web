@@ -86,6 +86,8 @@ model CustomerProfile {
   addresses      Address[]
   invoices       Invoice[]
   quotations     Quotation[]
+  rateOverrides  CustomerRateOverride[]
+  warehouseRateOverrides CustomerWarehouseRateOverride[]
 }
 
 model StaffProfile {
@@ -187,6 +189,7 @@ model Warehouse {
   updatedAt   DateTime @updatedAt
 
   shipments   Shipment[]
+  customerRateOverrides CustomerWarehouseRateOverride[]
 
   @@index([countryId, isActive])
 }
@@ -201,6 +204,39 @@ model RateCard {
   currency  String   @default("USD")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  customerOverrides CustomerRateOverride[]
+}
+
+model CustomerRateOverride {
+  id         String          @id @default(cuid())
+  customerId String
+  customer   CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  rateCardId String
+  rateCard   RateCard        @relation(fields: [rateCardId], references: [id], onDelete: Cascade)
+  price      Float
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@unique([customerId, rateCardId])
+  @@index([customerId])
+  @@index([rateCardId])
+}
+
+model CustomerWarehouseRateOverride {
+  id         String          @id @default(cuid())
+  customerId String
+  customer   CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  warehouseId String
+  warehouse   Warehouse      @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  price      Float
+  currency   String          @default("USD")
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@unique([customerId, warehouseId])
+  @@index([customerId])
+  @@index([warehouseId])
 }
 
 model Shipment {

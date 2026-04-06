@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Access denied. Please sign in." }, { status: 401 });
     }
 
     const body = await request.json();
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
     if (!dbUser) {
       return NextResponse.json(
-        { error: "Your session is stale. Please log in again." },
+        { error: "Your session has expired. Please sign in again." },
         { status: 401 },
       );
     }

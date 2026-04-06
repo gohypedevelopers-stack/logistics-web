@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import prisma from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
+import { createQuotationRequest } from "@/lib/quotation-utils";
 
 function cleanValue(formData: FormData, key: string) {
   const raw = formData.get(key);
@@ -22,7 +23,7 @@ export async function requestQuoteAction(formData: FormData) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    throw new Error("Unauthorized");
+    throw new Error("You are not authorized to perform this action.");
   }
 
   const customer = await prisma.customerProfile.findUnique({
@@ -64,15 +65,12 @@ export async function requestQuoteAction(formData: FormData) {
     notes ?? null,
   ].filter(Boolean);
 
-  await prisma.quotation.create({
-    data: {
-      quoteNumber: buildQuoteNumber(),
-      customerId: customer.id,
-      description: descriptionParts.join(" | "),
-      weight,
-      amount: insuredValue ?? 0,
-      status: "DRAFT",
-    },
+  await createQuotationRequest({
+    quoteNumber: buildQuoteNumber(),
+    customerId: customer.id,
+    description: descriptionParts.join(" | "),
+    weight,
+    amount: insuredValue ?? 0,
   });
 
   revalidatePath("/customer/rates");

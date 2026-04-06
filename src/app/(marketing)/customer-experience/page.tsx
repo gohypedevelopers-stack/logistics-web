@@ -3,27 +3,27 @@ import Link from "next/link";
 
 const flowSteps = [
   { num: "01", title: "Premium Pickup", desc: "Our certified pickup agents come to your door on time, verifying cargo weight and packing class." },
-  { num: "02", title: "Smart Transit", desc: "Optimized to our freight networks for maximum shipment efficiency and speed at all touchpoints." },
+  { num: "02", title: "Smart Transit", desc: "Optimized across our freight network for speed, visibility, and reliable handoffs." },
   { num: "03", title: "Digital Customs", desc: "All documentation and clearance processed digitally from our centralized intelligence platform." },
-  { num: "04", title: "The Last Mile", desc: "Our certified last-mile delivery systems operate with live confirmation details within India delivery." },
+  { num: "04", title: "Final Delivery", desc: "Certified delivery teams complete each shipment with live confirmation and status updates." },
 ];
 
 const intelFeatures = [
   { title: "Customs Engine", desc: "Advanced algorithms flag compliance risks with 200+ regulatory rules." },
   { title: "IoT Sensors", desc: "Temperature, humidity, and location sensors streaming live to your dashboard." },
-  { title: "The Blockchain", desc: "Immutable audit trail technology keeps all documents tamper-proof." },
+  { title: "Blockchain Audit Trail", desc: "Immutable audit logs keep shipment documentation secure and traceable." },
   { title: "Control Desk", desc: "Human experts monitoring high-value or sensitive cargo around the clock." },
 ];
 
 const testimonials = [
   {
-    quote: "Moving medical prototypes from Germany to Italy required more consignments. Global Navigator's reliability analysis provided the confidence our surgical team needed.",
+    quote: "We moved medical prototypes from Germany to Italy with complete confidence. Global Navigator's reliability insights gave our surgical team the assurance it needed.",
     name: "Arun Mehta",
     role: "HEAD OF OPS, BIOTECH GLOBAL",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&fit=crop",
   },
   {
-    quote: "The predictive alerts saved us three days during the distribution season. Their AI notified our human logistics team through Slack — creating an 8% boost in our tracking accuracy.",
+    quote: "Predictive alerts saved us three days during peak distribution. Their alerting workflow improved our tracking accuracy by 8%.",
     name: "Sarah Collins",
     role: "SUPPLY CHAIN DIRECTOR, FINSURE LTD",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&fit=crop",
@@ -47,7 +47,7 @@ export default function CustomerExperiencePage() {
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#818CF8] to-teal-400">An Exceptional<br />Journey</span>
               </h1>
               <p className="text-slate-500 font-medium text-base leading-relaxed mb-10 max-w-md">
-                At Global, the seamless transition of high-value cargo from London's creative hubs to the vibrant tech corridors of Bangalore. This is logistics redefined by clarity and intelligence.
+                Global Navigator delivers high-value cargo with clarity, control, and consistent communication from origin to destination.
               </p>
               <div className="flex gap-4">
                 <Link href="/register">
@@ -139,8 +139,8 @@ export default function CustomerExperiencePage() {
               </p>
               <div className="space-y-4">
                 {[
-                  { label: "Live ETA Tracking", desc: "Surpassing tracking ability in-industry, available in many formats." },
-                  { label: "Condition Monitoring", desc: "Peace of intelligence for high value electronics and total medical supplies." },
+                  { label: "Live ETA Tracking", desc: "Real-time ETA visibility across key milestones and delivery checkpoints." },
+                  { label: "Condition Monitoring", desc: "Ongoing oversight for high-value electronics, healthcare shipments, and sensitive cargo." },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-3">
                     <div className="w-5 h-5 rounded-full bg-teal-100 flex items-center justify-center mt-0.5 shrink-0">
@@ -148,7 +148,7 @@ export default function CustomerExperiencePage() {
                     </div>
                     <div>
                       <span className="font-bold text-[#1E1B4B] text-sm">{item.label}</span>
-                      <span className="text-slate-500 text-sm font-medium"> — {item.desc}</span>
+                      <span className="text-slate-500 text-sm font-medium"> - {item.desc}</span>
                     </div>
                   </div>
                 ))}
@@ -167,7 +167,7 @@ export default function CustomerExperiencePage() {
                 Global Support,<br />Local Expertise
               </h2>
               <p className="text-indigo-200 font-medium text-base leading-relaxed mb-10">
-                When you need help, you can't afford to wait 48 hours. You speak with logistics experts stationed in London, Mumbai, and New York at a moment and the local nuances of your package's journey are covered.
+                When you need support, you need it quickly. Our teams in London, Mumbai, and New York provide informed guidance with local operational context.
               </p>
               <div className="grid grid-cols-3 gap-8 mb-8">
                 {[{ val: "24/7", label: "Global Support" }, { val: "15m", label: "Response Time" }, { val: "50+", label: "Specialists" }].map((s, i) => (
@@ -183,8 +183,8 @@ export default function CustomerExperiencePage() {
             <div className="bg-white/10 rounded-2xl p-6 border border-white/10 backdrop-blur-sm">
               <div className="space-y-3 mb-5">
                 {[
-                  { label: "Customer Navigator", msg: "My shipment GN-94821 just hit customs — can you expedite?", ours: false },
-                  { label: "Mumbai Logistics Hub", msg: "I've flagged this for our senior clearance broker. Expect clearance within 90 minutes.", ours: true },
+                  { label: "Customer Support", msg: "My shipment GN-94821 has reached customs. Can you expedite clearance?", ours: false },
+                  { label: "Mumbai Operations Hub", msg: "This shipment has been escalated to our senior clearance broker. Expected clearance time is 90 minutes.", ours: true },
                 ].map((msg, i) => (
                   <div key={i} className={`flex items-start gap-3 ${msg.ours ? 'flex-row-reverse' : ''}`}>
                     <div className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-[9px] font-black ${msg.ours ? 'bg-teal-500 text-white' : 'bg-indigo-200 text-[#1E1B4B]'}`}>
@@ -239,12 +239,12 @@ export default function CustomerExperiencePage() {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#818CF8] to-teal-300">Navigator Difference.</span>
           </h2>
           <p className="text-indigo-200 font-medium text-base mb-12 max-w-lg mx-auto leading-relaxed">
-            Ready to envision your global journey from a book to a strategic advantage?
+            Ready to turn your shipping workflow into a strategic advantage?
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/register">
               <button className="px-8 py-4 bg-teal-400 text-[#1E1B4B] font-black text-sm rounded-2xl hover:bg-teal-300 transition-colors shadow-lg">
-                Request a Personalised Demo
+                Request a Personalized Demo
               </button>
             </Link>
             <Link href="/contact">
@@ -262,7 +262,7 @@ export default function CustomerExperiencePage() {
           <div>
             <p className="font-bold text-white text-[15px] mb-1">Global Navigator</p>
             <p className="text-[11px] text-indigo-400 font-medium">Logistics intelligence for the modern world.</p>
-            <p className="text-[10px] text-slate-600 font-medium mt-1">© 2024 Global Navigator Logistics. All rights reserved.</p>
+            <p className="text-[10px] text-slate-600 font-medium mt-1">Copyright 2024 Global Navigator Logistics. All rights reserved.</p>
           </div>
           <div className="flex flex-wrap gap-6 text-[11px] font-bold text-slate-500">
             {['Privacy Policy', 'Terms of Service', 'Global Compliance', 'Contact Support', 'Carrier Relations'].map(l => (

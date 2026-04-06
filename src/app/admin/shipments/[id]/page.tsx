@@ -38,7 +38,7 @@ export default async function AdminShipmentDetail({
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    return <div>Unauthorized</div>;
+    return <div>Access denied. Please sign in.</div>;
   }
 
   const shipment = await prisma.shipment.findUnique({

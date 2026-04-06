@@ -15,10 +15,10 @@ export default function ProfileClient({ fullName, firstName, lastName, email }: 
   const [activeTab, setActiveTab] = useState("profile");
 
   const menuItems = [
-    { id: "profile", label: "My Profile", icon: User },
+    { id: "profile", label: "Profile", icon: User },
     { id: "kyc", label: "KYC Details", icon: ShieldCheck },
-    { id: "address", label: "Pickup Address", icon: Truck },
-    { id: "refer", label: "Refer and Earn", icon: Users },
+    { id: "address", label: "Pickup Addresses", icon: Truck },
+    { id: "refer", label: "Referral Program", icon: Users },
     { id: "password", label: "Change Password", icon: Key },
   ];
 
@@ -62,7 +62,7 @@ export default function ProfileClient({ fullName, firstName, lastName, email }: 
             className="flex items-center gap-4 px-5 py-3 rounded-xl font-medium text-red-500 hover:bg-red-50 transition-all mt-4 border border-red-100/50"
           >
             <LogOut className="w-4 h-4 flex-shrink-0" />
-            <span className="text-sm">Log Out Account</span>
+            <span className="text-sm">Sign Out</span>
           </button>
         </nav>
       </div>
@@ -70,11 +70,11 @@ export default function ProfileClient({ fullName, firstName, lastName, email }: 
       {/* Main Content Area */}
       <div className="flex-1">
          <div className="mb-6">
-            <h1 className="text-[22px] font-semibold text-slate-800 tracking-tight leading-tight">My Profile</h1>
+            <h1 className="text-[22px] font-semibold text-slate-800 tracking-tight leading-tight">Profile</h1>
             <div className="text-[13px] text-slate-400 flex items-center gap-1.5 mt-0.5">
                <span>Settings</span>
                <span className="text-slate-300">&gt;</span>
-               <span className="text-slate-700 font-medium">My Profile</span>
+               <span className="text-slate-700 font-medium">Profile</span>
             </div>
          </div>
 
@@ -136,22 +136,22 @@ export default function ProfileClient({ fullName, firstName, lastName, email }: 
          
          {activeTab === "address" && (
            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden p-8">
-             <h3 className="text-lg font-bold text-slate-800 mb-4">Pickup Address</h3>
-             <p className="text-slate-500 text-sm">You have not saved any pickup addresses yet.</p>
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Pickup Addresses</h3>
+             <p className="text-slate-500 text-sm">No pickup addresses have been saved yet.</p>
            </div>
          )}
 
          {activeTab === "refer" && (
            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden p-8">
-             <h3 className="text-lg font-bold text-slate-800 mb-4">Refer and Earn</h3>
-             <p className="text-slate-500 text-sm">Invite friends and earn shipping credits.</p>
+             <h3 className="text-lg font-bold text-slate-800 mb-4">Referral Program</h3>
+             <p className="text-slate-500 text-sm">Invite colleagues and earn shipping credits.</p>
            </div>
          )}
 
          {activeTab === "password" && (
            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden p-8">
              <h3 className="text-lg font-bold text-slate-800 mb-4">Change Password</h3>
-             <p className="text-slate-500 text-sm">Update your account security settings here.</p>
+             <p className="text-slate-500 text-sm">Update your password and account security settings here.</p>
            </div>
          )}
          

@@ -13,6 +13,16 @@ import {
 } from "lucide-react";
 import { RefreshHandler } from "@/components/RefreshHandler";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { updateQuotationStatusAction } from "./actions";
+import {
+  TRANSIT_STATUS_QUERY_VALUES,
+  WAITING_STATUS_QUERY_VALUES,
+} from "@/lib/shipment-utils";
+import {
+  countActiveQuotations,
+  getActiveQuotationRequests,
+  getQuotationStatusMeta,
+} from "@/lib/quotation-utils";
 
 export const dynamic = "force-dynamic";
 
@@ -27,36 +37,23 @@ export default async function AdminDashboard() {
     activeRoutes,
     recentActivity,
     topCountryGroup,
+    pendingQuotationRequests,
   ] = await Promise.all([
     prisma.shipment.count(),
     prisma.shipment.count({
       where: {
-        status: { in: ["CREATED", "WAITING", "SUBMITTED", "ON_HOLD"] } as any,
+        status: { in: [...WAITING_STATUS_QUERY_VALUES] } as any,
       },
     }),
     prisma.shipment.count({
       where: {
         status: {
-          in: [
-            "ACCEPTED",
-            "PICKUP_SCHEDULED",
-            "PICKED_UP",
-            "AT_WAREHOUSE",
-            "PROCESSING",
-            "IN_TRANSIT",
-            "OUT_FOR_DELIVERY",
-          ],
+          in: [...TRANSIT_STATUS_QUERY_VALUES],
         } as any,
       },
     }),
     prisma.shipment.count({ where: { status: "DELIVERED" } }),
-    prisma.quotation.count({
-      where: {
-        status: {
-          in: ["DRAFT", "SENT"],
-        },
-      },
-    }),
+    countActiveQuotations(),
     prisma.country.count({ where: { isActive: true } }),
     prisma.route.count({ where: { isActive: true } }),
     prisma.shipmentEvent.findMany({
@@ -91,6 +88,7 @@ export default async function AdminDashboard() {
       },
       take: 1,
     }),
+    getActiveQuotationRequests(6),
   ]);
 
   const topCountryId = topCountryGroup[0]?.countryId;
@@ -131,9 +129,9 @@ export default async function AdminDashboard() {
       tone: "bg-emerald-50 text-emerald-700 border-emerald-100",
     },
     {
-      label: "Request a Quote",
+      label: "Quotation Requests",
       value: activeQuoteRequests,
-      href: "/customer/rates",
+      href: "/admin/dashboard#requested-quotes",
       icon: ReceiptText,
       tone: "bg-orange-50 text-orange-700 border-orange-100",
     },
@@ -219,7 +217,7 @@ export default async function AdminDashboard() {
                         {event.shipment.customer.companyName ||
                           event.shipment.customer.user?.name ||
                           "Private customer"}{" "}
-                        · {event.shipment.trackingId}
+                        | {event.shipment.trackingId}
                       </p>
                       {event.location ? (
                         <p className="text-sm font-medium text-slate-600">{event.location}</p>
@@ -237,6 +235,129 @@ export default async function AdminDashboard() {
         </section>
 
         <div className="space-y-8">
+          <section id="requested-quotes" className="app-card p-8">
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-[5px] border border-orange-100 bg-orange-50">
+                  <ReceiptText className="h-5 w-5 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-slate-900">Quotation Requests</h3>
+                  <p className="text-sm text-slate-500">
+                    Customer quotation requests waiting for admin review.
+                  </p>
+                </div>
+              </div>
+              <span className="rounded-full border border-orange-100 bg-orange-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-orange-700">
+                {activeQuoteRequests} open
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              {pendingQuotationRequests.length === 0 ? (
+                <div className="rounded-[5px] border border-dashed border-slate-300 p-6 text-sm text-slate-500">
+                  No customer quotation requests are waiting for review.
+                </div>
+              ) : (
+                pendingQuotationRequests.map((quotation) => {
+                  const statusMeta = getQuotationStatusMeta(quotation.status);
+
+                  return (
+                    <div
+                      key={quotation.id}
+                      className="rounded-[5px] border border-slate-200 bg-slate-50/90 p-5"
+                    >
+                      <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                          <div>
+                            <div className="flex flex-wrap items-center gap-3">
+                              <p className="font-semibold text-slate-900">{quotation.quoteNumber}</p>
+                              <span
+                                className={`rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${statusMeta.tone}`}
+                              >
+                                {statusMeta.label}
+                              </span>
+                            </div>
+                            <p className="mt-2 text-sm font-medium text-slate-700">
+                              {quotation.companyName ||
+                                quotation.userName ||
+                                quotation.userEmail ||
+                                "Customer"}
+                            </p>
+                            <p className="mt-1 text-sm leading-6 text-slate-600">
+                              {quotation.description || "No route details provided."}
+                            </p>
+                          </div>
+
+                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                            {formatDistanceToNow(new Date(quotation.updatedAt), { addSuffix: true })}
+                          </p>
+                        </div>
+
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div className="app-card-subtle px-4 py-3">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                              Weight
+                            </p>
+                            <p className="mt-1 text-sm font-semibold text-slate-900">
+                              {quotation.weight ? `${quotation.weight} KG` : "Not provided"}
+                            </p>
+                          </div>
+                          <div className="app-card-subtle px-4 py-3">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                              Declared Value
+                            </p>
+                            <p className="mt-1 text-sm font-semibold text-slate-900">
+                              {quotation.amount != null ? `$${quotation.amount}` : "Not provided"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-end gap-3">
+                          <form action={updateQuotationStatusAction} className="flex flex-wrap items-end gap-3">
+                            <input type="hidden" name="quotationId" value={quotation.id} />
+                            <input type="hidden" name="status" value="APPROVED" />
+                            <label className="block">
+                              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                                Approved Price
+                              </span>
+                              <input
+                                type="number"
+                                name="approvedPrice"
+                                min="0"
+                                step="0.01"
+                                required
+                                placeholder="Enter customer price"
+                                className="h-10 min-w-[190px] rounded-[5px] border border-slate-200 bg-white px-3 text-sm font-medium text-slate-800 outline-none"
+                              />
+                            </label>
+                            <button
+                              type="submit"
+                              className="inline-flex h-10 items-center justify-center rounded-[5px] bg-emerald-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
+                            >
+                              Approve and Set Price
+                            </button>
+                          </form>
+
+                          <form action={updateQuotationStatusAction}>
+                            <input type="hidden" name="quotationId" value={quotation.id} />
+                            <input type="hidden" name="status" value="REJECTED" />
+                            <button
+                              type="submit"
+                              className="inline-flex h-10 items-center justify-center rounded-[5px] border border-rose-200 bg-white px-4 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-50"
+                            >
+                              Reject
+                            </button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </section>
+
           <section className="app-card p-8">
             <div className="mb-5 flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-[5px] border border-emerald-100 bg-emerald-50">
@@ -267,7 +388,7 @@ export default async function AdminDashboard() {
               </div>
               <div className="app-card-subtle p-5 sm:col-span-2">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Maximum Country
+                  Top Destination Country
                 </p>
                 <p className="mt-3 text-xl font-semibold text-slate-900">
                   {topCountry ? `${topCountry.name} (${topCountry.code})` : "No shipment country data"}

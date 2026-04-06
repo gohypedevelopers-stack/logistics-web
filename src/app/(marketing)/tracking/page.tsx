@@ -108,7 +108,7 @@ export default async function TrackingPage({ searchParams }: { searchParams: Pro
                     <div className="text-right">
                       <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Estimated Arrival</p>
                       <p className="text-[22px] font-black text-teal-600 tracking-tight">
-                        {shipment.expectedArrivalDate ? new Date(shipment.expectedArrivalDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : "Pending Review"}
+                        {shipment.expectedArrivalDate ? new Date(shipment.expectedArrivalDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : "Pending review"}
                       </p>
                       <p className="text-xs font-medium text-slate-500 mt-0.5">Updated in real-time</p>
                     </div>

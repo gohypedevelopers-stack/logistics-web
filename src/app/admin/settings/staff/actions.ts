@@ -14,7 +14,7 @@ export async function createStaffAction(formData: FormData) {
   const position = formData.get("position") as string;
 
   if (!email || !password || !name || !role) {
-    throw new Error("Missing required fields");
+    throw new Error("Please complete all required fields.");
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -39,7 +39,7 @@ export async function createStaffAction(formData: FormData) {
     return { success: true };
   } catch (error) {
     console.error("Create staff error:", error);
-    return { success: false, error: "Email already exists or internal error." };
+    return { success: false, error: "This email address is already in use, or an internal error occurred." };
   }
 }
 
@@ -52,6 +52,6 @@ export async function deleteStaffAction(id: string) {
     return { success: true };
   } catch (error) {
     console.error("Delete staff error:", error);
-    return { success: false, error: "Could not delete user." };
+    return { success: false, error: "Unable to delete this user." };
   }
 }

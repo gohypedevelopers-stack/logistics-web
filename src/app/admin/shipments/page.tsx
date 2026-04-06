@@ -6,6 +6,12 @@ import { RefreshHandler } from "@/components/RefreshHandler";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import type { Prisma } from "@prisma/client";
 import { AdminShipmentsFilters } from "./AdminShipmentsFilters";
+import {
+  CLOSED_STATUS_QUERY_VALUES,
+  DELIVERED_STATUS_QUERY_VALUES,
+  TRANSIT_STATUS_QUERY_VALUES,
+  WAITING_STATUS_QUERY_VALUES,
+} from "@/lib/shipment-utils";
 
 export const dynamic = "force-dynamic";
 
@@ -15,34 +21,42 @@ function buildStatusWhere(status: string): Prisma.ShipmentWhereInput | undefined
   if (!status || status === "all") return undefined;
 
   if (status === "waiting") {
-    return { status: { in: ["CREATED", "WAITING", "SUBMITTED", "ON_HOLD"] } as any };
+    return { status: { in: [...WAITING_STATUS_QUERY_VALUES] } as any };
   }
 
   if (status === "in_transit") {
     return {
       status: {
-        in: [
-          "ACCEPTED",
-          "PICKUP_SCHEDULED",
-          "PICKED_UP",
-          "AT_WAREHOUSE",
-          "PROCESSING",
-          "IN_TRANSIT",
-          "OUT_FOR_DELIVERY",
-        ],
+        in: [...TRANSIT_STATUS_QUERY_VALUES],
       } as any,
     };
   }
 
   if (status === "delivered") {
-    return { status: { in: ["DELIVERED"] } as any };
+    return { status: { in: [...DELIVERED_STATUS_QUERY_VALUES] } as any };
   }
 
   if (status === "closed") {
-    return { status: { in: ["DELIVERED", "CANCELLED", "REJECTED"] } as any };
+    return { status: { in: [...CLOSED_STATUS_QUERY_VALUES] } as any };
+  }
+
+  if (status === "on_hold") {
+    return { status: { in: [...WAITING_STATUS_QUERY_VALUES] } as any };
   }
 
   return { status: status.toUpperCase() as any };
+}
+
+function buildCountryWhere(countryId: string): Prisma.ShipmentWhereInput | undefined {
+  if (!countryId) return undefined;
+
+  return {
+    OR: [
+      { countryId },
+      { receiverAddress: { countryId } },
+      { route: { destinationCountryId: countryId } },
+    ],
+  };
 }
 
 export default async function AdminShipments({
@@ -76,7 +90,7 @@ export default async function AdminShipments({
 
   const where: Prisma.ShipmentWhereInput = {
     ...(buildStatusWhere(status) ?? {}),
-    ...(country ? { countryId: country } : {}),
+    ...(buildCountryWhere(country) ?? {}),
     ...(from || to
       ? {
           createdAt: {
@@ -94,6 +108,10 @@ export default async function AdminShipments({
             { receiverName: { contains: query, mode: "insensitive" } },
             { country: { name: { contains: query, mode: "insensitive" } } },
             { country: { code: { contains: query, mode: "insensitive" } } },
+            { receiverAddress: { country: { name: { contains: query, mode: "insensitive" } } } },
+            { receiverAddress: { country: { code: { contains: query, mode: "insensitive" } } } },
+            { route: { destinationCountry: { name: { contains: query, mode: "insensitive" } } } },
+            { route: { destinationCountry: { code: { contains: query, mode: "insensitive" } } } },
             { customer: { companyName: { contains: query, mode: "insensitive" } } },
             { customer: { user: { name: { contains: query, mode: "insensitive" } } } },
             { customer: { user: { email: { contains: query, mode: "insensitive" } } } },
@@ -121,6 +139,16 @@ export default async function AdminShipments({
             },
           },
           country: true,
+          route: {
+            include: {
+              destinationCountry: true,
+            },
+          },
+          receiverAddress: {
+            include: {
+              country: true,
+            },
+          },
         },
         orderBy: { createdAt: "desc" },
         take: PAGE_SIZE,
@@ -128,27 +156,19 @@ export default async function AdminShipments({
       }),
       prisma.shipment.count({
         where: {
-          status: { in: ["CREATED", "WAITING", "SUBMITTED", "ON_HOLD"] } as any,
+          status: { in: [...WAITING_STATUS_QUERY_VALUES] } as any,
         },
       }),
       prisma.shipment.count({
         where: {
           status: {
-            in: [
-              "ACCEPTED",
-              "PICKUP_SCHEDULED",
-              "PICKED_UP",
-              "AT_WAREHOUSE",
-              "PROCESSING",
-              "IN_TRANSIT",
-              "OUT_FOR_DELIVERY",
-            ],
+            in: [...TRANSIT_STATUS_QUERY_VALUES],
           } as any,
         },
       }),
       prisma.shipment.count({
         where: {
-          status: "DELIVERED",
+          status: DELIVERED_STATUS_QUERY_VALUES[0],
         },
       }),
     ]);
@@ -258,7 +278,10 @@ export default async function AdminShipments({
                       </div>
                     </td>
                     <td className="px-6 py-5 text-sm text-slate-700">
-                      {shipment.country?.name || "Not assigned"}
+                      {shipment.country?.name ||
+                        shipment.receiverAddress?.country?.name ||
+                        shipment.route?.destinationCountry?.name ||
+                        "Not assigned"}
                     </td>
                     <td className="px-6 py-5 text-sm text-slate-700">
                       {format(new Date(shipment.createdAt), "dd MMM yyyy")}

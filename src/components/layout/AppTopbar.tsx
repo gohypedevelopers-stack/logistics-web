@@ -6,9 +6,8 @@ import { usePathname } from "next/navigation";
 function getPageLabel(pathname: string, variant: "admin" | "customer") {
   const map: Array<[string, string]> = [
     [`/${variant}/dashboard`, "Overview"],
-    [`/${variant}/schedule`, "Schedule Shipment"],
     [`/${variant}/shipments/new`, variant === "admin" ? "Create Shipment" : "Create Shipment"],
-    [`/${variant}/shipments`, "Shipments"],
+    [`/${variant}/shipments`, variant === "customer" ? "Total Orders" : "Shipments"],
     [`/${variant}/tracking`, "Tracking"],
     [`/${variant}/track`, "Tracking"],
     [`/${variant}/routes`, variant === "admin" ? "Routes" : "Routes"],

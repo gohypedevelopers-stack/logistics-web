@@ -54,6 +54,18 @@ export const TRANSIT_STATUSES = new Set([
 ]);
 export const COMPLETED_STATUSES = new Set(["DELIVERED"]);
 export const CLOSED_STATUSES = new Set(["DELIVERED", "CANCELLED", "REJECTED"]);
+export const WAITING_STATUS_QUERY_VALUES = ["CREATED", "WAITING"] as const;
+export const TRANSIT_STATUS_QUERY_VALUES = [
+  "ACCEPTED",
+  "PICKUP_SCHEDULED",
+  "PICKED_UP",
+  "AT_WAREHOUSE",
+  "PROCESSING",
+  "IN_TRANSIT",
+  "OUT_FOR_DELIVERY",
+] as const;
+export const DELIVERED_STATUS_QUERY_VALUES = ["DELIVERED"] as const;
+export const CLOSED_STATUS_QUERY_VALUES = ["DELIVERED", "CANCELLED", "REJECTED"] as const;
 
 const STATUS_META: Record<
   string,

@@ -112,13 +112,13 @@ export async function importAddressesCsvAction(formData: FormData) {
   const csvFile = formData.get("csvFile");
 
   if (!(csvFile instanceof File) || csvFile.size === 0) {
-    redirect("/admin/addresses?notice=Upload%20a%20CSV%20file%20exported%20from%20Excel.");
+    redirect("/admin/addresses?notice=Please%20upload%20a%20CSV%20file%20exported%20from%20Excel.");
   }
 
   const records = parseCsvRecords(await csvFile.text());
 
   if (records.length === 0) {
-    redirect("/admin/addresses?notice=No%20rows%20found%20in%20the%20uploaded%20file.");
+    redirect("/admin/addresses?notice=No%20rows%20were%20found%20in%20the%20uploaded%20file.");
   }
 
   const emails = [...new Set(records.map((record) => (record.customer_email || record.email || "").trim().toLowerCase()).filter(Boolean))];
@@ -223,5 +223,5 @@ export async function importAddressesCsvAction(formData: FormData) {
   }
 
   revalidateAddressPages();
-  redirect(`/admin/addresses?notice=${encodeURIComponent(`Imported ${imported} addresses${skipped ? `, skipped ${skipped}` : ""}.`)}`);
+  redirect(`/admin/addresses?notice=${encodeURIComponent(`Imported ${imported} addresses${skipped ? `. Skipped ${skipped} rows` : ""}.`)}`);
 }

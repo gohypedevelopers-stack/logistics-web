@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, CalendarPlus, MapPin, PlusSquare, Contact, Calculator, Rocket } from "lucide-react";
+import { LayoutDashboard, MapPin, PackageSearch, PlusSquare, Contact, Calculator, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function CustomerSidebar({ userName }: { userName?: string | null }) {
@@ -23,11 +23,11 @@ export function CustomerSidebar({ userName }: { userName?: string | null }) {
 
   const navItems = [
     { name: "Overview", href: "/customer/dashboard", icon: LayoutDashboard },
+    { name: "Total Orders", href: "/customer/shipments", icon: PackageSearch },
     { name: "Create Shipment", href: "/customer/shipments/new", icon: PlusSquare },
-    { name: "Schedule Shipment", href: "/customer/schedule", icon: CalendarPlus },
-    { name: "Address", href: "/customer/addresses", icon: Contact },
+    { name: "Addresses", href: "/customer/addresses", icon: Contact },
     { name: "Rates", href: "/customer/rates", icon: Calculator },
-    { name: "Track", href: "/customer/track", icon: MapPin },
+    { name: "Tracking", href: "/customer/track", icon: MapPin },
   ];
 
   return (

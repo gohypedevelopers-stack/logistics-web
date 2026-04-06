@@ -3,7 +3,8 @@
 import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft, Plus, Search } from "lucide-react";
+import { format } from "date-fns";
+import { ChevronLeft, Eye, Plus, Search } from "lucide-react";
 import { CUSTOMER_STATUS_TABS, matchCustomerShipmentTab } from "@/lib/shipment-utils";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 
@@ -39,9 +40,9 @@ function ShipmentsContent({ shipments }: { shipments: any[] }) {
               <ChevronLeft className="h-4 w-4" />
             </Link>
             <div>
-              <h1 className="text-3xl font-semibold tracking-tight text-slate-900">My Shipments</h1>
+              <h1 className="text-3xl font-semibold tracking-tight text-slate-900">Total Orders</h1>
               <p className="mt-1 text-sm text-slate-500">
-                View ongoing and completed shipments from one list.
+                View all shipment orders in one list.
               </p>
             </div>
           </div>
@@ -79,22 +80,22 @@ function ShipmentsContent({ shipments }: { shipments: any[] }) {
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search tracking ID, AWB, reference, destination"
+                placeholder="Search AWB, country, reference, tracking ID"
                 className="app-input w-full pl-11 pr-4 text-sm"
               />
             </div>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="app-table w-full min-w-[980px]">
+            <table className="app-table w-full min-w-[1020px]">
               <thead className="border-b border-slate-200/70">
                 <tr className="text-left text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  <th className="px-6 py-4">Tracking</th>
+                  <th className="px-6 py-4">AWB / Tracking</th>
                   <th className="px-6 py-4">Reference</th>
-                  <th className="px-6 py-4">Destination</th>
-                  <th className="px-6 py-4">Package</th>
+                  <th className="px-6 py-4">Country</th>
+                  <th className="px-6 py-4">Date</th>
                   <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Details</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -108,23 +109,17 @@ function ShipmentsContent({ shipments }: { shipments: any[] }) {
                   filteredShipments.map((shipment) => (
                     <tr key={shipment.id}>
                       <td className="px-6 py-5">
-                        <div className="font-semibold text-slate-900">{shipment.trackingId}</div>
-                        <div className="mt-1 text-sm text-slate-500">{shipment.awb || "AWB pending"}</div>
+                        <div className="font-semibold text-slate-900">{shipment.awb || "Pending AWB"}</div>
+                        <div className="mt-1 text-sm text-slate-500">{shipment.trackingId}</div>
                       </td>
                       <td className="px-6 py-5 text-sm text-slate-700">
                         {shipment.referenceNo || "Not assigned"}
                       </td>
-                      <td className="px-6 py-5">
-                        <div className="font-medium text-slate-900">{shipment.receiverAddress?.city || "-"}</div>
-                        <div className="mt-1 text-sm text-slate-500">
-                          {shipment.country?.name || shipment.receiverAddress?.country?.name || "Country pending"}
-                        </div>
+                      <td className="px-6 py-5 text-sm text-slate-700">
+                        {shipment.country?.name || shipment.receiverAddress?.country?.name || "Not assigned"}
                       </td>
-                      <td className="px-6 py-5">
-                        <div className="font-medium text-slate-700">{shipment.content || "No description"}</div>
-                        <div className="mt-1 text-sm text-slate-500">
-                          {shipment.pcs ?? "-"} pcs · {shipment.weight ?? "-"} kg
-                        </div>
+                      <td className="px-6 py-5 text-sm text-slate-700">
+                        {format(new Date(shipment.createdAt), "dd MMM yyyy")}
                       </td>
                       <td className="px-6 py-5">
                         <StatusBadge status={shipment.status} />
@@ -132,8 +127,9 @@ function ShipmentsContent({ shipments }: { shipments: any[] }) {
                       <td className="px-6 py-5 text-right">
                         <Link
                           href={`/customer/shipments/${shipment.id}`}
-                          className="app-button-secondary inline-flex items-center px-4 py-2 text-xs font-semibold"
+                          className="app-button-secondary inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold"
                         >
+                          <Eye className="h-4 w-4" />
                           View
                         </Link>
                       </td>

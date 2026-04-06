@@ -333,7 +333,7 @@ export async function importCountriesCsvAction(formData: FormData) {
   const redirectTo = getRedirectTarget(formData, "/admin/routes");
 
   if (!(csvFile instanceof File) || csvFile.size === 0) {
-    redirect(`${redirectTo}?notice=Upload%20a%20country%20CSV%20file.`);
+    redirect(`${redirectTo}?notice=Please%20upload%20a%20country%20CSV%20file.`);
   }
 
   const records = parseCsvRecords(await csvFile.text());
@@ -368,7 +368,11 @@ export async function importCountriesCsvAction(formData: FormData) {
   }
 
   revalidateLogisticsPages();
-  redirect(`${redirectTo}?notice=${encodeURIComponent(`Imported ${imported} countries${skipped ? `, skipped ${skipped}` : ""}.`)}`);
+  redirect(
+    `${redirectTo}?notice=${encodeURIComponent(
+      `Imported ${imported} countries.${skipped ? ` Skipped ${skipped} rows.` : ""}`,
+    )}`,
+  );
 }
 
 export async function importRoutesCsvAction(formData: FormData) {
@@ -376,7 +380,7 @@ export async function importRoutesCsvAction(formData: FormData) {
   const redirectTo = getRedirectTarget(formData, "/admin/routes");
 
   if (!(csvFile instanceof File) || csvFile.size === 0) {
-    redirect(`${redirectTo}?notice=Upload%20a%20route%20CSV%20file.`);
+    redirect(`${redirectTo}?notice=Please%20upload%20a%20route%20CSV%20file.`);
   }
 
   const records = parseCsvRecords(await csvFile.text());
@@ -411,7 +415,11 @@ export async function importRoutesCsvAction(formData: FormData) {
   }
 
   revalidateLogisticsPages();
-  redirect(`${redirectTo}?notice=${encodeURIComponent(`Imported ${imported} routes${skipped ? `, skipped ${skipped}` : ""}.`)}`);
+  redirect(
+    `${redirectTo}?notice=${encodeURIComponent(
+      `Imported ${imported} routes.${skipped ? ` Skipped ${skipped} rows.` : ""}`,
+    )}`,
+  );
 }
 
 export async function importWarehousesCsvAction(formData: FormData) {
@@ -419,7 +427,7 @@ export async function importWarehousesCsvAction(formData: FormData) {
   const redirectTo = getRedirectTarget(formData, "/admin/routes");
 
   if (!(csvFile instanceof File) || csvFile.size === 0) {
-    redirect(`${redirectTo}?notice=Upload%20a%20warehouse%20CSV%20file.`);
+    redirect(`${redirectTo}?notice=Please%20upload%20a%20warehouse%20CSV%20file.`);
   }
 
   const records = parseCsvRecords(await csvFile.text());
@@ -473,7 +481,11 @@ export async function importWarehousesCsvAction(formData: FormData) {
   }
 
   revalidateLogisticsPages();
-  redirect(`${redirectTo}?notice=${encodeURIComponent(`Imported ${imported} warehouses${skipped ? `, skipped ${skipped}` : ""}.`)}`);
+  redirect(
+    `${redirectTo}?notice=${encodeURIComponent(
+      `Imported ${imported} warehouses.${skipped ? ` Skipped ${skipped} rows.` : ""}`,
+    )}`,
+  );
 }
 
 export async function importRateCardsCsvAction(formData: FormData) {
@@ -481,7 +493,7 @@ export async function importRateCardsCsvAction(formData: FormData) {
   const redirectTo = getRedirectTarget(formData, "/admin/rates");
 
   if (!(csvFile instanceof File) || csvFile.size === 0) {
-    redirect(`${redirectTo}?notice=Upload%20a%20rate%20card%20CSV%20file.`);
+    redirect(`${redirectTo}?notice=Please%20upload%20a%20rate%20card%20CSV%20file.`);
   }
 
   const records = parseCsvRecords(await csvFile.text());
@@ -548,5 +560,9 @@ export async function importRateCardsCsvAction(formData: FormData) {
   }
 
   revalidateLogisticsPages();
-  redirect(`${redirectTo}?notice=${encodeURIComponent(`Imported ${imported} rate cards${skipped ? `, skipped ${skipped}` : ""}.`)}`);
+  redirect(
+    `${redirectTo}?notice=${encodeURIComponent(
+      `Imported ${imported} rate cards.${skipped ? ` Skipped ${skipped} rows.` : ""}`,
+    )}`,
+  );
 }
