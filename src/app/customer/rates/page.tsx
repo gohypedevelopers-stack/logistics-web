@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+﻿import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { formatDistanceToNow } from "date-fns";
@@ -80,7 +80,7 @@ export default async function RatesPage() {
   return (
     <div className="mx-auto min-h-full max-w-[1500px] bg-[#f8f9fa] p-8 lg:p-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-black tracking-tight text-[#1E1B4B]">Quotation Requests</h1>
+        <h1 className="text-3xl font-black tracking-tight text-[#1e4b7a]">Quotation Requests</h1>
         <p className="mt-2 text-sm font-medium text-slate-500">
           Submit a quotation request using live routes and current admin-managed rate cards.
         </p>
@@ -88,7 +88,7 @@ export default async function RatesPage() {
 
       <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
         <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-          <h2 className="mb-6 text-xl font-bold text-[#1E1B4B]">New Quotation Request</h2>
+          <h2 className="mb-6 text-xl font-bold text-[#1e4b7a]">New Quotation Request</h2>
 
           <form action={requestQuoteAction} className="grid gap-4 md:grid-cols-2">
             <select
@@ -156,7 +156,7 @@ export default async function RatesPage() {
 
             <button
               type="submit"
-              className="md:col-span-2 h-12 rounded-xl bg-[#1E1B4B] text-sm font-bold text-white transition-colors hover:bg-slate-900"
+              className="md:col-span-2 h-12 rounded-xl bg-[#1e4b7a] text-sm font-bold text-white transition-colors hover:bg-slate-900"
             >
               Submit Quotation Request
             </button>
@@ -165,7 +165,7 @@ export default async function RatesPage() {
 
         <section className="space-y-8">
           <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <h2 className="mb-6 text-xl font-bold text-[#1E1B4B]">Quotation Requests</h2>
+            <h2 className="mb-6 text-xl font-bold text-[#1e4b7a]">Quotation Requests</h2>
 
             <div className="space-y-4">
               {quotationRequests.length === 0 ? (
@@ -222,7 +222,7 @@ export default async function RatesPage() {
           </div>
 
           <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <h2 className="mb-6 text-xl font-bold text-[#1E1B4B]">Available Routes and Rates</h2>
+            <h2 className="mb-6 text-xl font-bold text-[#1e4b7a]">Available Routes and Rates</h2>
 
             <div className="space-y-3">
               {routes.map((route) => (
@@ -266,7 +266,7 @@ export default async function RatesPage() {
           </div>
 
           <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <h2 className="mb-6 text-xl font-bold text-[#1E1B4B]">Warehouse Charges</h2>
+            <h2 className="mb-6 text-xl font-bold text-[#1e4b7a]">Warehouse Charges</h2>
 
             <div className="space-y-3">
               {warehouses.length === 0 ? (
@@ -311,3 +311,4 @@ export default async function RatesPage() {
     </div>
   );
 }
+

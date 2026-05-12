@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+﻿import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
@@ -96,7 +96,7 @@ export default async function AdminTracking({
         <div className="flex items-center justify-between mb-4">
           <div>
             <div className="flex items-center gap-2 text-xl font-bold text-[#1E293B]">
-              <Link href="/admin/dashboard" className="w-6 h-6 rounded-full bg-[#1E1B4B] text-white flex items-center justify-center hover:bg-slate-900 transition-colors">
+              <Link href="/admin/dashboard" className="w-6 h-6 rounded-full bg-[#1e4b7a] text-white flex items-center justify-center hover:bg-slate-900 transition-colors">
                 <ChevronLeft className="w-4 h-4" />
               </Link>
               Shipment Tracking
@@ -125,7 +125,7 @@ export default async function AdminTracking({
                 placeholder="Enter Tracking ID or AWB"
                 className="w-full h-16 pl-12 pr-40 bg-slate-50 border border-slate-100 rounded-2xl text-lg font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-400/5 focus:border-blue-300 transition-all"
               />
-              <button type="submit" className="absolute right-2 top-2 h-12 px-8 bg-[#1E1B4B] text-white rounded-xl text-xs font-bold hover:bg-slate-900 transition-all">
+              <button type="submit" className="absolute right-2 top-2 h-12 px-8 bg-[#1e4b7a] text-white rounded-xl text-xs font-bold hover:bg-slate-900 transition-all">
                 Track Now
               </button>
             </form>
@@ -171,7 +171,7 @@ export default async function AdminTracking({
                   <div className="absolute bottom-2 left-[15px] top-2 w-px bg-slate-200" />
                   {timeline.map((entry) => (
                     <div key={entry.id} className="relative">
-                      <div className="absolute left-[-30px] top-6 h-3.5 w-3.5 rounded-full border-2 border-white bg-indigo-600 shadow-sm" />
+                      <div className="absolute left-[-30px] top-6 h-3.5 w-3.5 rounded-full border-2 border-white bg-orange-600 shadow-sm" />
                       <div className="rounded-2xl border border-slate-200 bg-slate-50/90 p-5">
                         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                           <div>
@@ -251,7 +251,7 @@ export default async function AdminTracking({
 
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-[#1E1B4B] group-hover:text-white transition-all">
+                    <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-[#1e4b7a] group-hover:text-white transition-all">
                       <Activity className="w-4 h-4" />
                     </div>
                     <div className="flex-1 truncate">
@@ -260,7 +260,7 @@ export default async function AdminTracking({
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-[#1E1B4B] group-hover:text-white transition-all">
+                    <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-[#1e4b7a] group-hover:text-white transition-all">
                       <MapPin className="w-4 h-4" />
                     </div>
                     <div className="flex-1 truncate">
@@ -286,3 +286,4 @@ export default async function AdminTracking({
     </div>
   );
 }
+

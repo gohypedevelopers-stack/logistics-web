@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+﻿import { Role } from "@prisma/client";
 import { 
   Users, 
   ShieldCheck, 
@@ -36,7 +36,7 @@ export default async function StaffManagementPage() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <div className="flex items-center gap-2 text-xl font-bold text-[#1E293B]">
-              <Link href="/admin/settings" className="w-6 h-6 rounded-full bg-[#1E1B4B] text-white flex items-center justify-center hover:bg-slate-900 transition-colors">
+              <Link href="/admin/settings" className="w-6 h-6 rounded-full bg-[#1e4b7a] text-white flex items-center justify-center hover:bg-slate-900 transition-colors">
                 <ChevronLeft className="w-4 h-4" />
               </Link>
               Staff & User Access
@@ -48,7 +48,7 @@ export default async function StaffManagementPage() {
           
           <Link 
             href="/admin/settings/staff/new" 
-            className="flex items-center gap-2 bg-[#1E1B4B] text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm hover:shadow-md hover:bg-blue-900 transition-all font-sans"
+            className="flex items-center gap-2 bg-[#1e4b7a] text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm hover:shadow-md hover:bg-blue-900 transition-all font-sans"
           >
             <Plus className="w-4 h-4" />
             Provision New Staff
@@ -135,3 +135,4 @@ export default async function StaffManagementPage() {
     </div>
   );
 }
+

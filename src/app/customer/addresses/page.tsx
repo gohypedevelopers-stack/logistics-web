@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+﻿import prisma from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { ContactRound, MapPin, Star, UserRound, Warehouse } from "lucide-react";
@@ -73,7 +73,7 @@ export default async function AddressesPage() {
   return (
     <div className="mx-auto min-h-full max-w-[1500px] bg-[#f8f9fa] p-8 lg:p-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-black tracking-tight text-[#1E1B4B]">Address Book</h1>
+        <h1 className="text-3xl font-black tracking-tight text-[#1e4b7a]">Address Book</h1>
         <p className="mt-2 text-sm font-medium text-slate-500">
           Saved pickup and office addresses added for your shipment requests.
         </p>
@@ -82,7 +82,7 @@ export default async function AddressesPage() {
       <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold text-[#1E1B4B]">Saved Addresses</h2>
+            <h2 className="text-xl font-bold text-[#1e4b7a]">Saved Addresses</h2>
             <p className="text-sm font-medium text-slate-500">
               These addresses can be used across create and schedule shipment flows.
             </p>
@@ -148,12 +148,12 @@ export default async function AddressesPage() {
         <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
           <div className="mb-6 flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-bold text-[#1E1B4B]">Shipment Addresses</h2>
+              <h2 className="text-xl font-bold text-[#1e4b7a]">Shipment Addresses</h2>
               <p className="text-sm font-medium text-slate-500">
                 Pickup and destination addresses used in your shipment records.
               </p>
             </div>
-            <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-indigo-700">
+            <span className="rounded-full bg-orange-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-orange-700">
               {shipmentAddresses.length} linked
             </span>
           </div>
@@ -201,7 +201,7 @@ export default async function AddressesPage() {
         <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
           <div className="mb-6 flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-bold text-[#1E1B4B]">Available Warehouses</h2>
+              <h2 className="text-xl font-bold text-[#1e4b7a]">Available Warehouses</h2>
               <p className="text-sm font-medium text-slate-500">
                 Admin-managed warehouse drop-off locations available for your shipments.
               </p>
@@ -272,3 +272,4 @@ export default async function AddressesPage() {
     </div>
   );
 }
+

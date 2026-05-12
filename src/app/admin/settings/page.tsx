@@ -1,4 +1,4 @@
-import { 
+﻿import { 
   Settings, 
   MapPin, 
   Bell, 
@@ -41,7 +41,7 @@ export default function AdminSettings() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <div className="flex items-center gap-2 text-xl font-bold text-[#1E293B]">
-              <Link href="/admin/dashboard" className="w-6 h-6 rounded-full bg-[#1E1B4B] text-white flex items-center justify-center hover:bg-slate-900 transition-colors">
+              <Link href="/admin/dashboard" className="w-6 h-6 rounded-full bg-[#1e4b7a] text-white flex items-center justify-center hover:bg-slate-900 transition-colors">
                 <ChevronLeft className="w-4 h-4" />
               </Link>
               System Settings
@@ -61,7 +61,7 @@ export default function AdminSettings() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                  {group.items.map((item) => (
                    <Link key={item.name} href="#" className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm hover:border-blue-300 hover:shadow-md transition-all group flex items-start gap-6">
-                      <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-[#1E1B4B] group-hover:text-white transition-all">
+                      <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-[#1e4b7a] group-hover:text-white transition-all">
                          <item.icon className="w-6 h-6" />
                       </div>
                       <div className="flex-1">
@@ -83,3 +83,4 @@ export default function AdminSettings() {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+﻿import prisma from "@/lib/prisma";
 import Link from "next/link";
 import {
   ChevronLeft,
@@ -56,7 +56,7 @@ export default async function AdminAddressesPage({
         <div className="flex items-center gap-2 text-xl font-bold text-[#1E293B]">
           <Link
             href="/admin/dashboard"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1E1B4B] text-white transition-colors hover:bg-slate-900"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1e4b7a] text-white transition-colors hover:bg-slate-900"
           >
             <ChevronLeft className="h-4 w-4" />
           </Link>
@@ -81,7 +81,7 @@ export default async function AdminAddressesPage({
                 <ContactRound className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#1E1B4B]">Address Entry</h2>
+                <h2 className="text-xl font-bold text-[#1e4b7a]">Address Entry</h2>
                 <p className="text-sm font-medium text-slate-500">
                   Save pickup, office, or warehouse-linked customer addresses from one place.
                 </p>
@@ -198,7 +198,7 @@ export default async function AdminAddressesPage({
               <div className="md:col-span-2 flex flex-wrap gap-3">
                 <button
                   type="submit"
-                  className="h-12 rounded-xl bg-[#1E1B4B] px-6 text-sm font-bold text-white transition-colors hover:bg-slate-900"
+                  className="h-12 rounded-xl bg-[#1e4b7a] px-6 text-sm font-bold text-white transition-colors hover:bg-slate-900"
                 >
                   {editAddress ? "Update Address" : "Save Address"}
                 </button>
@@ -220,7 +220,7 @@ export default async function AdminAddressesPage({
                 <FileSpreadsheet className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#1E1B4B]">Excel / CSV Upload</h2>
+                <h2 className="text-xl font-bold text-[#1e4b7a]">Excel / CSV Upload</h2>
                 <p className="text-sm font-medium text-slate-500">
                   Export from Excel as CSV, then upload using the template columns below.
                 </p>
@@ -232,7 +232,7 @@ export default async function AdminAddressesPage({
                 type="file"
                 name="csvFile"
                 accept=".csv,text/csv"
-                className="block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-[#1E1B4B] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+                className="block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-[#1e4b7a] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
                 required
               />
               <button
@@ -255,7 +255,7 @@ export default async function AdminAddressesPage({
         <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
           <div className="mb-6 flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-bold text-[#1E1B4B]">Saved Customer Addresses</h2>
+              <h2 className="text-xl font-bold text-[#1e4b7a]">Saved Customer Addresses</h2>
               <p className="text-sm font-medium text-slate-500">
                 Live address book used by customer accounts and shipment pickup flows.
               </p>
@@ -280,7 +280,7 @@ export default async function AdminAddressesPage({
                     <div className="space-y-3">
                       <div className="flex flex-wrap items-center gap-3">
                         <p className="font-bold text-slate-900">
-                          {address.label || "Address"} {address.isDefault ? "· Default" : ""}
+                          {address.label || "Address"} {address.isDefault ? "Â· Default" : ""}
                         </p>
                         <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
                           {address.country.code}
@@ -297,7 +297,7 @@ export default async function AdminAddressesPage({
                         <p className="flex items-center gap-2">
                           <ContactRound className="h-4 w-4 text-slate-400" />
                           {address.name}
-                          {address.phone ? ` · ${address.phone}` : ""}
+                          {address.phone ? ` Â· ${address.phone}` : ""}
                         </p>
                         <p className="flex items-start gap-2 sm:col-span-2">
                           <MapPin className="mt-0.5 h-4 w-4 text-slate-400" />
@@ -342,3 +342,4 @@ export default async function AdminAddressesPage({
     </div>
   );
 }
+

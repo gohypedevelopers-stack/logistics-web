@@ -1,4 +1,4 @@
-import * as React from "react"
+﻿import * as React from "react"
 import { cn } from "@/lib/utils"
 
 export interface ButtonProps
@@ -15,7 +15,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(
           "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
           {
-            "bg-primary text-white hover:bg-[#0B0E27] shadow-lg": variant === "default",
+            "bg-primary text-white hover:bg-[#173e67] shadow-lg": variant === "default",
             "bg-secondary text-primary hover:bg-secondary/80 shadow-md": variant === "secondary",
             "border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 shadow-sm": variant === "outline",
             "hover:bg-slate-50 hover:text-slate-900": variant === "ghost",
@@ -35,3 +35,4 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button"
 
 export { Button }
+

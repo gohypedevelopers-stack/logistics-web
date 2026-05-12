@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+﻿import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { randomUUID } from "crypto";
 
@@ -135,7 +135,7 @@ export function getQuotationStatusMeta(status: string) {
     case "SENT":
       return {
         label: "Under Review",
-        tone: "border-indigo-200 bg-indigo-50 text-indigo-700",
+        tone: "border-orange-200 bg-orange-50 text-orange-700",
         summary: "Your quotation request is currently under review.",
       };
     case "PENDING":
@@ -208,3 +208,4 @@ export async function getActiveQuotationRequests(take = 6) {
     LIMIT ${take}
   `);
 }
+

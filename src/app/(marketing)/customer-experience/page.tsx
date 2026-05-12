@@ -1,4 +1,4 @@
-import { Package, Zap, Globe2, BarChart2, Truck, MessageSquare, Check, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+﻿import { Package, Zap, Globe2, BarChart2, Truck, MessageSquare, Check, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 const flowSteps = [
@@ -17,7 +17,7 @@ const intelFeatures = [
 
 const testimonials = [
   {
-    quote: "We moved medical prototypes from Germany to Italy with complete confidence. Global Navigator's reliability insights gave our surgical team the assurance it needed.",
+    quote: "We moved medical prototypes from Germany to Italy with complete confidence. ship2sell's reliability insights gave our surgical team the assurance it needed.",
     name: "Arun Mehta",
     role: "HEAD OF OPS, BIOTECH GLOBAL",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&fit=crop",
@@ -34,24 +34,24 @@ export default function CustomerExperiencePage() {
   return (
     <div className="bg-white min-h-screen font-sans">
 
-      {/* ── HERO ──────────────────────────────────── */}
+      {/* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="pt-32 pb-20 bg-white">
         <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-14 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-[10px] font-bold tracking-widest uppercase mb-8">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-orange-700 text-[10px] font-bold tracking-widest uppercase mb-8">
                 Customer Experience
               </div>
-              <h1 className="text-5xl lg:text-6xl font-black text-[#1E1B4B] tracking-tight leading-[1.1] mb-6">
+              <h1 className="text-5xl lg:text-6xl font-black text-[#1e4b7a] tracking-tight leading-[1.1] mb-6">
                 Beyond<br />Logistics:<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#818CF8] to-teal-400">An Exceptional<br />Journey</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#fe6801] to-orange-400">An Exceptional<br />Journey</span>
               </h1>
               <p className="text-slate-500 font-medium text-base leading-relaxed mb-10 max-w-md">
-                Global Navigator delivers high-value cargo with clarity, control, and consistent communication from origin to destination.
+                ship2sell delivers high-value cargo with clarity, control, and consistent communication from origin to destination.
               </p>
               <div className="flex gap-4">
                 <Link href="/register">
-                  <button className="h-11 px-7 bg-[#1E1B4B] text-white font-bold text-sm rounded-xl hover:bg-[#2A377B] transition-colors shadow-md flex items-center gap-2">
+                  <button className="h-11 px-7 bg-[#1e4b7a] text-white font-bold text-sm rounded-xl hover:bg-[#1e4b7a] transition-colors shadow-md flex items-center gap-2">
                     Track a Journey <ArrowRight className="w-4 h-4" />
                   </button>
                 </Link>
@@ -74,7 +74,7 @@ export default function CustomerExperiencePage() {
                   <Check className="w-4 h-4 text-green-600" />
                 </div>
                 <div>
-                  <p className="font-black text-[#1E1B4B] text-[12px]">Customs Verified</p>
+                  <p className="font-black text-[#1e4b7a] text-[12px]">Customs Verified</p>
                   <p className="text-[10px] text-slate-500 font-medium">Indira Gandhi, August 24</p>
                 </div>
               </div>
@@ -83,32 +83,32 @@ export default function CustomerExperiencePage() {
         </div>
       </section>
 
-      {/* ── ORIGIN TO DESTINATION FLOW ────────────── */}
+      {/* â”€â”€ ORIGIN TO DESTINATION FLOW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="py-20 bg-[#FAFAFD]">
         <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
           <div className="text-center mb-14">
-            <h2 className="text-[28px] font-black text-[#1E1B4B] tracking-tight mb-3">The Origin-to-Destination Flow</h2>
+            <h2 className="text-[28px] font-black text-[#1e4b7a] tracking-tight mb-3">The Origin-to-Destination Flow</h2>
             <p className="text-slate-500 font-medium text-sm">From a single warehouse to a global doorstep, refined at every step of the journey.</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {flowSteps.map((step, i) => (
-              <div key={i} className={`rounded-2xl p-7 border transition-all hover:shadow-md ${i === 1 ? 'bg-[#1E1B4B] border-[#2A377B] text-white' : 'bg-white border-slate-100'}`}>
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-5 ${i === 1 ? 'bg-white/15' : 'bg-indigo-50'}`}>
-                  {i === 0 && <Package className="w-5 h-5 text-[#1E1B4B]" />}
-                  {i === 1 && <Zap className="w-5 h-5 text-[#818CF8]" />}
-                  {i === 2 && <Globe2 className="w-5 h-5 text-[#1E1B4B]" />}
-                  {i === 3 && <Truck className="w-5 h-5 text-[#1E1B4B]" />}
+              <div key={i} className={`rounded-2xl p-7 border transition-all hover:shadow-md ${i === 1 ? 'bg-[#1e4b7a] border-[#1e4b7a] text-white' : 'bg-white border-slate-100'}`}>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-5 ${i === 1 ? 'bg-white/15' : 'bg-orange-50'}`}>
+                  {i === 0 && <Package className="w-5 h-5 text-[#1e4b7a]" />}
+                  {i === 1 && <Zap className="w-5 h-5 text-[#fe6801]" />}
+                  {i === 2 && <Globe2 className="w-5 h-5 text-[#1e4b7a]" />}
+                  {i === 3 && <Truck className="w-5 h-5 text-[#1e4b7a]" />}
                 </div>
-                <p className={`text-[10px] font-bold tracking-widest uppercase mb-2 ${i === 1 ? 'text-indigo-300' : 'text-slate-400'}`}>{step.num}</p>
-                <h3 className={`font-black text-[15px] mb-2 ${i === 1 ? 'text-white' : 'text-[#1E1B4B]'}`}>{step.title}</h3>
-                <p className={`text-[12px] font-medium leading-relaxed ${i === 1 ? 'text-indigo-200' : 'text-slate-500'}`}>{step.desc}</p>
+                <p className={`text-[10px] font-bold tracking-widest uppercase mb-2 ${i === 1 ? 'text-orange-300' : 'text-slate-400'}`}>{step.num}</p>
+                <h3 className={`font-black text-[15px] mb-2 ${i === 1 ? 'text-white' : 'text-[#1e4b7a]'}`}>{step.title}</h3>
+                <p className={`text-[12px] font-medium leading-relaxed ${i === 1 ? 'text-orange-200' : 'text-slate-500'}`}>{step.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── INTELLIGENCE BEHIND THE TRANSIT ───────── */}
+      {/* â”€â”€ INTELLIGENCE BEHIND THE TRANSIT â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -116,22 +116,22 @@ export default function CustomerExperiencePage() {
             {/* Left: 4 mini cards */}
             <div className="grid grid-cols-2 gap-5">
               {intelFeatures.map((feat, i) => (
-                <div key={i} className={`rounded-2xl p-6 border ${i === 1 ? 'bg-[#1E1B4B] border-[#2A377B]' : 'bg-slate-50 border-slate-100'} hover:shadow-md transition-all`}>
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-4 ${i === 1 ? 'bg-white/15' : 'bg-indigo-50'}`}>
-                    {i === 0 && <Globe2 className="w-4 h-4 text-[#1E1B4B]" />}
-                    {i === 1 && <BarChart2 className="w-4 h-4 text-[#818CF8]" />}
-                    {i === 2 && <Package className="w-4 h-4 text-[#1E1B4B]" />}
-                    {i === 3 && <MessageSquare className="w-4 h-4 text-[#1E1B4B]" />}
+                <div key={i} className={`rounded-2xl p-6 border ${i === 1 ? 'bg-[#1e4b7a] border-[#1e4b7a]' : 'bg-slate-50 border-slate-100'} hover:shadow-md transition-all`}>
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-4 ${i === 1 ? 'bg-white/15' : 'bg-orange-50'}`}>
+                    {i === 0 && <Globe2 className="w-4 h-4 text-[#1e4b7a]" />}
+                    {i === 1 && <BarChart2 className="w-4 h-4 text-[#fe6801]" />}
+                    {i === 2 && <Package className="w-4 h-4 text-[#1e4b7a]" />}
+                    {i === 3 && <MessageSquare className="w-4 h-4 text-[#1e4b7a]" />}
                   </div>
-                  <h4 className={`font-black text-[13px] mb-1.5 ${i === 1 ? 'text-white' : 'text-[#1E1B4B]'}`}>{feat.title}</h4>
-                  <p className={`text-[11px] font-medium leading-relaxed ${i === 1 ? 'text-indigo-200' : 'text-slate-500'}`}>{feat.desc}</p>
+                  <h4 className={`font-black text-[13px] mb-1.5 ${i === 1 ? 'text-white' : 'text-[#1e4b7a]'}`}>{feat.title}</h4>
+                  <p className={`text-[11px] font-medium leading-relaxed ${i === 1 ? 'text-orange-200' : 'text-slate-500'}`}>{feat.desc}</p>
                 </div>
               ))}
             </div>
 
             {/* Right: text */}
             <div>
-              <h2 className="text-[32px] font-black text-[#1E1B4B] tracking-tight leading-tight mb-6">
+              <h2 className="text-[32px] font-black text-[#1e4b7a] tracking-tight leading-tight mb-6">
                 The Intelligence Behind<br />the Transit.
               </h2>
               <p className="text-slate-500 font-medium text-base leading-relaxed mb-8">
@@ -143,11 +143,11 @@ export default function CustomerExperiencePage() {
                   { label: "Condition Monitoring", desc: "Ongoing oversight for high-value electronics, healthcare shipments, and sensitive cargo." },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-3">
-                    <div className="w-5 h-5 rounded-full bg-teal-100 flex items-center justify-center mt-0.5 shrink-0">
-                      <Check className="w-3 h-3 text-teal-600" />
+                    <div className="w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center mt-0.5 shrink-0">
+                      <Check className="w-3 h-3 text-orange-600" />
                     </div>
                     <div>
-                      <span className="font-bold text-[#1E1B4B] text-sm">{item.label}</span>
+                      <span className="font-bold text-[#1e4b7a] text-sm">{item.label}</span>
                       <span className="text-slate-500 text-sm font-medium"> - {item.desc}</span>
                     </div>
                   </div>
@@ -158,22 +158,22 @@ export default function CustomerExperiencePage() {
         </div>
       </section>
 
-      {/* ── GLOBAL SUPPORT LOCAL EXPERTISE ───────── */}
-      <section className="py-20 bg-[#1E1B4B]">
+      {/* â”€â”€ GLOBAL SUPPORT LOCAL EXPERTISE â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section className="py-20 bg-[#1e4b7a]">
         <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-[32px] font-black text-white tracking-tight leading-tight mb-6">
                 Global Support,<br />Local Expertise
               </h2>
-              <p className="text-indigo-200 font-medium text-base leading-relaxed mb-10">
+              <p className="text-orange-200 font-medium text-base leading-relaxed mb-10">
                 When you need support, you need it quickly. Our teams in London, Mumbai, and New York provide informed guidance with local operational context.
               </p>
               <div className="grid grid-cols-3 gap-8 mb-8">
                 {[{ val: "24/7", label: "Global Support" }, { val: "15m", label: "Response Time" }, { val: "50+", label: "Specialists" }].map((s, i) => (
                   <div key={i}>
                     <p className="text-3xl font-black text-white tracking-tight mb-1">{s.val}</p>
-                    <p className="text-[11px] font-bold text-indigo-300 uppercase tracking-widest">{s.label}</p>
+                    <p className="text-[11px] font-bold text-orange-300 uppercase tracking-widest">{s.label}</p>
                   </div>
                 ))}
               </div>
@@ -187,17 +187,17 @@ export default function CustomerExperiencePage() {
                   { label: "Mumbai Operations Hub", msg: "This shipment has been escalated to our senior clearance broker. Expected clearance time is 90 minutes.", ours: true },
                 ].map((msg, i) => (
                   <div key={i} className={`flex items-start gap-3 ${msg.ours ? 'flex-row-reverse' : ''}`}>
-                    <div className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-[9px] font-black ${msg.ours ? 'bg-teal-500 text-white' : 'bg-indigo-200 text-[#1E1B4B]'}`}>
+                    <div className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-[9px] font-black ${msg.ours ? 'bg-orange-500 text-white' : 'bg-orange-200 text-[#1e4b7a]'}`}>
                       {msg.ours ? 'GN' : 'YOU'}
                     </div>
-                    <div className={`rounded-2xl p-4 max-w-[80%] ${msg.ours ? 'bg-[#2A377B] text-white' : 'bg-white text-[#1E1B4B]'}`}>
-                      <p className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${msg.ours ? 'text-indigo-300' : 'text-slate-400'}`}>{msg.label}</p>
+                    <div className={`rounded-2xl p-4 max-w-[80%] ${msg.ours ? 'bg-[#1e4b7a] text-white' : 'bg-white text-[#1e4b7a]'}`}>
+                      <p className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${msg.ours ? 'text-orange-300' : 'text-slate-400'}`}>{msg.label}</p>
                       <p className="text-[12px] font-medium leading-relaxed">{msg.msg}</p>
                     </div>
                   </div>
                 ))}
               </div>
-              <button className="w-full h-11 bg-teal-500 hover:bg-teal-400 text-white font-bold text-sm rounded-xl transition-colors flex items-center justify-center gap-2">
+              <button className="w-full h-11 bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm rounded-xl transition-colors flex items-center justify-center gap-2">
                 <MessageSquare className="w-4 h-4" /> Initiate Live Chat
               </button>
             </div>
@@ -205,12 +205,12 @@ export default function CustomerExperiencePage() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ──────────────────────────── */}
+      {/* â”€â”€ TESTIMONIALS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
           <div className="text-center mb-12">
-            <h2 className="text-[28px] font-black text-[#1E1B4B] tracking-tight mb-3">Trusted by Global Leaders</h2>
-            <p className="text-slate-500 font-medium text-sm">Hear from businesses that have entrusted their most critical shipments with Global Navigator.</p>
+            <h2 className="text-[28px] font-black text-[#1e4b7a] tracking-tight mb-3">Trusted by Global Leaders</h2>
+            <p className="text-slate-500 font-medium text-sm">Hear from businesses that have entrusted their most critical shipments with ship2sell.</p>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             {testimonials.map((t, i) => (
@@ -219,7 +219,7 @@ export default function CustomerExperiencePage() {
                 <div className="flex items-center gap-4">
                   <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" loading="lazy" />
                   <div>
-                    <p className="font-black text-[#1E1B4B] text-[14px]">{t.name}</p>
+                    <p className="font-black text-[#1e4b7a] text-[14px]">{t.name}</p>
                     <p className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mt-0.5">{t.role}</p>
                   </div>
                 </div>
@@ -229,21 +229,21 @@ export default function CustomerExperiencePage() {
         </div>
       </section>
 
-      {/* ── FINAL CTA ─────────────────────────────── */}
-      <section className="py-20 bg-[#1E1B4B] relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+      {/* â”€â”€ FINAL CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section className="py-20 bg-[#1e4b7a] relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
         <div className="container mx-auto px-6 lg:px-16 max-w-4xl text-center relative z-10">
           <h2 className="text-5xl font-black text-white tracking-tight mb-6 leading-tight">
             Experience the<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#818CF8] to-teal-300">Navigator Difference.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#fe6801] to-orange-300">Navigator Difference.</span>
           </h2>
-          <p className="text-indigo-200 font-medium text-base mb-12 max-w-lg mx-auto leading-relaxed">
+          <p className="text-orange-200 font-medium text-base mb-12 max-w-lg mx-auto leading-relaxed">
             Ready to turn your shipping workflow into a strategic advantage?
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/register">
-              <button className="px-8 py-4 bg-teal-400 text-[#1E1B4B] font-black text-sm rounded-2xl hover:bg-teal-300 transition-colors shadow-lg">
+              <button className="px-8 py-4 bg-orange-400 text-[#1e4b7a] font-black text-sm rounded-2xl hover:bg-orange-300 transition-colors shadow-lg">
                 Request a Personalized Demo
               </button>
             </Link>
@@ -256,13 +256,13 @@ export default function CustomerExperiencePage() {
         </div>
       </section>
 
-      {/* ── FOOTER ────────────────────────────────── */}
+      {/* â”€â”€ FOOTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <footer className="border-t border-slate-700/30 py-10 bg-[#0d0c2b]">
         <div className="container mx-auto px-6 lg:px-16 max-w-6xl flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
-            <p className="font-bold text-white text-[15px] mb-1">Global Navigator</p>
-            <p className="text-[11px] text-indigo-400 font-medium">Logistics intelligence for the modern world.</p>
-            <p className="text-[10px] text-slate-600 font-medium mt-1">Copyright 2024 Global Navigator Logistics. All rights reserved.</p>
+            <p className="font-bold text-white text-[15px] mb-1">ship2sell</p>
+            <p className="text-[11px] text-orange-400 font-medium">Logistics intelligence for the modern world.</p>
+            <p className="text-[10px] text-slate-600 font-medium mt-1">Copyright 2024 ship2sell Logistics. All rights reserved.</p>
           </div>
           <div className="flex flex-wrap gap-6 text-[11px] font-bold text-slate-500">
             {['Privacy Policy', 'Terms of Service', 'Global Compliance', 'Contact Support', 'Carrier Relations'].map(l => (
@@ -275,3 +275,4 @@ export default function CustomerExperiencePage() {
     </div>
   );
 }
+

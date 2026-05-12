@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+﻿import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { BadgeDollarSign, ChevronLeft, FileSpreadsheet, PencilLine, Trash2 } from "lucide-react";
 import { deleteRateCardAction, importRateCardsCsvAction, saveRateCardAction } from "./actions";
@@ -54,7 +54,7 @@ export default async function AdminRatesPage({
         <div className="flex items-center gap-2 text-xl font-bold text-[#1E293B]">
           <Link
             href="/admin/dashboard"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1E1B4B] text-white transition-colors hover:bg-slate-900"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1e4b7a] text-white transition-colors hover:bg-slate-900"
           >
             <ChevronLeft className="h-4 w-4" />
           </Link>
@@ -78,7 +78,7 @@ export default async function AdminRatesPage({
               <BadgeDollarSign className="h-5 w-5 text-orange-600" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#1E1B4B]">Rate Card Entry</h2>
+              <h2 className="text-xl font-bold text-[#1e4b7a]">Rate Card Entry</h2>
               <p className="text-sm font-medium text-slate-500">
                 Add weight-based pricing against any active lane.
               </p>
@@ -97,8 +97,8 @@ export default async function AdminRatesPage({
               {routes.map((route) => (
                 <option key={route.id} value={route.id}>
                   {route.originCountry.code} to {route.destinationCountry.code}
-                  {route.serviceLevel ? ` · ${route.serviceLevel}` : ""}
-                  {route.name ? ` · ${route.name}` : ""}
+                  {route.serviceLevel ? ` Â· ${route.serviceLevel}` : ""}
+                  {route.name ? ` Â· ${route.name}` : ""}
                 </option>
               ))}
             </select>
@@ -145,7 +145,7 @@ export default async function AdminRatesPage({
             <div className="md:col-span-2 flex flex-wrap gap-3">
               <button
                 type="submit"
-                className="h-12 rounded-xl bg-[#1E1B4B] px-6 text-sm font-bold text-white transition-colors hover:bg-slate-900"
+                className="h-12 rounded-xl bg-[#1e4b7a] px-6 text-sm font-bold text-white transition-colors hover:bg-slate-900"
               >
                 {editRateCard ? "Update Rate Card" : "Save Rate Card"}
               </button>
@@ -167,7 +167,7 @@ export default async function AdminRatesPage({
               <FileSpreadsheet className="h-5 w-5 text-slate-700" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#1E1B4B]">Rate Card CSV Upload</h2>
+              <h2 className="text-xl font-bold text-[#1e4b7a]">Rate Card CSV Upload</h2>
               <p className="text-sm font-medium text-slate-500">
                 Import Excel-exported CSV files for rate slabs only.
               </p>
@@ -188,11 +188,11 @@ export default async function AdminRatesPage({
                 name="csvFile"
                 accept=".csv,text/csv"
                 required
-                className="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-[#1E1B4B] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+                className="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-[#1e4b7a] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
               />
               <button
                 type="submit"
-                className="h-12 rounded-xl bg-[#1E1B4B] px-5 text-sm font-bold text-white transition-colors hover:bg-slate-900"
+                className="h-12 rounded-xl bg-[#1e4b7a] px-5 text-sm font-bold text-white transition-colors hover:bg-slate-900"
               >
                 Import Rates
               </button>
@@ -204,7 +204,7 @@ export default async function AdminRatesPage({
       <section className="mt-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-xl font-bold text-[#1E1B4B]">Live Rate Card List</h2>
+            <h2 className="text-xl font-bold text-[#1e4b7a]">Live Rate Card List</h2>
             <p className="text-sm font-medium text-slate-500">
               Current pricing slabs visible to customer quote and rates flows.
             </p>
@@ -226,7 +226,7 @@ export default async function AdminRatesPage({
                   <div>
                     <p className="font-bold text-slate-900">
                       {rateCard.route.originCountry.code} to {rateCard.route.destinationCountry.code}
-                      {rateCard.route.serviceLevel ? ` · ${rateCard.route.serviceLevel}` : ""}
+                      {rateCard.route.serviceLevel ? ` Â· ${rateCard.route.serviceLevel}` : ""}
                     </p>
                     <p className="mt-1 text-sm text-slate-500">
                       {rateCard.route.name || "Active shipping lane"}
@@ -279,3 +279,4 @@ export default async function AdminRatesPage({
     </div>
   );
 }
+

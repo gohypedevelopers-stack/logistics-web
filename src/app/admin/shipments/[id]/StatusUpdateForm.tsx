@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useTransition, useState, useOptimistic } from "react";
 import { useRouter } from "next/navigation";
@@ -132,7 +132,7 @@ export function StatusUpdateForm({
            className={cn(
              "w-full flex items-center justify-center gap-3 py-4 rounded-xl font-bold text-xs transition-all shadow-lg",
              isPending ? "bg-slate-100 text-slate-400 cursor-not-allowed" : 
-             success ? "bg-teal-600 text-white" : "bg-[#3146d3] hover:bg-[#2537b8] text-white"
+             success ? "bg-orange-600 text-white" : "bg-[#3146d3] hover:bg-[#2537b8] text-white"
            )}
          >
             {isPending ? (
@@ -153,3 +153,4 @@ export function StatusUpdateForm({
     </div>
   );
 }
+

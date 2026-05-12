@@ -12,6 +12,21 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
   },
+  logger: {
+    error(code, metadata) {
+      const metadataMessage = JSON.stringify(metadata ?? "").toLowerCase();
+
+      const isJwtDecryptError =
+        code === "JWT_SESSION_ERROR" &&
+        metadataMessage.includes("decryption operation failed");
+
+      if (isJwtDecryptError) {
+        return;
+      }
+
+      console.error(`[NEXTAUTH][${code}]`, metadata ?? "");
+    },
+  },
   providers: [
     CredentialsProvider({
       name: "Credentials",

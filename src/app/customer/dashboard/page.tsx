@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+﻿import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Link from "next/link";
@@ -94,7 +94,7 @@ export default async function CustomerDashboard({
       value: activeQuotations,
       href: "/customer/rates",
       icon: FileText,
-      tone: "bg-indigo-50 text-indigo-700 border-indigo-100",
+      tone: "bg-orange-50 text-orange-700 border-orange-100",
     },
     {
       label: "Ongoing Shipments",
@@ -351,7 +351,7 @@ export default async function CustomerDashboard({
 
         <section id="order-details" className="app-card p-6">
           <div className="mb-5 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-[5px] bg-indigo-50 text-indigo-600">
+            <div className="flex h-10 w-10 items-center justify-center rounded-[5px] bg-orange-50 text-orange-600">
               <Package2 className="h-5 w-5" />
             </div>
             <div>
@@ -498,3 +498,4 @@ export default async function CustomerDashboard({
     </div>
   );
 }
+

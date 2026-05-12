@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+﻿import prisma from "@/lib/prisma";
 import { Search, Plane, CheckCircle2, Clock, Headphones, Download, MapPin, XCircle } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -56,12 +56,12 @@ export default async function TrackingPage({ searchParams }: { searchParams: Pro
             className="w-full h-full object-cover opacity-40"
             loading="lazy"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#1E1B4B]/95 via-[#1E1B4B]/85 to-[#1E1B4B]/90"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-[#1e4b7a]/95 via-[#1e4b7a]/85 to-[#1e4b7a]/90"></div>
         </div>
 
         <div className="relative z-10 container mx-auto px-6 lg:px-16 max-w-5xl pt-8">
           <h1 className="text-4xl font-black text-white tracking-tight mb-3">Intelligence in Transit</h1>
-          <p className="text-indigo-200 font-medium text-[15px] mb-8">Track your global assets with real-time logistical precision.</p>
+          <p className="text-orange-200 font-medium text-[15px] mb-8">Track your global assets with real-time logistical precision.</p>
 
           <form action={handleTrack} className="flex gap-3 max-w-2xl">
             <div className="flex-1 relative">
@@ -76,7 +76,7 @@ export default async function TrackingPage({ searchParams }: { searchParams: Pro
             </div>
             <button
               type="submit"
-              className="h-12 px-7 bg-teal-500 hover:bg-teal-400 text-white font-bold text-sm rounded-xl transition-colors shadow-lg shrink-0"
+              className="h-12 px-7 bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm rounded-xl transition-colors shadow-lg shrink-0"
             >
               Track Shipment
             </button>
@@ -98,7 +98,7 @@ export default async function TrackingPage({ searchParams }: { searchParams: Pro
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Current Status</p>
-                      <h2 className="text-[26px] font-black text-[#1E1B4B] tracking-tight mb-1">
+                      <h2 className="text-[26px] font-black text-[#1e4b7a] tracking-tight mb-1">
                         {shipment.status.replace(/_/g, ' ')}
                       </h2>
                       <p className="text-sm font-medium text-slate-500">
@@ -107,19 +107,19 @@ export default async function TrackingPage({ searchParams }: { searchParams: Pro
                     </div>
                     <div className="text-right">
                       <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Estimated Arrival</p>
-                      <p className="text-[22px] font-black text-teal-600 tracking-tight">
+                      <p className="text-[22px] font-black text-orange-600 tracking-tight">
                         {shipment.expectedArrivalDate ? new Date(shipment.expectedArrivalDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : "Pending review"}
                       </p>
                       <p className="text-xs font-medium text-slate-500 mt-0.5">Updated in real-time</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 bg-teal-50 border border-teal-100 rounded-xl px-5 py-4">
-                    <div className="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center shrink-0">
+                  <div className="flex items-center gap-3 bg-orange-50 border border-orange-100 rounded-xl px-5 py-4">
+                    <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center shrink-0">
                       <CheckCircle2 className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <p className="font-black text-[#1E1B4B] text-[14px]">ID: {shipment.trackingId}</p>
+                      <p className="font-black text-[#1e4b7a] text-[14px]">ID: {shipment.trackingId}</p>
                       <p className="text-[11px] text-slate-500 font-medium mt-0.5">
                         {timeline[0]?.notes || "Last logged activity for this consignment."}
                       </p>
@@ -129,7 +129,7 @@ export default async function TrackingPage({ searchParams }: { searchParams: Pro
 
                 {/* Tracking Workflow */}
                 <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm">
-                  <h3 className="text-[17px] font-black text-[#1E1B4B] tracking-tight mb-7">Tracking Workflow</h3>
+                  <h3 className="text-[17px] font-black text-[#1e4b7a] tracking-tight mb-7">Tracking Workflow</h3>
 
                   <div className="relative">
                     <div className="absolute left-[19px] top-0 bottom-0 w-[2px] bg-slate-100"></div>
@@ -139,18 +139,18 @@ export default async function TrackingPage({ searchParams }: { searchParams: Pro
                         <div key={i} className="relative flex gap-5 pb-7 last:pb-0">
                           <div className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center shrink-0 border-2 ${
                             step.active
-                              ? 'bg-[#1E1B4B] border-[#1E1B4B]'
-                              : 'bg-teal-50 border-teal-200'
+                              ? 'bg-[#1e4b7a] border-[#1e4b7a]'
+                              : 'bg-orange-50 border-orange-200'
                           }`}>
                             {step.active
                               ? <CheckCircle2 className="w-4 h-4 text-white" />
-                              : <div className="w-2.5 h-2.5 rounded-full bg-teal-400"></div>
+                              : <div className="w-2.5 h-2.5 rounded-full bg-orange-400"></div>
                             }
                           </div>
 
                           <div className="flex-1 min-w-0 flex items-start justify-between gap-4 pt-2">
                             <div>
-                              <p className="font-bold text-[14px] leading-tight text-[#1E1B4B] uppercase tracking-tight">{step.label}</p>
+                              <p className="font-bold text-[14px] leading-tight text-[#1e4b7a] uppercase tracking-tight">{step.label}</p>
                               <p className="text-[12px] font-medium text-slate-400 mt-0.5">{step.sub}</p>
                               {step.notes && <p className="text-[11px] text-slate-500 mt-2 bg-slate-50 p-2 rounded-lg border border-slate-100 italic">"{step.notes}"</p>}
                             </div>
@@ -171,28 +171,28 @@ export default async function TrackingPage({ searchParams }: { searchParams: Pro
 
                 {/* Shipment Intelligence */}
                 <div className="bg-white rounded-2xl p-7 border border-slate-100 shadow-sm">
-                  <h3 className="text-[16px] font-black text-[#1E1B4B] tracking-tight mb-6">Shipment Intelligence</h3>
+                  <h3 className="text-[16px] font-black text-[#1e4b7a] tracking-tight mb-6">Shipment Intelligence</h3>
 
                   {/* Origin */}
                   <div className="flex items-start gap-4 mb-5">
-                    <div className="w-9 h-9 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
-                      <Plane className="w-4 h-4 text-[#1E1B4B] -rotate-45" />
+                    <div className="w-9 h-9 bg-orange-50 rounded-xl flex items-center justify-center shrink-0">
+                      <Plane className="w-4 h-4 text-[#1e4b7a] -rotate-45" />
                     </div>
                     <div>
                       <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Origin</p>
-                      <p className="font-black text-[#1E1B4B] text-[15px]">{shipment.pickupAddress?.city || "Gateway Origin"}</p>
+                      <p className="font-black text-[#1e4b7a] text-[15px]">{shipment.pickupAddress?.city || "Gateway Origin"}</p>
                       <p className="text-[11px] text-slate-500 font-medium mt-0.5">{shipment.pickupAddress?.country?.name || "Global Node"}</p>
                     </div>
                   </div>
 
                   {/* Destination */}
                   <div className="flex items-start gap-4 mb-7 pb-7 border-b border-slate-100">
-                    <div className="w-9 h-9 bg-teal-50 rounded-xl flex items-center justify-center shrink-0">
-                      <Plane className="w-4 h-4 text-teal-600 rotate-45" />
+                    <div className="w-9 h-9 bg-orange-50 rounded-xl flex items-center justify-center shrink-0">
+                      <Plane className="w-4 h-4 text-orange-600 rotate-45" />
                     </div>
                     <div>
                       <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Destination</p>
-                      <p className="font-black text-[#1E1B4B] text-[15px]">{shipment.receiverAddress?.city}</p>
+                      <p className="font-black text-[#1e4b7a] text-[15px]">{shipment.receiverAddress?.city}</p>
                       <p className="text-[11px] text-slate-500 font-medium mt-0.5">{shipment.receiverAddress?.country?.name}</p>
                     </div>
                   </div>
@@ -220,7 +220,7 @@ export default async function TrackingPage({ searchParams }: { searchParams: Pro
                       loading="lazy"
                     />
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="bg-[#1E1B4B] text-white text-[10px] font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
+                      <div className="bg-[#1e4b7a] text-white text-[10px] font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></div>
                         Real-time GPS Active
                       </div>
@@ -229,14 +229,14 @@ export default async function TrackingPage({ searchParams }: { searchParams: Pro
                 </div>
 
                 {/* Download */}
-                <button className="w-full h-12 bg-white border border-slate-200 rounded-2xl font-bold text-[13px] text-[#1E1B4B] hover:bg-slate-50 transition-colors shadow-sm flex items-center justify-center gap-2">
+                <button className="w-full h-12 bg-white border border-slate-200 rounded-2xl font-bold text-[13px] text-[#1e4b7a] hover:bg-slate-50 transition-colors shadow-sm flex items-center justify-center gap-2">
                   <Download className="w-4 h-4" /> Download Tracking History
                 </button>
 
                 {/* Need Assistance */}
-                <div className="bg-[#1E1B4B] rounded-2xl p-7 border border-[#2A377B] shadow-md">
+                <div className="bg-[#1e4b7a] rounded-2xl p-7 border border-[#1e4b7a] shadow-md">
                   <h4 className="font-black text-white text-[16px] mb-2">Need Assistance?</h4>
-                  <p className="text-indigo-200 text-[12px] font-medium leading-relaxed mb-5">
+                  <p className="text-orange-200 text-[12px] font-medium leading-relaxed mb-5">
                     Our global support team is available 24/7 for logistics intelligence.
                   </p>
                   <Link href="/contact" className="block text-center w-full h-11 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold text-[13px] flex items-center justify-center gap-2 transition-colors border border-white/10">
@@ -256,7 +256,7 @@ export default async function TrackingPage({ searchParams }: { searchParams: Pro
           <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <XCircle className="w-7 h-7 text-red-400" />
           </div>
-          <h2 className="text-xl font-bold text-[#1E1B4B] mb-2">Shipment Not Found</h2>
+          <h2 className="text-xl font-bold text-[#1e4b7a] mb-2">Shipment Not Found</h2>
           <p className="text-slate-400 font-medium text-sm">We couldn't find a shipment with ID: <span className="text-slate-800 font-bold">{query}</span></p>
         </section>
       )}
@@ -264,8 +264,8 @@ export default async function TrackingPage({ searchParams }: { searchParams: Pro
       {/* Placeholder when no result */}
       {!query && (
         <section className="py-20 text-center">
-          <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <MapPin className="w-7 h-7 text-indigo-300" />
+          <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <MapPin className="w-7 h-7 text-orange-300" />
           </div>
           <p className="text-slate-400 font-medium text-sm">Enter a tracking ID or AWB above to see real-time shipment intelligence.</p>
         </section>
@@ -274,3 +274,4 @@ export default async function TrackingPage({ searchParams }: { searchParams: Pro
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import { MapPin, Mail, Navigation } from "lucide-react";
+﻿import { MapPin, Mail, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 export default function ContactPage() {
@@ -19,7 +19,7 @@ export default function ContactPage() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20">
            {/* Direct Email form */}
            <div className="bg-white p-10 md:p-12 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col relative z-10">
-              <h3 className="text-2xl font-black text-[#0B0E27] tracking-tight mb-8 flex items-center gap-3">
+              <h3 className="text-2xl font-black text-[#1e4b7a] tracking-tight mb-8 flex items-center gap-3">
                  <Navigation className="w-6 h-6 text-primary" /> Request Support
               </h3>
               <form className="space-y-6">
@@ -43,15 +43,15 @@ export default function ContactPage() {
                     <label className="block text-[10px] font-bold tracking-widest text-slate-500 uppercase mb-3 ml-1">Shipment Details</label>
                     <textarea placeholder="Share the origin, destination, cargo type, and timing requirements..." className="w-full h-32 p-5 rounded-xl border border-slate-200 bg-slate-50 font-medium text-sm text-slate-900 outline-none focus:border-primary focus:bg-white focus:ring-4 ring-primary/10 transition-all resize-none"></textarea>
                  </div>
-                 <Button size="lg" type="button" className="w-full h-14 rounded-xl font-bold text-xs uppercase tracking-widest shadow-none mt-4 bg-primary text-white hover:bg-[#0B0E27] transition-colors border border-transparent hover:border-indigo-900">Send Request</Button>
+                 <Button size="lg" type="button" className="w-full h-14 rounded-xl font-bold text-xs uppercase tracking-widest shadow-none mt-4 bg-primary text-white hover:bg-[#1e4b7a] transition-colors border border-transparent hover:border-orange-900">Send Request</Button>
               </form>
            </div>
 
            {/* Location Information */}
            <div className="space-y-6 flex flex-col justify-start pt-4">
-              <div className="bg-[#0B0E27] text-white p-10 rounded-2xl shadow-xl relative overflow-hidden group border border-indigo-900/50">
+              <div className="bg-[#1e4b7a] text-white p-10 rounded-2xl shadow-xl relative overflow-hidden group border border-orange-900/50">
                  <div className="absolute right-0 top-0 translate-x-1/2 -translate-y-1/2 bg-blue-500/20 w-48 h-48 rounded-full blur-[60px]"></div>
-                 <div className="w-12 h-12 bg-white text-[#0B0E27] rounded-xl flex items-center justify-center mb-6 shadow-md relative z-10 group-hover:bg-secondary transition-colors">
+                 <div className="w-12 h-12 bg-white text-[#1e4b7a] rounded-xl flex items-center justify-center mb-6 shadow-md relative z-10 group-hover:bg-secondary transition-colors">
                     <MapPin className="w-6 h-6" />
                  </div>
                  <div className="flex items-center gap-4 mb-2 relative z-10">
@@ -74,10 +74,10 @@ export default function ContactPage() {
                  <p className="text-slate-800 font-bold font-mono tracking-widest text-lg relative z-10">+91 11-2093-1123</p>
               </div>
 
-              <div className="bg-primary p-8 rounded-2xl shadow-lg border border-indigo-500/30 flex items-center justify-between">
+              <div className="bg-primary p-8 rounded-2xl shadow-lg border border-orange-500/30 flex items-center justify-between">
                  <div>
                     <h4 className="text-lg font-black text-white tracking-tight">Direct Support Channel</h4>
-                    <p className="text-indigo-200 font-medium text-sm mt-1">support@brandname.logistics</p>
+                    <p className="text-orange-200 font-medium text-sm mt-1">support@ship2sell.com</p>
                  </div>
                  <div className="w-14 h-14 bg-white/10 text-white rounded-xl flex items-center justify-center backdrop-blur-md">
                     <Mail className="w-6 h-6" />
@@ -89,3 +89,4 @@ export default function ContactPage() {
     </div>
   );
 }
+

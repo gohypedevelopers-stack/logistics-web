@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -91,9 +91,9 @@ export function CreateShipmentForm({
   );
   const selectedWarehouse = availableWarehouses.find((warehouse) => warehouse.id === warehouseId);
   const heroTone = isScheduleMode
-    ? "border-blue-200 bg-gradient-to-r from-blue-50 via-white to-teal-50"
-    : "border-indigo-200 bg-gradient-to-r from-indigo-50 via-white to-slate-50";
-  const heroIconTone = isScheduleMode ? "bg-blue-600 text-white" : "bg-indigo-600 text-white";
+    ? "border-blue-200 bg-gradient-to-r from-blue-50 via-white to-orange-50"
+    : "border-orange-200 bg-gradient-to-r from-orange-50 via-white to-slate-50";
+  const heroIconTone = isScheduleMode ? "bg-blue-600 text-white" : "bg-orange-600 text-white";
 
   const canSubmit =
     Boolean(pickupDate) &&
@@ -209,8 +209,8 @@ export function CreateShipmentForm({
         <div className="space-y-6">
           <section className="app-card p-7 lg:p-8">
             <div className="mb-6 flex items-center gap-4">
-              <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${isScheduleMode ? "bg-blue-100" : "bg-indigo-100"}`}>
-                <Globe2 className={`h-5 w-5 ${isScheduleMode ? "text-blue-700" : "text-indigo-700"}`} />
+              <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${isScheduleMode ? "bg-blue-100" : "bg-orange-100"}`}>
+                <Globe2 className={`h-5 w-5 ${isScheduleMode ? "text-blue-700" : "text-orange-700"}`} />
               </div>
               <h2 className="text-lg font-semibold tracking-tight text-slate-900">
                 {isScheduleMode ? "1. Route & Schedule" : "1. Route & Order Details"}
@@ -242,7 +242,7 @@ export function CreateShipmentForm({
               <label
                 className={`cursor-pointer rounded-[18px] border px-5 py-4 transition-colors ${
                   collectionType === "WAREHOUSE_DROP"
-                    ? "border-teal-300 bg-teal-50"
+                    ? "border-orange-300 bg-orange-50"
                     : "border-slate-200 bg-slate-50"
                 }`}
               >
@@ -435,8 +435,8 @@ export function CreateShipmentForm({
 
           <section className="app-card p-8">
             <div className="mb-6 flex items-center gap-4">
-              <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${isScheduleMode ? "bg-blue-100" : "bg-indigo-100"}`}>
-                <Box className={`h-5 w-5 ${isScheduleMode ? "text-blue-700" : "text-indigo-700"}`} />
+              <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${isScheduleMode ? "bg-blue-100" : "bg-orange-100"}`}>
+                <Box className={`h-5 w-5 ${isScheduleMode ? "text-blue-700" : "text-orange-700"}`} />
               </div>
               <h2 className="text-lg font-semibold tracking-tight text-slate-900">
                 2. Package Details
@@ -506,8 +506,8 @@ export function CreateShipmentForm({
           {collectionType === "PICKUP" ? (
             <section className="app-card p-7 lg:p-8">
               <div className="mb-6 flex items-center gap-4">
-                <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${isScheduleMode ? "bg-blue-100" : "bg-indigo-100"}`}>
-                  <User className={`h-5 w-5 ${isScheduleMode ? "text-blue-700" : "text-indigo-700"}`} />
+                <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${isScheduleMode ? "bg-blue-100" : "bg-orange-100"}`}>
+                  <User className={`h-5 w-5 ${isScheduleMode ? "text-blue-700" : "text-orange-700"}`} />
                 </div>
                 <h2 className="text-lg font-semibold tracking-tight text-slate-900">
                   3. Receiver Details
@@ -582,7 +582,7 @@ export function CreateShipmentForm({
         <aside className="w-full space-y-5 xl:sticky xl:top-24 xl:self-start">
           <div className="app-card relative overflow-hidden p-6">
             <div className="relative z-10 mb-6 flex items-center gap-3">
-              <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${isScheduleMode ? "bg-blue-100 text-blue-700" : "bg-indigo-100 text-indigo-700"}`}>
+              <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${isScheduleMode ? "bg-blue-100 text-blue-700" : "bg-orange-100 text-orange-700"}`}>
                 <Zap className="h-5 w-5" />
               </div>
               <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-900">
@@ -596,7 +596,7 @@ export function CreateShipmentForm({
                   Route
                 </p>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-2xl border border-indigo-100 bg-white px-4 py-3">
+                  <div className="rounded-2xl border border-orange-100 bg-white px-4 py-3">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
                       From
                     </p>
@@ -607,7 +607,7 @@ export function CreateShipmentForm({
                       {selectedOrigin?.name || "Pickup"}
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-indigo-100 bg-white px-4 py-3">
+                  <div className="rounded-2xl border border-orange-100 bg-white px-4 py-3">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
                       To
                     </p>
@@ -686,3 +686,4 @@ export function CreateShipmentForm({
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-export async function sendStatusEmail(
+﻿export async function sendStatusEmail(
   customerName: string,
   trackingId: string,
   statusName: string,
@@ -14,6 +14,7 @@ export async function sendStatusEmail(
   if (notes) {
     console.log(`Latest Update Note: ${notes}`);
   }
-  console.log("Track live updates anytime in your Global Navigator Console.");
+  console.log("Track live updates anytime in your ship2sell Console.");
   console.log("========================================================\n");
 }
+

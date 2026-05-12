@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+﻿import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
@@ -125,7 +125,7 @@ export default async function TrackPage({
                 <div className="absolute bottom-2 left-[15px] top-2 w-px bg-slate-200" />
                 {timeline.map((entry) => (
                   <div key={entry.id} className="relative">
-                    <div className="absolute left-[-30px] top-6 h-3.5 w-3.5 rounded-full border-2 border-white bg-indigo-600 shadow-sm" />
+                    <div className="absolute left-[-30px] top-6 h-3.5 w-3.5 rounded-full border-2 border-white bg-orange-600 shadow-sm" />
                     <div className="rounded-[18px] border border-slate-200 bg-slate-50/90 p-5">
                       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                         <div>
@@ -154,7 +154,7 @@ export default async function TrackPage({
           <section className="space-y-8">
             <div className="app-card p-8">
               <div className="mb-5 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-50 text-orange-600">
                   <Truck className="h-5 w-5" />
                 </div>
                 <div>
@@ -192,3 +192,4 @@ export default async function TrackPage({
     </div>
   );
 }
+

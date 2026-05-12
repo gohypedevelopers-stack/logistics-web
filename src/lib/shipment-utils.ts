@@ -1,4 +1,4 @@
-import { compareDesc } from "date-fns";
+﻿import { compareDesc } from "date-fns";
 
 export const SHIPMENT_STATUS_FLOW = [
   "CREATED",
@@ -103,13 +103,13 @@ const STATUS_META: Record<
   PICKED_UP: {
     label: "Picked Up",
     customerLabel: "Picked Up",
-    tone: "bg-teal-50 text-teal-700 border-teal-200",
+    tone: "bg-orange-50 text-orange-700 border-orange-200",
     summary: "Cargo collected from pickup location.",
   },
   AT_WAREHOUSE: {
     label: "At Warehouse",
     customerLabel: "At Warehouse",
-    tone: "bg-teal-50 text-teal-700 border-teal-200",
+    tone: "bg-orange-50 text-orange-700 border-orange-200",
     summary: "Shipment reached warehouse.",
   },
   PROCESSING: {
@@ -310,3 +310,4 @@ export function buildReferenceNumber() {
   const suffix = Math.random().toString(36).slice(2, 6).toUpperCase();
   return `REF-${stamp}-${suffix}`;
 }
+

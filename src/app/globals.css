@@ -1,11 +1,11 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 :root {
   --background: #f5f7fb;
   --foreground: #102033;
-  --primary: #1f4ed8;
-  --secondary: #d9e7ff;
-  --teal-accent: #0f766e;
+  --primary: #1e4b7a;
+  --secondary: #ffe7d1;
+  --orange-accent: #fe6801;
   --neutral-surface: #f7f9fc;
 }
 
@@ -69,8 +69,8 @@ body {
 .app-input:focus,
 .app-input:focus-visible {
   outline: none;
-  border-color: #1f4ed8;
-  box-shadow: 0 0 0 4px rgba(31, 78, 216, 0.12);
+  border-color: #1e4b7a;
+  box-shadow: 0 0 0 4px rgba(30, 75, 122, 0.12);
 }
 
 .app-textarea {
@@ -84,19 +84,19 @@ body {
 .app-textarea:focus,
 .app-textarea:focus-visible {
   outline: none;
-  border-color: #1f4ed8;
-  box-shadow: 0 0 0 4px rgba(31, 78, 216, 0.12);
+  border-color: #1e4b7a;
+  box-shadow: 0 0 0 4px rgba(30, 75, 122, 0.12);
 }
 
 .app-button-primary {
   border-radius: 14px;
-  background: #1f4ed8;
+  background: #1e4b7a;
   color: #fff;
   transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
 .app-button-primary:hover {
-  background: #1b43bb;
+  background: #173e67;
 }
 
 .app-button-secondary {
@@ -128,7 +128,7 @@ body {
 .courier-loop-track {
   height: 6px;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(31, 78, 216, 0.12), rgba(31, 78, 216, 0.45), rgba(15, 118, 110, 0.14));
+  background: linear-gradient(90deg, rgba(30, 75, 122, 0.12), rgba(30, 75, 122, 0.45), rgba(254, 104, 1, 0.24));
 }
 
 .courier-loop-dot {
@@ -137,8 +137,8 @@ body {
   width: 18px;
   height: 18px;
   border-radius: 999px;
-  background: #1f4ed8;
-  box-shadow: 0 0 0 6px rgba(31, 78, 216, 0.14);
+  background: #1e4b7a;
+  box-shadow: 0 0 0 6px rgba(30, 75, 122, 0.14);
   transform: translateY(-50%);
 }
 
@@ -149,8 +149,8 @@ body {
 
 .courier-loop-dot-b {
   left: 32px;
-  background: #0f766e;
-  box-shadow: 0 0 0 6px rgba(15, 118, 110, 0.12);
+  background: #fe6801;
+  box-shadow: 0 0 0 6px rgba(254, 104, 1, 0.16);
   animation: courier-loop 5s linear infinite 2.5s;
 }
 
@@ -173,3 +173,56 @@ body {
     opacity: 0.2;
   }
 }
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes soft-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.65s ease-out both;
+}
+
+.animate-fade-up-delay-1 {
+  animation: fade-up 0.7s ease-out 0.1s both;
+}
+
+.animate-fade-up-delay-2 {
+  animation: fade-up 0.75s ease-out 0.2s both;
+}
+
+.animate-soft-float {
+  animation: soft-float 5.5s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 3.2s linear infinite;
+}
+
+

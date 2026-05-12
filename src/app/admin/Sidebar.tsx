@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { 
   LayoutDashboard, 
@@ -10,7 +11,6 @@ import {
   Contact,
   BadgeDollarSign,
   Settings, 
-  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -53,11 +53,9 @@ export function AdminSidebar({ userName }: { userName?: string | null }) {
     <aside className="hidden h-full w-[278px] flex-col border-r border-slate-200/80 bg-white/80 backdrop-blur-xl lg:flex">
       <div className="border-b border-slate-200/80 px-6 pb-6 pt-7">
         <Link href="/admin/dashboard" className="flex gap-3 items-center">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-100 text-blue-700 shrink-0">
-            <ShieldCheck className="w-6 h-6 text-blue-700" />
-          </div>
+          <Image src="/logo.png" alt="ship2sell logo" width={44} height={44} className="h-11 w-11 object-contain shrink-0" />
           <div>
-            <h1 className="text-lg font-semibold leading-tight tracking-tight text-slate-900">Admin Console</h1>
+            <h1 className="text-lg font-semibold leading-tight tracking-tight text-[#1e4b7a]">ship2sell</h1>
             <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">Enterprise Ops</p>
           </div>
         </Link>

@@ -1,4 +1,4 @@
-import { Search, Bell, User } from "lucide-react";
+﻿import { Search, Bell, User } from "lucide-react";
 
 interface HeaderProps {
   title: string;
@@ -33,7 +33,7 @@ export function AdminHeader({ title, subtitle }: HeaderProps) {
           <div className="w-px h-6 bg-slate-200 mx-1" />
           
           <div className="flex items-center gap-3 cursor-pointer group">
-            <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 font-bold text-sm tracking-tighter group-hover:bg-[#1E1B4B] group-hover:text-white transition-all">
+            <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 font-bold text-sm tracking-tighter group-hover:bg-[#1e4b7a] group-hover:text-white transition-all">
               AD
             </div>
             <div className="hidden lg:block">
@@ -46,3 +46,4 @@ export function AdminHeader({ title, subtitle }: HeaderProps) {
     </header>
   );
 }
+

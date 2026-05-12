@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+﻿import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { User, Mail, Phone, ChevronLeft, Search, Plus, ArrowRight } from "lucide-react";
 
@@ -20,7 +20,7 @@ export default async function AdminCustomers() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <div className="flex items-center gap-2 text-xl font-bold text-[#1E293B]">
-              <Link href="/admin/dashboard" className="w-6 h-6 rounded-full bg-[#1E1B4B] text-white flex items-center justify-center hover:bg-slate-900 transition-colors">
+              <Link href="/admin/dashboard" className="w-6 h-6 rounded-full bg-[#1e4b7a] text-white flex items-center justify-center hover:bg-slate-900 transition-colors">
                 <ChevronLeft className="w-4 h-4" />
               </Link>
               Customer Directory
@@ -29,7 +29,7 @@ export default async function AdminCustomers() {
               Manage client accounts, contact details, and visibility.
             </div>
           </div>
-          <button className="px-5 h-11 bg-[#1E1B4B] text-white rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-slate-900 transition-all shadow-md">
+          <button className="px-5 h-11 bg-[#1e4b7a] text-white rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-slate-900 transition-all shadow-md">
             <Plus className="w-4 h-4" /> Create Profile
           </button>
         </div>
@@ -57,7 +57,7 @@ export default async function AdminCustomers() {
                <div key={customer.id} className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:border-blue-300 transition-all group flex flex-col justify-between h-[300px]">
                   <div>
                     <div className="flex items-center gap-4 mb-6">
-                       <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-700 border border-slate-100 flex items-center justify-center font-bold text-lg group-hover:bg-[#1E1B4B] group-hover:text-white transition-all">
+                       <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-700 border border-slate-100 flex items-center justify-center font-bold text-lg group-hover:bg-[#1e4b7a] group-hover:text-white transition-all">
                           {(customer.companyName || customer.user.name || "C").charAt(0).toUpperCase()}
                        </div>
                        <div className="flex-1 truncate">
@@ -81,9 +81,9 @@ export default async function AdminCustomers() {
                   <div className="mt-8 pt-4 border-t border-slate-50 flex items-center justify-between">
                      <div>
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Orders</p>
-                        <p className="text-xl font-black text-[#1E1B4B] tracking-tight mt-0.5">{customer.shipments.length}</p>
+                        <p className="text-xl font-black text-[#1e4b7a] tracking-tight mt-0.5">{customer.shipments.length}</p>
                      </div>
-                     <Link href={`/admin/customers/${customer.id}`} className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-[#1E1B4B] hover:text-white transition-all">
+                     <Link href={`/admin/customers/${customer.id}`} className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-[#1e4b7a] hover:text-white transition-all">
                         <ArrowRight className="w-5 h-5" />
                      </Link>
                   </div>
@@ -95,3 +95,4 @@ export default async function AdminCustomers() {
     </div>
   );
 }
+

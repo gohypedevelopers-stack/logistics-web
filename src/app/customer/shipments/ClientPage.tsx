@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Suspense, useState } from "react";
 import Link from "next/link";
@@ -62,7 +62,7 @@ function ShipmentsContent({ shipments }: { shipments: any[] }) {
               onClick={() => router.push(`/customer/shipments?tab=${tab.id}`)}
               className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                 activeTab === tab.id
-                  ? "bg-indigo-50 text-indigo-700"
+                  ? "bg-orange-50 text-orange-700"
                   : "bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-900"
               }`}
             >
@@ -163,3 +163,4 @@ export default function ClientShipmentsPage({ shipments }: { shipments: any[] })
     </Suspense>
   );
 }
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { 
   ChevronLeft, 
@@ -45,7 +45,7 @@ export default function NewStaffPage() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <div className="flex items-center gap-2 text-xl font-bold text-[#1E293B]">
-              <Link href="/admin/settings/staff" className="w-6 h-6 rounded-full bg-[#1E1B4B] text-white flex items-center justify-center hover:bg-slate-900 transition-colors">
+              <Link href="/admin/settings/staff" className="w-6 h-6 rounded-full bg-[#1e4b7a] text-white flex items-center justify-center hover:bg-slate-900 transition-colors">
                 <ChevronLeft className="w-4 h-4" />
               </Link>
               Provision New Staff
@@ -64,7 +64,7 @@ export default function NewStaffPage() {
             {/* Identity Card */}
             <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-10 overflow-hidden relative">
               <div className="absolute top-0 right-0 p-8 opacity-10">
-                <ShieldCheck className="w-24 h-24 text-[#1E1B4B]" />
+                <ShieldCheck className="w-24 h-24 text-[#1e4b7a]" />
               </div>
 
               <h2 className="text-lg font-bold text-[#1E293B] mb-8 flex items-center gap-2 border-b border-slate-50 pb-4">
@@ -120,7 +120,7 @@ export default function NewStaffPage() {
                       name="password"
                       type="password"
                       required
-                      placeholder="••••••••••••"
+                      placeholder="************"
                       className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-6 text-sm outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-300 transition-all font-medium"
                     />
                   </div>
@@ -135,7 +135,7 @@ export default function NewStaffPage() {
                     <select 
                       name="role"
                       required
-                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-6 text-sm outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-300 transition-all font-bold appearance-none text-[#1E1B4B]"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-6 text-sm outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-300 transition-all font-bold appearance-none text-[#1e4b7a]"
                     >
                        <option value="ADMIN">System Administrator</option>
                        <option value="MANAGER">Branch Manager</option>
@@ -187,7 +187,7 @@ export default function NewStaffPage() {
                  <button 
                    type="submit"
                    disabled={loading}
-                   className="bg-[#1E1B4B] text-white px-10 py-4 rounded-2xl text-sm font-bold shadow-xl hover:shadow-2xl hover:bg-blue-900 transition-all flex items-center gap-3 disabled:opacity-50"
+                   className="bg-[#1e4b7a] text-white px-10 py-4 rounded-2xl text-sm font-bold shadow-xl hover:shadow-2xl hover:bg-blue-900 transition-all flex items-center gap-3 disabled:opacity-50"
                  >
                    {loading ? <Clock className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                    Provision Staff Member
@@ -207,7 +207,7 @@ export default function NewStaffPage() {
 
         {/* Sidebar Info */}
         <div className="w-full lg:w-[320px] shrink-0 space-y-6">
-           <div className="bg-[#1E1B4B] rounded-3xl p-8 text-white shadow-xl shadow-blue-200/20 relative overflow-hidden">
+           <div className="bg-[#1e4b7a] rounded-3xl p-8 text-white shadow-xl shadow-blue-200/20 relative overflow-hidden">
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl"></div>
               <h3 className="font-bold text-lg mb-4">IAM Security Notice</h3>
               <p className="text-sm font-medium text-blue-100 leading-relaxed mb-6 italic">
@@ -233,3 +233,5 @@ export default function NewStaffPage() {
     </div>
   );
 }
+
+

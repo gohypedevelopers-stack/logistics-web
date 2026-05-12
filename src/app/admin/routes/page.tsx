@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+﻿import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { ChevronLeft, FileSpreadsheet, Globe2, PencilLine, Route as RouteIcon, Trash2, Warehouse as WarehouseIcon } from "lucide-react";
 import {
@@ -52,7 +52,7 @@ export default async function AdminRoutesPage({
         <div className="flex items-center gap-2 text-xl font-bold text-[#1E293B]">
           <Link
             href="/admin/dashboard"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1E1B4B] text-white transition-colors hover:bg-slate-900"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1e4b7a] text-white transition-colors hover:bg-slate-900"
           >
             <ChevronLeft className="h-4 w-4" />
           </Link>
@@ -77,7 +77,7 @@ export default async function AdminRoutesPage({
                 <Globe2 className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#1E1B4B]">Supported Countries</h2>
+                <h2 className="text-xl font-bold text-[#1e4b7a]">Supported Countries</h2>
                 <p className="text-sm font-medium text-slate-500">
                   Add or update operational countries.
                 </p>
@@ -92,7 +92,7 @@ export default async function AdminRoutesPage({
                 <input type="checkbox" name="isActive" defaultChecked />
                 Active country
               </label>
-              <button type="submit" className="md:col-span-2 h-12 rounded-xl bg-[#1E1B4B] text-sm font-bold text-white transition-colors hover:bg-slate-900">
+              <button type="submit" className="md:col-span-2 h-12 rounded-xl bg-[#1e4b7a] text-sm font-bold text-white transition-colors hover:bg-slate-900">
                 Save Country
               </button>
             </form>
@@ -118,7 +118,7 @@ export default async function AdminRoutesPage({
                 <FileSpreadsheet className="h-5 w-5 text-slate-700" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#1E1B4B]">Routes CSV Upload</h2>
+                <h2 className="text-xl font-bold text-[#1e4b7a]">Routes CSV Upload</h2>
                 <p className="text-sm font-medium text-slate-500">
                   Import countries, lanes, and warehouses from Excel-exported CSV files.
                 </p>
@@ -131,8 +131,8 @@ export default async function AdminRoutesPage({
                 <p className="font-semibold text-slate-900">Countries CSV</p>
                 <p className="mt-1 text-sm text-slate-500">Headers: code,name,display_order,is_active</p>
                 <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-                  <input type="file" name="csvFile" accept=".csv,text/csv" required className="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-[#1E1B4B] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white" />
-                  <button type="submit" className="h-12 rounded-xl bg-[#1E1B4B] px-5 text-sm font-bold text-white transition-colors hover:bg-slate-900">Import</button>
+                  <input type="file" name="csvFile" accept=".csv,text/csv" required className="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-[#1e4b7a] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white" />
+                  <button type="submit" className="h-12 rounded-xl bg-[#1e4b7a] px-5 text-sm font-bold text-white transition-colors hover:bg-slate-900">Import</button>
                 </div>
               </form>
 
@@ -141,8 +141,8 @@ export default async function AdminRoutesPage({
                 <p className="font-semibold text-slate-900">Routes CSV</p>
                 <p className="mt-1 text-sm text-slate-500">Headers: origin_code,destination_code,name,service_level,transit_days,notes,is_active</p>
                 <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-                  <input type="file" name="csvFile" accept=".csv,text/csv" required className="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-[#1E1B4B] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white" />
-                  <button type="submit" className="h-12 rounded-xl bg-[#1E1B4B] px-5 text-sm font-bold text-white transition-colors hover:bg-slate-900">Import</button>
+                  <input type="file" name="csvFile" accept=".csv,text/csv" required className="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-[#1e4b7a] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white" />
+                  <button type="submit" className="h-12 rounded-xl bg-[#1e4b7a] px-5 text-sm font-bold text-white transition-colors hover:bg-slate-900">Import</button>
                 </div>
               </form>
 
@@ -151,8 +151,8 @@ export default async function AdminRoutesPage({
                 <p className="font-semibold text-slate-900">Warehouses CSV</p>
                 <p className="mt-1 text-sm text-slate-500">Headers: code,name,country_code,city,street1,street2,state,postal_code,phone,is_active</p>
                 <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-                  <input type="file" name="csvFile" accept=".csv,text/csv" required className="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-[#1E1B4B] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white" />
-                  <button type="submit" className="h-12 rounded-xl bg-[#1E1B4B] px-5 text-sm font-bold text-white transition-colors hover:bg-slate-900">Import</button>
+                  <input type="file" name="csvFile" accept=".csv,text/csv" required className="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-[#1e4b7a] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white" />
+                  <button type="submit" className="h-12 rounded-xl bg-[#1e4b7a] px-5 text-sm font-bold text-white transition-colors hover:bg-slate-900">Import</button>
                 </div>
               </form>
             </div>
@@ -166,7 +166,7 @@ export default async function AdminRoutesPage({
                 <RouteIcon className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#1E1B4B]">Shipment Routes</h2>
+                <h2 className="text-xl font-bold text-[#1e4b7a]">Shipment Routes</h2>
                 <p className="text-sm font-medium text-slate-500">
                   Configure supported lanes that customers can book or request quotes against.
                 </p>
@@ -190,7 +190,7 @@ export default async function AdminRoutesPage({
                 Active route
               </label>
               <textarea name="notes" rows={4} placeholder="Operational note or route remarks" className="md:col-span-2 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-medium text-slate-800 outline-none" />
-              <button type="submit" className="md:col-span-2 h-12 rounded-xl bg-[#1E1B4B] text-sm font-bold text-white transition-colors hover:bg-slate-900">
+              <button type="submit" className="md:col-span-2 h-12 rounded-xl bg-[#1e4b7a] text-sm font-bold text-white transition-colors hover:bg-slate-900">
                 Save Route
               </button>
             </form>
@@ -205,8 +205,8 @@ export default async function AdminRoutesPage({
                       </p>
                       <p className="mt-1 text-sm font-medium text-slate-500">
                         {route.name || "Lane name not set"}
-                        {route.serviceLevel ? ` · ${route.serviceLevel}` : ""}
-                        {route.transitDays ? ` · ${route.transitDays} days` : ""}
+                        {route.serviceLevel ? ` Â· ${route.serviceLevel}` : ""}
+                        {route.transitDays ? ` Â· ${route.transitDays} days` : ""}
                       </p>
                       {route.notes ? <p className="mt-2 text-sm text-slate-500">{route.notes}</p> : null}
                       <p className="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
@@ -224,11 +224,11 @@ export default async function AdminRoutesPage({
 
           <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
             <div className="mb-6 flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-violet-100 bg-violet-50">
-                <WarehouseIcon className="h-5 w-5 text-violet-600" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-orange-100 bg-orange-50">
+                <WarehouseIcon className="h-5 w-5 text-orange-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#1E1B4B]">Company Warehouses</h2>
+                <h2 className="text-xl font-bold text-[#1e4b7a]">Company Warehouses</h2>
                 <p className="text-sm font-medium text-slate-500">
                   Warehouses used when customers choose warehouse drop during shipment creation.
                 </p>
@@ -253,7 +253,7 @@ export default async function AdminRoutesPage({
               </label>
               <input type="text" name="state" placeholder="State" defaultValue={editWarehouse?.state || ""} className="h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-medium text-slate-800 outline-none" />
               <input type="text" name="street2" placeholder="Street 2" defaultValue={editWarehouse?.street2 || ""} className="md:col-span-2 h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-medium text-slate-800 outline-none" />
-              <button type="submit" className="md:col-span-3 h-12 rounded-xl bg-[#1E1B4B] text-sm font-bold text-white transition-colors hover:bg-slate-900">
+              <button type="submit" className="md:col-span-3 h-12 rounded-xl bg-[#1e4b7a] text-sm font-bold text-white transition-colors hover:bg-slate-900">
                 {editWarehouse ? "Update Warehouse" : "Save Warehouse"}
               </button>
             </form>
@@ -266,7 +266,7 @@ export default async function AdminRoutesPage({
                       <p className="font-bold text-slate-900">{warehouse.name} ({warehouse.code})</p>
                       <p className="mt-1 text-sm text-slate-500">
                         {warehouse.city}, {warehouse.country.name}
-                        {warehouse.phone ? ` · ${warehouse.phone}` : ""}
+                        {warehouse.phone ? ` Â· ${warehouse.phone}` : ""}
                       </p>
                       <p className="mt-1 text-sm text-slate-500">
                         {warehouse.street1}
@@ -296,3 +296,4 @@ export default async function AdminRoutesPage({
     </div>
   );
 }
+

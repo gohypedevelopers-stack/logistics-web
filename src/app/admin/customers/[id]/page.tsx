@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+﻿import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -142,7 +142,7 @@ export default async function AdminCustomerDetail({
         <div className="flex items-center gap-2 text-xl font-bold text-[#1E293B]">
           <Link
             href="/admin/customers"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1E1B4B] text-white transition-colors hover:bg-slate-900"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1e4b7a] text-white transition-colors hover:bg-slate-900"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -192,8 +192,8 @@ export default async function AdminCustomerDetail({
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-700">Saved Addresses</p>
               <p className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">{customer.addresses.length}</p>
             </div>
-            <div className="rounded-2xl border border-indigo-100 bg-indigo-50 p-5">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-700">Shipments</p>
+            <div className="rounded-2xl border border-orange-100 bg-orange-50 p-5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-orange-700">Shipments</p>
               <p className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">{customer.shipments.length}</p>
             </div>
             <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-5">
@@ -216,7 +216,7 @@ export default async function AdminCustomerDetail({
                 <BadgeDollarSign className="h-5 w-5 text-orange-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#1E1B4B]">Step 1: Customer Route Pricing</h2>
+                <h2 className="text-xl font-bold text-[#1e4b7a]">Step 1: Customer Route Pricing</h2>
                 <p className="text-sm font-medium text-slate-500">
                   Select a route band, enter the customer-specific price, and save the override.
                 </p>
@@ -305,7 +305,7 @@ export default async function AdminCustomerDetail({
                                   <div className="flex flex-wrap gap-3">
                                     <button
                                       type="submit"
-                                      className="h-11 rounded-xl bg-[#1E1B4B] px-5 text-sm font-semibold text-white transition-colors hover:bg-slate-900"
+                                      className="h-11 rounded-xl bg-[#1e4b7a] px-5 text-sm font-semibold text-white transition-colors hover:bg-slate-900"
                                     >
                                       Save Price
                                     </button>
@@ -370,7 +370,7 @@ export default async function AdminCustomerDetail({
                                   <div className="flex flex-wrap gap-3">
                                     <button
                                       type="submit"
-                                      className="h-11 rounded-xl bg-[#1E1B4B] px-5 text-sm font-semibold text-white transition-colors hover:bg-slate-900"
+                                      className="h-11 rounded-xl bg-[#1e4b7a] px-5 text-sm font-semibold text-white transition-colors hover:bg-slate-900"
                                     >
                                       Save
                                     </button>
@@ -400,7 +400,7 @@ export default async function AdminCustomerDetail({
                 <Warehouse className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#1E1B4B]">Step 2: Customer Warehouse Pricing</h2>
+                <h2 className="text-xl font-bold text-[#1e4b7a]">Step 2: Customer Warehouse Pricing</h2>
                 <p className="text-sm font-medium text-slate-500">
                   Enter a customer-specific warehouse charge when it differs from the standard value.
                 </p>
@@ -485,7 +485,7 @@ export default async function AdminCustomerDetail({
                           <div className="flex flex-wrap gap-3">
                             <button
                               type="submit"
-                              className="h-11 rounded-xl bg-[#1E1B4B] px-5 text-sm font-semibold text-white transition-colors hover:bg-slate-900"
+                              className="h-11 rounded-xl bg-[#1e4b7a] px-5 text-sm font-semibold text-white transition-colors hover:bg-slate-900"
                             >
                               Save Charge
                             </button>
@@ -547,7 +547,7 @@ export default async function AdminCustomerDetail({
                             <div className="flex flex-wrap gap-3">
                               <button
                                 type="submit"
-                                className="h-11 rounded-xl bg-[#1E1B4B] px-5 text-sm font-semibold text-white transition-colors hover:bg-slate-900"
+                                className="h-11 rounded-xl bg-[#1e4b7a] px-5 text-sm font-semibold text-white transition-colors hover:bg-slate-900"
                               >
                                 Save
                               </button>
@@ -576,7 +576,7 @@ export default async function AdminCustomerDetail({
                 <ContactRound className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#1E1B4B]">Saved Addresses</h2>
+                <h2 className="text-xl font-bold text-[#1e4b7a]">Saved Addresses</h2>
                 <p className="text-sm font-medium text-slate-500">
                   Customer account addresses. The first 2 are shown here.
                 </p>
@@ -647,7 +647,7 @@ export default async function AdminCustomerDetail({
                 <Route className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#1E1B4B]">Shipment Routes</h2>
+                <h2 className="text-xl font-bold text-[#1e4b7a]">Shipment Routes</h2>
                 <p className="text-sm font-medium text-slate-500">
                   Routes that already appear in this customer's shipment history.
                 </p>
@@ -700,11 +700,11 @@ export default async function AdminCustomerDetail({
 
           <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
             <div className="mb-6 flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-violet-100 bg-violet-50">
-                <MapPin className="h-5 w-5 text-violet-600" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-orange-100 bg-orange-50">
+                <MapPin className="h-5 w-5 text-orange-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#1E1B4B]">Shipment Addresses</h2>
+                <h2 className="text-xl font-bold text-[#1e4b7a]">Shipment Addresses</h2>
                 <p className="text-sm font-medium text-slate-500">
                   Pickup and destination addresses linked to this customer's shipments. The first 2 are shown here.
                 </p>
@@ -768,7 +768,7 @@ export default async function AdminCustomerDetail({
                 <Warehouse className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#1E1B4B]">Active Warehouses</h2>
+                <h2 className="text-xl font-bold text-[#1e4b7a]">Active Warehouses</h2>
                 <p className="text-sm font-medium text-slate-500">
                   Admin-managed warehouses. The first 2 are shown here.
                 </p>
@@ -852,3 +852,4 @@ export default async function AdminCustomerDetail({
     </div>
   );
 }
+

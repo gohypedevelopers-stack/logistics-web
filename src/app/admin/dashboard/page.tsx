@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+﻿import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -105,7 +105,7 @@ export default async function AdminDashboard() {
       value: totalShipments,
       href: "/admin/shipments",
       icon: PackageSearch,
-      tone: "bg-indigo-50 text-indigo-700 border-indigo-100",
+      tone: "bg-orange-50 text-orange-700 border-orange-100",
     },
     {
       label: "Waiting Shipments",
@@ -414,3 +414,4 @@ export default async function AdminDashboard() {
     </div>
   );
 }
+

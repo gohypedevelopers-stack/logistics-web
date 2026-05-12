@@ -1,9 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Compass, Network, TrendingUp, Headphones } from "lucide-react";
+import Image from "next/image";
+import { Network, TrendingUp, Headphones } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -60,16 +61,14 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white font-sans selection:bg-indigo-100">
+    <div className="min-h-screen flex bg-white font-sans selection:bg-orange-100">
       
       {/* LEFT PANEL - Gradient Brand Area */}
-      <div className="hidden lg:flex w-5/12 relative flex-col justify-between p-12 overflow-hidden bg-gradient-to-br from-[#1b195c] via-[#2A377B] to-[#b3e0e6]">
+      <div className="hidden lg:flex w-5/12 relative flex-col justify-between p-12 overflow-hidden bg-gradient-to-br from-[#1e4b7a] via-[#1e4b7a] to-[#fe6801]">
          {/* Branding Header */}
          <Link href="/" className="flex items-center gap-3 relative z-10 w-max">
-            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-               <Compass className="w-5 h-5 text-[#1b195c]" />
-            </div>
-            <span className="text-xl font-bold text-white tracking-tight">Global Navigator</span>
+            <Image src="/logo.png" alt="ship2sell logo" width={42} height={42} className="h-10 w-10 object-contain" />
+            <span className="text-xl font-bold text-white tracking-tight">ship2sell</span>
          </Link>
 
          {/* Middle Content */}
@@ -77,7 +76,7 @@ export default function RegisterPage() {
             <h1 className="text-5xl font-bold text-white leading-[1.15] mb-6 tracking-tight">
                Intelligence<br/>
                behind every<br/>
-               <span className="text-[#cbf5f3]">global move.</span>
+               <span className="text-[#ffd1ad]">global move.</span>
             </h1>
              <p className="text-[#a4b4e5] text-lg font-medium leading-relaxed max-w-md">
                Ship parcels worldwide with real-time tracking and complete peace of mind. Create your free account in under 2 minutes.
@@ -87,19 +86,19 @@ export default function RegisterPage() {
          {/* Bottom Cards */}
          <div className="relative z-10 mt-20 grid grid-cols-2 gap-6 max-w-lg">
             <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-6">
-               <Network className="w-6 h-6 text-[#cbf5f3] mb-4" />
+               <Network className="w-6 h-6 text-[#ffd1ad] mb-4" />
                <h3 className="text-white font-bold text-sm mb-2">Unified Network</h3>
                <p className="text-[#a4b4e5] text-xs font-medium leading-relaxed">Connect with 150+ global carriers instantly.</p>
             </div>
             <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-6">
-               <TrendingUp className="w-6 h-6 text-[#cbf5f3] mb-4" />
+               <TrendingUp className="w-6 h-6 text-[#ffd1ad] mb-4" />
                <h3 className="text-white font-bold text-sm mb-2">Predictive Intelligence</h3>
                <p className="text-[#a4b4e5] text-xs font-medium leading-relaxed">AI-driven delay forecasting and rerouting.</p>
             </div>
          </div>
 
          <p className="relative z-10 text-[#677abf] text-xs font-medium mt-16">
-           © 2024 Global Navigator Logistics. All rights reserved.
+           © 2024 ship2sell Logistics. All rights reserved.
          </p>
       </div>
 
@@ -107,8 +106,8 @@ export default function RegisterPage() {
       <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-24 bg-[#FAFAFA] relative">
          
          <div className="w-full max-w-xl mx-auto">
-            <h2 className="text-3xl font-bold text-[#1E1B4B] tracking-tight mb-2">Create your account</h2>
-            <p className="text-slate-500 font-medium mb-10">Ship parcels globally — free to join, no subscriptions.</p>
+            <h2 className="text-3xl font-bold text-[#1e4b7a] tracking-tight mb-2">Create your account</h2>
+            <p className="text-slate-500 font-medium mb-10">Ship parcels globally - free to join, no subscriptions.</p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
                {error && (
@@ -123,7 +122,7 @@ export default function RegisterPage() {
                   <input
                     type="text" required
                     placeholder="John Doe"
-                    className="w-full h-12 bg-slate-100 hover:bg-slate-200/50 focus:bg-white rounded-xl px-4 text-sm font-bold text-slate-900 outline-none focus:ring-2 ring-[#2A377B]/20 border border-transparent transition-all placeholder:text-slate-400 placeholder:font-medium"
+                    className="w-full h-12 bg-slate-100 hover:bg-slate-200/50 focus:bg-white rounded-xl px-4 text-sm font-bold text-slate-900 outline-none focus:ring-2 ring-[#1e4b7a]/20 border border-transparent transition-all placeholder:text-slate-400 placeholder:font-medium"
                     value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
                   />
                </div>
@@ -134,7 +133,7 @@ export default function RegisterPage() {
                   <input
                     type="email" required
                     placeholder="you@example.com"
-                    className="w-full h-12 bg-slate-100 hover:bg-slate-200/50 focus:bg-white rounded-xl px-4 text-sm font-bold text-slate-900 outline-none focus:ring-2 ring-[#2A377B]/20 border border-transparent transition-all placeholder:text-slate-400 placeholder:font-medium"
+                    className="w-full h-12 bg-slate-100 hover:bg-slate-200/50 focus:bg-white rounded-xl px-4 text-sm font-bold text-slate-900 outline-none focus:ring-2 ring-[#1e4b7a]/20 border border-transparent transition-all placeholder:text-slate-400 placeholder:font-medium"
                     value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})}
                   />
                </div>
@@ -145,7 +144,7 @@ export default function RegisterPage() {
                   <input
                     type="tel" required
                     placeholder="+1 (555) 000-0000"
-                    className="w-full h-12 bg-slate-100 hover:bg-slate-200/50 focus:bg-white rounded-xl px-4 text-sm font-bold text-slate-900 outline-none focus:ring-2 ring-[#2A377B]/20 border border-transparent transition-all placeholder:text-slate-400 placeholder:font-medium"
+                    className="w-full h-12 bg-slate-100 hover:bg-slate-200/50 focus:bg-white rounded-xl px-4 text-sm font-bold text-slate-900 outline-none focus:ring-2 ring-[#1e4b7a]/20 border border-transparent transition-all placeholder:text-slate-400 placeholder:font-medium"
                     value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})}
                   />
                </div>
@@ -156,8 +155,8 @@ export default function RegisterPage() {
                      <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-2 ml-1">Password</label>
                      <input
                        type="password" required minLength={8}
-                       placeholder="••••••••"
-                       className="w-full h-12 bg-slate-100 hover:bg-slate-200/50 focus:bg-white rounded-xl px-4 text-sm font-bold text-slate-900 outline-none focus:ring-2 ring-[#2A377B]/20 border border-transparent transition-all placeholder:text-slate-400 placeholder:font-medium"
+                       placeholder="********"
+                       className="w-full h-12 bg-slate-100 hover:bg-slate-200/50 focus:bg-white rounded-xl px-4 text-sm font-bold text-slate-900 outline-none focus:ring-2 ring-[#1e4b7a]/20 border border-transparent transition-all placeholder:text-slate-400 placeholder:font-medium"
                        value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})}
                      />
                   </div>
@@ -165,8 +164,8 @@ export default function RegisterPage() {
                      <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-2 ml-1">Confirm Password</label>
                      <input
                        type="password" required minLength={8}
-                       placeholder="••••••••"
-                       className="w-full h-12 bg-slate-100 hover:bg-slate-200/50 focus:bg-white rounded-xl px-4 text-sm font-bold text-slate-900 outline-none focus:ring-2 ring-[#2A377B]/20 border border-transparent transition-all placeholder:text-slate-400 placeholder:font-medium"
+                       placeholder="********"
+                       className="w-full h-12 bg-slate-100 hover:bg-slate-200/50 focus:bg-white rounded-xl px-4 text-sm font-bold text-slate-900 outline-none focus:ring-2 ring-[#1e4b7a]/20 border border-transparent transition-all placeholder:text-slate-400 placeholder:font-medium"
                        value={formData.confirmPassword} onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
                      />
                   </div>
@@ -178,18 +177,18 @@ export default function RegisterPage() {
                      <input 
                        type="checkbox" 
                        id="terms" required
-                       className="w-4 h-4 rounded border-slate-300 text-[#2A377B] focus:ring-[#2A377B]"
+                       className="w-4 h-4 rounded border-slate-300 text-[#1e4b7a] focus:ring-[#1e4b7a]"
                        checked={formData.terms} onChange={(e) => setFormData({...formData, terms: e.target.checked})}
                      />
                   </div>
                   <label htmlFor="terms" className="text-xs font-medium text-slate-600 leading-relaxed cursor-pointer select-none">
-                     By creating an account, you agree to our <span className="font-bold text-[#1E1B4B]">Terms of Service</span> and <span className="font-bold text-[#1E1B4B]">Privacy Policy</span>.
+                     By creating an account, you agree to our <span className="font-bold text-[#1e4b7a]">Terms of Service</span> and <span className="font-bold text-[#1e4b7a]">Privacy Policy</span>.
                   </label>
                </div>
 
                {/* Submit Button */}
                <div className="pt-4">
-                  <button type="submit" disabled={loading} className="w-full h-14 bg-[#2A377B] hover:bg-[#1E1B4B] text-white font-bold text-sm rounded-xl transition-colors shadow-md flex items-center justify-center">
+                  <button type="submit" disabled={loading} className="w-full h-14 bg-[#1e4b7a] hover:bg-[#173e67] text-white font-bold text-sm rounded-xl transition-colors shadow-md flex items-center justify-center">
                     {loading ? "Creating Account..." : "Create Account"}
                   </button>
                </div>
@@ -197,7 +196,7 @@ export default function RegisterPage() {
 
             <div className="mt-8 text-center">
                <span className="text-sm font-medium text-slate-500">Already have an account? </span>
-               <Link href="/login" className="text-sm font-bold text-[#2A377B] hover:underline">
+               <Link href="/login" className="text-sm font-bold text-[#1e4b7a] hover:underline">
                   Sign In
                </Link>
             </div>
@@ -205,10 +204,13 @@ export default function RegisterPage() {
 
          {/* Floating Support Button */}
          <div className="absolute bottom-8 right-8 w-14 h-14 bg-white rounded-2xl shadow-xl flex items-center justify-center cursor-pointer hover:-translate-y-1 transition-transform border border-slate-50">
-            <Headphones className="w-6 h-6 text-[#1E1B4B]" />
+            <Headphones className="w-6 h-6 text-[#1e4b7a]" />
          </div>
       </div>
 
     </div>
   );
 }
+
+
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -38,7 +38,7 @@ export function TrackingEventForm({
   return (
     <div className="app-card overflow-hidden p-8">
       <h3 className="mb-6 flex items-center gap-3 font-semibold text-slate-900">
-        <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+        <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-orange-50 text-orange-600">
           <Milestone className="w-4 h-4" />
         </span>
         Tracking Update
@@ -132,3 +132,4 @@ export function TrackingEventForm({
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useTransition, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -55,7 +55,7 @@ export function BillingInfo({ shipmentId, currentStatus, paymentStatus }: Billin
             className={cn(
                "flex w-full items-center justify-center gap-2 py-3 text-xs font-semibold uppercase transition-all",
                isPending ? "text-slate-400" : 
-               success ? "text-teal-600" : "text-blue-600 hover:text-blue-800"
+               success ? "text-orange-600" : "text-blue-600 hover:text-blue-800"
             )}
           >
              {isPending ? (
@@ -69,3 +69,4 @@ export function BillingInfo({ shipmentId, currentStatus, paymentStatus }: Billin
     </div>
   );
 }
+
