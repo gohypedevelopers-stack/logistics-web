@@ -62,6 +62,13 @@ model User {
   passwordHash  String
   name          String?
   role          Role      @default(CUSTOMER)
+  emailVerified Boolean   @default(false)
+  emailVerificationOtpHash String?
+  emailVerificationOtpExpiresAt DateTime?
+  emailVerificationLastSentAt DateTime?
+  passwordResetOtpHash String?
+  passwordResetOtpExpiresAt DateTime?
+  passwordResetLastSentAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

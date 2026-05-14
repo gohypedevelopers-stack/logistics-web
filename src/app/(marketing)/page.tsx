@@ -24,18 +24,21 @@ export default function Home() {
   const steps = [
     {
       step: "01",
+      label: "Booking",
       icon: PackageCheck,
       title: "Register & Book",
       desc: "Create your free account and book your shipment in under 2 minutes. No contracts required.",
     },
     {
       step: "02",
+      label: "Collection",
       icon: Activity,
       title: "Collect & Verify",
       desc: "Our agents collect from your door, verifying cargo class and weight for absolute quote accuracy.",
     },
     {
       step: "03",
+      label: "Tracking",
       icon: Globe2,
       title: "Track & Release",
       desc: "Monitor your parcel move across continents. Automated customs clearance handles the rest.",
@@ -157,7 +160,7 @@ export default function Home() {
                 <div className="mb-7 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eef4fb] transition-transform group-hover:scale-110">
                   <s.icon className="h-6 w-6 text-[#1e4b7a]" />
                 </div>
-                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-orange-600">{s.step} Experience</p>
+                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-orange-600">{s.step} {s.label}</p>
                 <h3 className="mb-3 text-2xl font-black text-[#1e4b7a]">{s.title}</h3>
                 <p className="text-sm font-medium leading-relaxed text-slate-500">{s.desc}</p>
               </div>
@@ -174,79 +177,96 @@ export default function Home() {
           </p>
 
           <div className="mt-14 grid gap-6 md:grid-cols-3">
-            <div className="animate-fade-up relative flex min-h-[360px] flex-col justify-between overflow-hidden rounded-[30px] bg-[#1e4b7a] p-7 text-left text-white shadow-2xl md:h-[450px] md:rounded-[36px] md:p-10">
-              <div className="absolute -top-16 -right-8 h-52 w-52 rounded-full bg-orange-400/20 blur-3xl" />
-              <div>
-                <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10">
-                  <Plane className="h-6 w-6 text-[#fe6801]" />
-                </div>
-                <h3 className="mb-4 text-3xl font-black leading-[1.05] md:text-4xl [font-family:var(--font-display,var(--font-sans))]">
-                  Priority
-                  <br />
-                  Air Cargo
-                </h3>
-                <p className="text-sm font-medium leading-relaxed text-orange-100">
-                  Fastest path for high-value electronics, personal essentials, and time-critical deliveries.
-                </p>
+            <div className="animate-fade-up group relative overflow-hidden rounded-[30px] border border-[#dbe5f0] bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl md:h-[450px] md:rounded-[36px]">
+              <div className="relative h-40 overflow-hidden">
+                <img src="/hero-bg.png" alt="Air cargo operations" className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#0f3a68]/75 to-[#1e4b7a]/45" />
               </div>
-              <Link
-                href="/services"
-                className="w-max rounded-xl bg-[#fe6801] px-7 py-3 text-sm font-black text-[#1e4b7a] transition-colors hover:bg-orange-300"
-              >
-                Check Air Rates
-              </Link>
+              <div className="flex h-[calc(100%-10rem)] flex-col justify-between p-7 md:p-8">
+                <div>
+                  <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eef4fb]">
+                    <Plane className="h-6 w-6 text-[#fe6801]" />
+                  </div>
+                  <h3 className="mb-4 text-3xl font-black leading-[1.05] text-[#1e4b7a] md:text-4xl [font-family:var(--font-display,var(--font-sans))]">
+                    Priority
+                    <br />
+                    Air Cargo
+                  </h3>
+                  <p className="text-sm font-medium leading-relaxed text-slate-500">
+                    Fastest path for high-value electronics, personal essentials, and time-critical deliveries.
+                  </p>
+                </div>
+                <Link
+                  href="/services"
+                  className="w-max rounded-xl bg-[#fe6801] px-7 py-3 text-sm font-black text-white transition-colors hover:bg-orange-500"
+                >
+                  Check Air Rates
+                </Link>
+              </div>
             </div>
 
-            <div className="group animate-fade-up relative flex min-h-[360px] flex-col justify-between overflow-hidden rounded-[30px] border border-[#dbe5f0] bg-white p-7 text-left shadow-sm transition-all hover:shadow-xl md:h-[450px] md:rounded-[36px] md:p-10">
-              <div>
-                <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eef4fb]">
-                  <Truck className="h-6 w-6 text-[#1e4b7a]" />
-                </div>
-                <h3 className="mb-4 text-3xl font-black leading-[1.05] text-[#1e4b7a] md:text-4xl [font-family:var(--font-display,var(--font-sans))]">
-                  Last-Mile
-                  <br />
-                  Network
-                </h3>
-                <p className="mb-6 text-sm font-medium leading-relaxed text-slate-500">
-                  Delivery reaching 19,000+ pin codes. From Bengaluru tech hubs to Mumbai financial center.
-                </p>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-orange-500" />
-                  <span className="text-xs font-bold text-slate-700">Digital Proof of Delivery</span>
-                </div>
+            <div className="group animate-fade-up relative overflow-hidden rounded-[30px] border border-[#dbe5f0] bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl md:h-[450px] md:rounded-[36px]">
+              <div className="relative h-40 overflow-hidden">
+                <img src="/bg.jpg" alt="Last-mile delivery vehicles" className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#123d6b]/60 to-transparent" />
               </div>
-              <Link
-                href="/services"
-                className="inline-flex w-max items-center gap-2 text-[12px] font-black uppercase tracking-[0.18em] text-[#1e4b7a] transition-transform group-hover:translate-x-1"
-              >
-                Manage Network <ArrowRight className="h-4 w-4" />
-              </Link>
+              <div className="flex h-[calc(100%-10rem)] flex-col justify-between p-7 md:p-8">
+                <div>
+                  <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eef4fb]">
+                    <Truck className="h-6 w-6 text-[#1e4b7a]" />
+                  </div>
+                  <h3 className="mb-4 text-3xl font-black leading-[1.05] text-[#1e4b7a] md:text-4xl [font-family:var(--font-display,var(--font-sans))]">
+                    Last-Mile
+                    <br />
+                    Network
+                  </h3>
+                  <p className="mb-6 text-sm font-medium leading-relaxed text-slate-500">
+                    Delivery reaching 19,000+ pin codes. From Bengaluru tech hubs to Mumbai financial center.
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-orange-500" />
+                    <span className="text-xs font-bold text-slate-700">Digital Proof of Delivery</span>
+                  </div>
+                </div>
+                <Link
+                  href="/services"
+                  className="inline-flex w-max items-center gap-2 text-[12px] font-black uppercase tracking-[0.18em] text-[#1e4b7a] transition-transform group-hover:translate-x-1"
+                >
+                  Manage Network <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
             </div>
 
-            <div className="animate-fade-up relative flex min-h-[360px] flex-col justify-between overflow-hidden rounded-[30px] border border-[#dbe5f0] bg-white p-7 text-left shadow-sm md:h-[450px] md:rounded-[36px] md:p-10">
-              <div>
-                <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50">
-                  <BarChart3 className="h-6 w-6 text-[#1e4b7a]" />
-                </div>
-                <h3 className="mb-4 text-3xl font-black leading-[1.05] text-[#1e4b7a] md:text-4xl [font-family:var(--font-display,var(--font-sans))]">
-                  Customs
-                  <br />
-                  Intelligence
-                </h3>
-                <p className="text-sm font-medium leading-relaxed text-slate-500">
-                  Automated duty calculations and digital pre-clearance to minimize landing delays.
-                </p>
+            <div className="animate-fade-up group relative overflow-hidden rounded-[30px] border border-[#dbe5f0] bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl md:h-[450px] md:rounded-[36px]">
+              <div className="relative h-40 overflow-hidden bg-slate-100">
+                <img src="/courier-loop-whiteboard.svg" alt="Customs compliance workflow" className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#173f6e]/15 to-[#fe6801]/10" />
               </div>
-              <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
-                <p className="mb-2 text-center text-[10px] font-black uppercase tracking-widest text-slate-400">Platform Health</p>
-                <div className="flex justify-center gap-1">
-                  {[...Array(8)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="h-6 w-1.5 animate-pulse rounded-full bg-orange-400"
-                      style={{ animationDelay: `${i * 100}ms` }}
-                    />
-                  ))}
+              <div className="flex h-[calc(100%-10rem)] flex-col justify-between p-7 md:p-8">
+                <div>
+                  <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50">
+                    <BarChart3 className="h-6 w-6 text-[#1e4b7a]" />
+                  </div>
+                  <h3 className="mb-4 text-3xl font-black leading-[1.05] text-[#1e4b7a] md:text-4xl [font-family:var(--font-display,var(--font-sans))]">
+                    Customs
+                    <br />
+                    Intelligence
+                  </h3>
+                  <p className="text-sm font-medium leading-relaxed text-slate-500">
+                    Automated duty calculations and digital pre-clearance to minimize landing delays.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                  <p className="mb-2 text-center text-[10px] font-black uppercase tracking-widest text-slate-400">Platform Health</p>
+                  <div className="flex justify-center gap-1">
+                    {[...Array(8)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="h-6 w-1.5 animate-pulse rounded-full bg-orange-400"
+                        style={{ animationDelay: `${i * 100}ms` }}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -268,7 +288,7 @@ export default function Home() {
               <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
                 <Link
                   href="/register"
-                  className="rounded-2xl bg-[#fe6801] px-10 py-4 text-sm font-black text-[#1e4b7a] transition-all hover:-translate-y-0.5 hover:bg-orange-300"
+                  className="rounded-2xl bg-[#fe6801] px-10 py-4 text-sm font-black text-white transition-all hover:-translate-y-0.5 hover:bg-orange-500"
                 >
                   Create Free Account
                 </Link>

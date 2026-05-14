@@ -22,10 +22,11 @@ export async function createStaffAction(formData: FormData) {
   try {
     await prisma.user.create({
       data: {
-        email,
+        email: email.trim().toLowerCase(),
         name,
         passwordHash: hashedPassword,
         role,
+        emailVerified: true,
         staffProfile: {
           create: {
             department,

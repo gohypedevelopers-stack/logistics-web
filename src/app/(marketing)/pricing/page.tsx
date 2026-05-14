@@ -263,21 +263,6 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* â”€â”€ FOOTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <footer className="border-t border-slate-100 py-10 bg-white">
-        <div className="container mx-auto px-6 lg:px-16 max-w-6xl flex flex-col md:flex-row items-center justify-between gap-6">
-          <div>
-            <p className="font-bold text-[#1e4b7a] text-[15px] mb-1">ship2sell</p>
-            <p className="text-[11px] text-slate-400 font-medium">© 2024 ship2sell Logistics. All rights reserved.</p>
-          </div>
-          <div className="flex flex-wrap gap-6 text-[11px] font-bold text-slate-400">
-            {['Privacy Policy', 'Terms of Service', 'Global Compliance', 'Sustainability Report', 'Contact Support'].map(l => (
-              <a key={l} href="#" className="hover:text-[#1e4b7a] transition-colors">{l}</a>
-            ))}
-          </div>
-        </div>
-      </footer>
-
     </div>
   );
 }

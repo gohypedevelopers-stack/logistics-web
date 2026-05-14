@@ -15,16 +15,26 @@ function LoginForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [registered, setRegistered] = useState(false);
+  const [verified, setVerified] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState("");
 
   useEffect(() => {
     if (searchParams.get("registered")) {
       setRegistered(true);
+    }
+    if (searchParams.get("verified")) {
+      setVerified(true);
+    }
+    const queryEmail = searchParams.get("email");
+    if (queryEmail) {
+      setEmail(queryEmail);
     }
   }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setUnverifiedEmail("");
     setLoading(true);
     
     console.log(`[LOGIN_FRONTEND] Starting sign-in attempt for: ${email}`);
@@ -44,10 +54,18 @@ function LoginForm() {
       });
 
       if (res?.error) {
-        if (res.error === "CredentialsSignin") {
-           setError("The email or password you entered is incorrect.");
+        if (res.error.includes("EMAIL_NOT_VERIFIED")) {
+          setUnverifiedEmail(email);
+          setError("Your email is not verified. Please verify with OTP first.");
+        } else if (
+          res.error === "CredentialsSignin" ||
+          res.error.includes("INVALID_CREDENTIALS")
+        ) {
+          setError("The email or password you entered is incorrect.");
+        } else if (res.error.includes("AUTH_TIMEOUT")) {
+          setError("Login timed out. Please try again in a moment.");
         } else {
-           setError(`Authentication failed: ${res.error}. Please try again later.`);
+          setError("Authentication failed. Please try again later.");
         }
         setLoading(false);
       } else if (res?.ok) {
@@ -88,7 +106,7 @@ function LoginForm() {
       {/* LEFT PANEL - Gradient Brand Area */}
       <div className="hidden lg:flex w-5/12 relative flex-col justify-between p-12 overflow-hidden bg-gradient-to-br from-[#1e4b7a] via-[#1e4b7a] to-[#fe6801]">
          {/* Branding Header */}
-         <Link href="/" className="flex items-center gap-3 relative z-10 w-max">
+         <Link href="/" className="flex items-center gap-3 relative z-10 w-max rounded-xl bg-white/10 px-3 py-2 backdrop-blur-md border border-white/20">
             <Image src="/logo.png" alt="ship2sell logo" width={42} height={42} className="h-10 w-10 object-contain" />
             <span className="text-xl font-bold text-white tracking-tight">ship2sell</span>
          </Link>
@@ -119,7 +137,7 @@ function LoginForm() {
          </div>
 
          <p className="relative z-10 text-[#677abf] text-xs font-medium mt-16">
-            © 2024 ship2sell Logistics. All rights reserved.
+            © {new Date().getFullYear()} ship2sell Logistics. All rights reserved.
          </p>
       </div>
 
@@ -128,21 +146,36 @@ function LoginForm() {
          
          <div className="w-full max-w-md mx-auto">
             {registered && (
-               <div className="mb-6 p-4 bg-green-50 border border-green-100 rounded-2xl flex items-center gap-3">
+               <div className="mb-4 p-4 bg-green-50 border border-green-100 rounded-2xl flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center shrink-0">
                      <ArrowRight className="w-4 h-4 text-white" />
                   </div>
-                  <p className="text-green-700 text-sm font-bold">Registration successful! Please sign in.</p>
+                  <p className="text-green-700 text-sm font-bold">Registration successful. Verify OTP from your email before signing in.</p>
+               </div>
+            )}
+            {verified && (
+               <div className="mb-4 p-4 bg-blue-50 border border-blue-100 rounded-2xl">
+                  <p className="text-blue-700 text-sm font-bold">Email verified successfully. You can sign in now.</p>
                </div>
             )}
 
-            <h2 className="text-3xl font-bold text-[#1e4b7a] tracking-tight mb-2">Sign in</h2>
+            <h2 className="text-3xl font-bold text-[#1e4b7a] tracking-tight mb-2">Login</h2>
             <p className="text-slate-500 font-medium mb-10">Enter your credentials to access your parcel console.</p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
                {error && (
                  <div className="bg-red-50 text-red-700 p-4 rounded-xl text-sm font-bold border border-red-100">
                    {error}
+                   {unverifiedEmail && (
+                     <div className="mt-2">
+                       <Link
+                         href={`/verify-email?email=${encodeURIComponent(unverifiedEmail)}`}
+                         className="underline font-extrabold"
+                       >
+                         Verify email now
+                       </Link>
+                     </div>
+                   )}
                  </div>
                )}
 
@@ -161,7 +194,7 @@ function LoginForm() {
                <div>
                   <div className="flex items-center justify-between mb-2 ml-1">
                      <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-widest">Password</label>
-                     <Link href="#" className="text-[10px] font-bold text-[#1e4b7a] hover:underline uppercase tracking-widest">Forgot Password?</Link>
+                     <Link href={`/forgot-password${email ? `?email=${encodeURIComponent(email)}` : ""}`} className="text-[10px] font-bold text-[#1e4b7a] hover:underline uppercase tracking-widest">Forgot Password?</Link>
                   </div>
                   <input
                     type="password" required
@@ -174,7 +207,7 @@ function LoginForm() {
                {/* Submit Button */}
                <div className="pt-4">
                   <button type="submit" disabled={loading} className="w-full h-14 bg-[#1e4b7a] hover:bg-[#173e67] text-white font-bold text-sm rounded-xl transition-colors shadow-md flex items-center justify-center gap-2 group">
-                    {loading ? "Signing in..." : "Sign In"} 
+                    {loading ? "Logging in..." : "Login"} 
                     {!loading && <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
                   </button>
                </div>

@@ -25,12 +25,14 @@ async function main() {
         passwordHash,
         name: staff.name,
         role: staff.role,
+        emailVerified: true,
       },
       create: {
         email: staff.email,
         name: staff.name,
         passwordHash,
         role: staff.role,
+        emailVerified: true,
         staffProfile: {
           create: {
             department: staff.role.toString(),
@@ -48,12 +50,14 @@ async function main() {
       passwordHash,
       name: 'Customer Demo',
       role: Role.CUSTOMER,
+      emailVerified: true,
     },
     create: {
       email: 'customer@example.com',
       name: 'Customer Demo',
       passwordHash,
       role: Role.CUSTOMER,
+      emailVerified: true,
       customerProfile: {
         create: {
           companyName: 'Demo Corp',

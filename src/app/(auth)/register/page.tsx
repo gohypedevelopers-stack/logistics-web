@@ -46,13 +46,17 @@ export default function RegisterPage() {
            phone: formData.phone,
         }),
       });
+      const d = await res.json();
 
       if (!res.ok) {
-         const d = await res.json();
          throw new Error(d.message || "Registration failed");
       }
-      
-      router.push("/login?registered=true");
+
+      router.push(
+        `/verify-email?email=${encodeURIComponent(formData.email)}&registered=true${
+          d.otpDeliveryFailed ? "&otpDeliveryFailed=true" : ""
+        }`
+      );
     } catch (err: any) {
       setError(err.message);
     } finally {

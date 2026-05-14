@@ -271,45 +271,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* â”€â”€ FOOTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <footer className="border-t border-slate-100 py-12 bg-white">
-        <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
-          <div className="flex flex-col md:flex-row justify-between items-start gap-10 mb-10">
-            <div>
-              <h2 className="font-bold text-[#1e4b7a] text-[18px] mb-2">ship2sell</h2>
-              <p className="text-[12px] text-slate-500 font-medium max-w-xs leading-relaxed">Next-generation worldwide logistics intelligence for international businesses.</p>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-10 text-sm">
-              {[
-                { heading: 'Services', links: ['Air Freight', 'Ocean Freight', 'Warehousing', 'Customs'] },
-                { heading: 'Company', links: ['About', 'Careers', 'Press', 'Blog'] },
-                { heading: 'Solutions', links: ['Enterprise', 'SME', 'Government', 'Pharma'] },
-                { heading: 'Legal', links: ['Privacy Policy', 'Terms of Service', 'Global Compliance', 'Contact'] },
-              ].map((col, i) => (
-                <div key={i}>
-                  <p className="font-black text-[#1e4b7a] text-[12px] tracking-widest uppercase mb-4">{col.heading}</p>
-                  <ul className="space-y-2.5">
-                    {col.links.map((l, j) => (
-                      <li key={j}><a href="#" className="text-[12px] font-medium text-slate-500 hover:text-[#1e4b7a] transition-colors">{l}</a></li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="border-t border-slate-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-[11px] text-slate-400 font-medium">© 2024 ship2sell Logistics. All rights reserved.</p>
-            <div className="flex gap-6 text-[11px] font-bold text-slate-400">
-              <a href="#" className="hover:text-[#1e4b7a] transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-[#1e4b7a] transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-[#1e4b7a] transition-colors">Global Compliance</a>
-              <a href="#" className="hover:text-[#1e4b7a] transition-colors">Sustainability Note</a>
-              <a href="#" className="hover:text-[#1e4b7a] transition-colors">Contact Support</a>
-            </div>
-          </div>
-        </div>
-      </footer>
-
     </div>
   );
 }

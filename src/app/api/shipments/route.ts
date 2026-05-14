@@ -9,7 +9,7 @@ import {
   buildShipmentTrackingId,
   createTrackingSummary,
 } from "@/lib/shipment-utils";
-import { sendStatusEmail } from "@/lib/email";
+import { sendShipmentBookedEmail } from "@/lib/email";
 
 const createShipmentSchema = z.object({
   collectionType: z.enum(["PICKUP", "WAREHOUSE_DROP"]).default("PICKUP"),
@@ -239,14 +239,20 @@ export async function POST(request: Request) {
     revalidatePath("/admin/dashboard");
     revalidatePath("/admin/shipments");
 
-    if (dbUser.name) {
+    if (dbUser.email) {
       try {
-        await sendStatusEmail(
-          dbUser.name,
+        await sendShipmentBookedEmail({
+          toEmail: dbUser.email,
+          customerName: dbUser.name ?? "Customer",
           trackingId,
-          "Shipment created",
-          createTrackingSummary(status),
-        );
+          referenceNo,
+          pickupCountry: pickupCountry.name,
+          destinationCountry: destinationCountry.name,
+          collectionType: payload.collectionType,
+          weight: payload.weight,
+          pcs: payload.pcs,
+          description: payload.description,
+        });
       } catch (error) {
         console.error("[SHIPMENTS_POST] Non-blocking email failure", error);
       }

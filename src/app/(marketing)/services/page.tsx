@@ -54,7 +54,7 @@ export default function ServicesPage() {
           <div className="grid md:grid-cols-2 gap-6">
 
             {/* Air Freight */}
-            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-8 hover:border-orange-200 hover:shadow-md transition-all group">
+            <div id="air-freight" className="scroll-mt-28 bg-slate-50 border border-slate-100 rounded-2xl p-8 hover:border-orange-200 hover:shadow-md transition-all group">
               <div className="flex justify-between items-start mb-5">
                 <div className="w-11 h-11 bg-orange-100 rounded-xl flex items-center justify-center">
                   <Plane className="w-5 h-5 text-[#1e4b7a]" />
@@ -71,7 +71,7 @@ export default function ServicesPage() {
             </div>
 
             {/* Ocean Freight */}
-            <div className="bg-[#1e4b7a] border border-[#1e4b7a] rounded-2xl p-8 hover:border-orange-400 hover:shadow-xl transition-all group relative overflow-hidden">
+            <div id="ocean-freight" className="scroll-mt-28 bg-[#1e4b7a] border border-[#1e4b7a] rounded-2xl p-8 hover:border-orange-400 hover:shadow-xl transition-all group relative overflow-hidden">
               <div className="absolute top-0 right-0 w-40 h-40 bg-orange-500/20 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
               <div className="relative z-10">
                 <div className="flex justify-between items-start mb-5">
@@ -91,7 +91,7 @@ export default function ServicesPage() {
             </div>
 
             {/* Warehousing */}
-            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-8 hover:border-orange-200 hover:shadow-md transition-all group">
+            <div id="warehousing" className="scroll-mt-28 bg-slate-50 border border-slate-100 rounded-2xl p-8 hover:border-orange-200 hover:shadow-md transition-all group">
               <div className="flex justify-between items-start mb-5">
                 <div className="w-11 h-11 bg-orange-50 rounded-xl flex items-center justify-center">
                   <Building2 className="w-5 h-5 text-orange-600" />
@@ -106,8 +106,25 @@ export default function ServicesPage() {
               </button>
             </div>
 
+            {/* Express Courier */}
+            <div id="express-courier" className="scroll-mt-28 bg-slate-50 border border-slate-100 rounded-2xl p-8 hover:border-orange-200 hover:shadow-md transition-all group">
+              <div className="flex justify-between items-start mb-5">
+                <div className="w-11 h-11 bg-orange-100 rounded-xl flex items-center justify-center">
+                  <Map className="w-5 h-5 text-[#1e4b7a]" />
+                </div>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-blue-700 bg-blue-50 border border-blue-100 px-2 py-1 rounded-full">Same Day Priority</span>
+              </div>
+              <h3 className="text-[20px] font-black text-[#1e4b7a] mb-3 tracking-tight">Express Courier</h3>
+              <p className="text-slate-500 font-medium text-sm leading-relaxed mb-6">
+                Time-critical international documents and parcels with rapid pickup windows, milestone scanning, and priority dispatch routing.
+              </p>
+              <button className="flex items-center gap-2 text-[#1e4b7a] font-bold text-sm hover:gap-3 transition-all">
+                View Express Lanes <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+
             {/* Customs Brokerage - featured dark */}
-            <div className="bg-gradient-to-br from-orange-600 to-orange-700 rounded-2xl p-8 hover:shadow-xl transition-all group relative overflow-hidden">
+            <div id="customs-brokerage" className="scroll-mt-28 bg-gradient-to-br from-orange-600 to-orange-700 rounded-2xl p-8 hover:shadow-xl transition-all group relative overflow-hidden">
               <div className="absolute right-0 bottom-0 w-48 h-48 bg-orange-400/20 rounded-full blur-3xl translate-x-1/4 translate-y-1/4"></div>
               <div className="relative z-10">
                 <div className="flex justify-between items-start mb-5">
@@ -217,25 +234,25 @@ export default function ServicesPage() {
 
           <div className="grid md:grid-cols-3 gap-6 mb-10">
             {[
-              { region: 'London to Mumbai Corridor', tag: 'ðŸ‡¬ðŸ‡§', desc: 'Our flagship UK-India channel: 5-day air / 21-day ocean connections.', tags: ['Air Freight', 'LCL Ocean', 'Overnight Docs'], status: 'Fully Operational' },
-              { region: 'NYC to Delhi | Strategic Lane', tag: 'ðŸ‡ºðŸ‡¸', desc: 'Premium B2B tier. Technology and pharmaceutical specialists.', tags: ['Priority Tier', 'Temperature Sensitive', 'Priority Assist'], status: 'High Priority' },
-              { region: '130+ Countries', tag: 'ðŸŒ', desc: 'Full-service shipping capacity across 6 continents and 130+ countries.', tags: [], status: 'Global Reach' },
+              { region: 'London to Mumbai Corridor', tag: 'UK-IN', desc: 'Our flagship UK-India channel: 5-day air / 21-day ocean connections.', tags: ['Air Freight', 'LCL Ocean', 'Overnight Docs'], status: 'Fully Operational' },
+              { region: 'NYC to Delhi | Strategic Lane', tag: 'US-IN', desc: 'Premium B2B tier. Technology and pharmaceutical specialists.', tags: ['Priority Tier', 'Temperature Sensitive', 'Priority Assist'], status: 'High Priority' },
+              { region: '130+ Countries', tag: 'GLOBAL', desc: 'Full-service shipping capacity across 6 continents and 130+ countries.', tags: [], status: 'Global Reach' },
             ].map((c, i) => (
-              <div key={i} className={`rounded-2xl p-7 border ${i === 2 ? 'bg-[#1e4b7a] border-[#1e4b7a] text-white' : 'bg-slate-50 border-slate-100'} hover:shadow-md transition-all`}>
+              <div key={i} className="rounded-2xl p-7 border bg-slate-50 border-slate-100 hover:shadow-md transition-all">
                 <div className="flex justify-between items-start mb-4">
-                  <span className="text-2xl">{c.tag}</span>
+                  <span className="text-xs font-black tracking-[0.18em] text-[#1e4b7a]">{c.tag}</span>
                   <span className={`text-[9px] font-bold px-2.5 py-1 rounded-full tracking-widest uppercase ${
-                    i === 1 ? 'bg-orange-100 text-orange-700' : i === 2 ? 'bg-white/15 text-orange-200' : 'bg-green-100 text-green-700'
+                    i === 1 ? 'bg-orange-100 text-orange-700' : i === 2 ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
                   }`}>{c.status}</span>
                 </div>
-                <h3 className={`font-black text-[15px] mb-3 tracking-tight ${i === 2 ? 'text-white' : 'text-[#1e4b7a]'}`}>{c.region}</h3>
-                <p className={`text-sm font-medium leading-relaxed mb-4 ${i === 2 ? 'text-orange-200' : 'text-slate-500'}`}>{c.desc}</p>
+                <h3 className="font-black text-[15px] mb-3 tracking-tight text-[#1e4b7a]">{c.region}</h3>
+                <p className="text-sm font-medium leading-relaxed mb-4 text-slate-500">{c.desc}</p>
                 <div className="flex flex-wrap gap-2">
                   {c.tags.map((t, j) => (
-                    <span key={j} className={`text-[9px] font-bold px-2.5 py-1 rounded-lg tracking-wide ${i === 2 ? 'bg-white/10 text-orange-200' : 'bg-white border border-slate-200 text-slate-600'}`}>{t}</span>
+                    <span key={j} className="text-[9px] font-bold px-2.5 py-1 rounded-lg tracking-wide bg-white border border-slate-200 text-slate-600">{t}</span>
                   ))}
                   {i === 2 && (
-                    <button className="mt-4 w-full h-10 bg-white/15 hover:bg-white/25 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-colors">
+                    <button className="mt-4 w-full h-10 bg-[#1e4b7a] hover:bg-[#173e67] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-colors">
                       <Globe2 className="w-4 h-4" /> View Site Map
                     </button>
                   )}
@@ -250,7 +267,7 @@ export default function ServicesPage() {
       <section className="py-24 bg-[#FAFAFD]">
         <div className="container mx-auto px-6 lg:px-16 max-w-3xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-black text-[#1e4b7a] tracking-tight mb-3">Common Inquiries</h2>
+            <h2 className="text-3xl font-black text-[#1e4b7a] tracking-tight mb-3">FAQ</h2>
             <p className="text-slate-500 font-medium">Answers to common logistics and shipping questions.</p>
           </div>
 
@@ -264,36 +281,6 @@ export default function ServicesPage() {
                 <p className="text-slate-500 text-sm font-medium leading-relaxed mt-4 border-t border-slate-50 pt-4">{faq.a}</p>
               </details>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* â”€â”€ CTA SECTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-6 lg:px-16 max-w-4xl">
-          <div className="bg-gradient-to-br from-[#1e4b7a] to-[#1e4b7a] rounded-3xl p-14 text-center text-white relative overflow-hidden shadow-2xl">
-            <div className="absolute top-0 left-0 w-64 h-64 bg-orange-500/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-            <div className="absolute bottom-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
-            <div className="relative z-10">
-              <h2 className="text-4xl font-black tracking-tight mb-4 leading-tight">
-                Ready to scale your global<br />operations?
-              </h2>
-              <p className="text-orange-100/80 font-medium text-base mb-10 max-w-lg mx-auto leading-relaxed">
-                Join over 10,000 businesses navigating the global markets with our platform.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/register">
-                  <button className="h-13 px-8 py-4 bg-white text-[#1e4b7a] font-black text-sm rounded-2xl hover:bg-orange-50 transition-colors shadow-lg">
-                    Get a Quote
-                  </button>
-                </Link>
-                <Link href="/contact">
-                  <button className="h-13 px-8 py-4 bg-white/10 border border-white/20 text-white font-black text-sm rounded-2xl hover:bg-white/20 transition-colors backdrop-blur-sm">
-                    Schedule a Demo
-                  </button>
-                </Link>
-              </div>
-            </div>
           </div>
         </div>
       </section>

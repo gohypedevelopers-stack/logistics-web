@@ -1,6 +1,6 @@
 ﻿import Image from "next/image";
 import Link from "next/link";
-import { Share2, Globe, Mail } from "lucide-react";
+import { Facebook, Instagram, Mail } from "lucide-react";
 
 export function Footer() {
   return (
@@ -20,10 +20,10 @@ export function Footer() {
             <div>
               <h4 className="text-[#1e4b7a] font-bold tracking-wide text-xs mb-6">Services</h4>
               <ul className="space-y-4 text-xs font-medium text-slate-400">
-                <li><Link href="/services" className="hover:text-slate-800 transition-colors">Air Freight</Link></li>
-                <li><Link href="/services" className="hover:text-slate-800 transition-colors">Ocean Shipping</Link></li>
-                <li><Link href="/services" className="hover:text-slate-800 transition-colors">Express Courier</Link></li>
-                <li><Link href="/services" className="hover:text-slate-800 transition-colors">Warehousing</Link></li>
+                <li><Link href="/services#air-freight" className="hover:text-slate-800 transition-colors">Air Freight</Link></li>
+                <li><Link href="/services#ocean-freight" className="hover:text-slate-800 transition-colors">Ocean Shipping</Link></li>
+                <li><Link href="/services#express-courier" className="hover:text-slate-800 transition-colors">Express Courier</Link></li>
+                <li><Link href="/services#warehousing" className="hover:text-slate-800 transition-colors">Warehousing</Link></li>
               </ul>
             </div>
 
@@ -40,9 +40,25 @@ export function Footer() {
           <div className="col-span-1 border-t border-slate-100 pt-8 md:border-0 md:pt-0">
             <h4 className="text-[#1e4b7a] font-bold tracking-wide text-xs mb-6">Follow Us</h4>
             <div className="flex gap-4 mb-8">
-              <a href="#" className="text-[#1e4b7a] hover:text-[#fe6801] transition-colors"><Share2 className="w-4 h-4" /></a>
-              <a href="#" className="text-[#1e4b7a] hover:text-[#fe6801] transition-colors"><Globe className="w-4 h-4" /></a>
-              <a href="#" className="text-[#1e4b7a] hover:text-[#fe6801] transition-colors"><Mail className="w-4 h-4" /></a>
+              <a
+                href="https://www.facebook.com/profile.php?id=61589313998002"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="text-[#1e4b7a] hover:text-[#fe6801] transition-colors"
+              >
+                <Facebook className="w-4 h-4" />
+              </a>
+              <a
+                href="https://www.instagram.com/_ship2sell/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="text-[#1e4b7a] hover:text-[#fe6801] transition-colors"
+              >
+                <Instagram className="w-4 h-4" />
+              </a>
+              <a href="/contact" aria-label="Contact" className="text-[#1e4b7a] hover:text-[#fe6801] transition-colors"><Mail className="w-4 h-4" /></a>
             </div>
             <p className="text-[10px] uppercase tracking-widest text-slate-300 font-bold">
               &copy; {new Date().getFullYear()} ship2sell Logistics. All rights reserved.

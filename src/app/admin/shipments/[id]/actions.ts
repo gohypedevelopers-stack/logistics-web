@@ -91,10 +91,11 @@ export async function updateShipmentAction(formData: FormData) {
 
   revalidateShipmentViews(shipmentId);
 
-  if (hasStatusChanged && shipment.customer.user?.name) {
+  if (hasStatusChanged && shipment.customer.user?.name && shipment.customer.user?.email) {
     after(async () => {
       try {
         await sendStatusEmail(
+          shipment.customer.user.email,
           shipment.customer.user.name!,
           shipment.trackingId,
           nextStatus.replace(/_/g, " "),

@@ -50,7 +50,7 @@ export default function CustomerExperiencePage() {
                 ship2sell delivers high-value cargo with clarity, control, and consistent communication from origin to destination.
               </p>
               <div className="flex gap-4">
-                <Link href="/register">
+                <Link href="/login?callbackUrl=%2Fcustomer%2Ftrack">
                   <button className="h-11 px-7 bg-[#1e4b7a] text-white font-bold text-sm rounded-xl hover:bg-[#1e4b7a] transition-colors shadow-md flex items-center gap-2">
                     Track a Journey <ArrowRight className="w-4 h-4" />
                   </button>
@@ -92,16 +92,16 @@ export default function CustomerExperiencePage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {flowSteps.map((step, i) => (
-              <div key={i} className={`rounded-2xl p-7 border transition-all hover:shadow-md ${i === 1 ? 'bg-[#1e4b7a] border-[#1e4b7a] text-white' : 'bg-white border-slate-100'}`}>
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-5 ${i === 1 ? 'bg-white/15' : 'bg-orange-50'}`}>
+              <div key={i} className="rounded-2xl p-7 border border-slate-100 bg-white transition-all hover:shadow-md">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5 bg-orange-50">
                   {i === 0 && <Package className="w-5 h-5 text-[#1e4b7a]" />}
-                  {i === 1 && <Zap className="w-5 h-5 text-[#fe6801]" />}
+                  {i === 1 && <Zap className="w-5 h-5 text-[#1e4b7a]" />}
                   {i === 2 && <Globe2 className="w-5 h-5 text-[#1e4b7a]" />}
                   {i === 3 && <Truck className="w-5 h-5 text-[#1e4b7a]" />}
                 </div>
-                <p className={`text-[10px] font-bold tracking-widest uppercase mb-2 ${i === 1 ? 'text-orange-300' : 'text-slate-400'}`}>{step.num}</p>
-                <h3 className={`font-black text-[15px] mb-2 ${i === 1 ? 'text-white' : 'text-[#1e4b7a]'}`}>{step.title}</h3>
-                <p className={`text-[12px] font-medium leading-relaxed ${i === 1 ? 'text-orange-200' : 'text-slate-500'}`}>{step.desc}</p>
+                <p className="text-[10px] font-bold tracking-widest uppercase mb-2 text-slate-400">{step.num}</p>
+                <h3 className="font-black text-[15px] mb-2 text-[#1e4b7a]">{step.title}</h3>
+                <p className="text-[12px] font-medium leading-relaxed text-slate-500">{step.desc}</p>
               </div>
             ))}
           </div>
@@ -116,15 +116,15 @@ export default function CustomerExperiencePage() {
             {/* Left: 4 mini cards */}
             <div className="grid grid-cols-2 gap-5">
               {intelFeatures.map((feat, i) => (
-                <div key={i} className={`rounded-2xl p-6 border ${i === 1 ? 'bg-[#1e4b7a] border-[#1e4b7a]' : 'bg-slate-50 border-slate-100'} hover:shadow-md transition-all`}>
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-4 ${i === 1 ? 'bg-white/15' : 'bg-orange-50'}`}>
+                <div key={i} className="rounded-2xl p-6 border bg-slate-50 border-slate-100 hover:shadow-md transition-all">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-4 bg-orange-50">
                     {i === 0 && <Globe2 className="w-4 h-4 text-[#1e4b7a]" />}
-                    {i === 1 && <BarChart2 className="w-4 h-4 text-[#fe6801]" />}
+                    {i === 1 && <BarChart2 className="w-4 h-4 text-[#1e4b7a]" />}
                     {i === 2 && <Package className="w-4 h-4 text-[#1e4b7a]" />}
                     {i === 3 && <MessageSquare className="w-4 h-4 text-[#1e4b7a]" />}
                   </div>
-                  <h4 className={`font-black text-[13px] mb-1.5 ${i === 1 ? 'text-white' : 'text-[#1e4b7a]'}`}>{feat.title}</h4>
-                  <p className={`text-[11px] font-medium leading-relaxed ${i === 1 ? 'text-orange-200' : 'text-slate-500'}`}>{feat.desc}</p>
+                  <h4 className="font-black text-[13px] mb-1.5 text-[#1e4b7a]">{feat.title}</h4>
+                  <p className="text-[11px] font-medium leading-relaxed text-slate-500">{feat.desc}</p>
                 </div>
               ))}
             </div>
@@ -255,22 +255,6 @@ export default function CustomerExperiencePage() {
           </div>
         </div>
       </section>
-
-      {/* â”€â”€ FOOTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <footer className="border-t border-slate-700/30 py-10 bg-[#0d0c2b]">
-        <div className="container mx-auto px-6 lg:px-16 max-w-6xl flex flex-col md:flex-row items-center justify-between gap-6">
-          <div>
-            <p className="font-bold text-white text-[15px] mb-1">ship2sell</p>
-            <p className="text-[11px] text-orange-400 font-medium">Logistics intelligence for the modern world.</p>
-            <p className="text-[10px] text-slate-600 font-medium mt-1">Copyright 2024 ship2sell Logistics. All rights reserved.</p>
-          </div>
-          <div className="flex flex-wrap gap-6 text-[11px] font-bold text-slate-500">
-            {['Privacy Policy', 'Terms of Service', 'Global Compliance', 'Contact Support', 'Carrier Relations'].map(l => (
-              <a key={l} href="#" className="hover:text-white transition-colors">{l}</a>
-            ))}
-          </div>
-        </div>
-      </footer>
 
     </div>
   );

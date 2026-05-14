@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import prisma from "./prisma";
 import { Role } from "@prisma/client";
+import { normalizeEmail } from "./email-verification";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -35,58 +36,48 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log(`[AUTH] Starting authorization for: ${credentials?.email}`);
-        
         if (!credentials?.email || !credentials?.password) {
-          console.error("[AUTH] Missing email or password in credentials");
-          throw new Error("Invalid credentials");
+          throw new Error("INVALID_CREDENTIALS");
         }
 
+        const email = normalizeEmail(credentials.email);
+
+        let user;
         try {
-          const user = await prisma.user.findUnique({
-            where: { email: credentials.email },
+          user = await prisma.user.findUnique({
+            where: { email },
           });
-
-          if (!user) {
-             console.error(`[AUTH] User not found for email: ${credentials.email}`);
-             throw new Error("User not found");
-          }
-          
-          if (!user.passwordHash) {
-             console.error(`[AUTH] User has no password hash set: ${user.id}`);
-             throw new Error("Invalid account data. Please contact support.");
-          }
-
-          console.log(`[AUTH] Comparing password for user: ${user.email}`);
-          const isPasswordValid = await bcrypt.compare(
-            credentials.password,
-            user.passwordHash
-          );
-
-          if (!isPasswordValid) {
-            console.error(`[AUTH] Invalid password attempt for: ${user.email}`);
-            throw new Error("Invalid password");
-          }
-
-          console.log(`[AUTH] Successful sign-in for: ${user.email} (Role: ${user.role})`);
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: user.role,
-          };
         } catch (dbError: any) {
-          console.error("[AUTH] CRITICAL ERROR during authorize flow:");
-          console.error("Error Message:", dbError.message);
-          console.error("Error Code:", dbError.code);
-          console.error("Error Stack:", dbError.stack);
-          
           if (dbError.message?.includes("timed out") || dbError.code === "ETIMEDOUT") {
-            throw new Error("Database connection timed out. The server might be under heavy load or blocked by a firewall.");
+            throw new Error("AUTH_TIMEOUT");
           }
-          
-          throw new Error("Authentication failed due to a server error. Please check if your DATABASE_URL is correct in Vercel.");
+
+          throw new Error("AUTH_SYSTEM_ERROR");
         }
+
+        if (!user || !user.passwordHash) {
+          throw new Error("INVALID_CREDENTIALS");
+        }
+
+        if (!user.emailVerified) {
+          throw new Error("EMAIL_NOT_VERIFIED");
+        }
+
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.passwordHash
+        );
+
+        if (!isPasswordValid) {
+          throw new Error("INVALID_CREDENTIALS");
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        };
       },
     }),
   ],
