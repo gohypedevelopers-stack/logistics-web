@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Manrope } from "next/font/google";
 import {
   Search,
   Plane,
@@ -13,7 +14,19 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+const homeFont = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
+
 export default function Home() {
+  const sectionTitleClass =
+    "text-balance text-[1.5rem] font-bold tracking-[-0.02em] text-[#1e4b7a] sm:text-[1.75rem] lg:text-[2rem]";
+  const sectionCopyClass =
+    "mx-auto mt-4 max-w-2xl text-[0.88rem] font-normal leading-7 text-slate-600 sm:text-[0.95rem]";
+  const cardClass =
+    "rounded-[20px] border border-[#d9e2ec] bg-white p-5 shadow-[0_10px_30px_rgba(30,75,122,0.06)] sm:p-6 lg:p-7";
+
   const stats = [
     { val: "2,500+", label: "Daily Shipments" },
     { val: "19k", label: "Pin Codes Covered" },
@@ -46,8 +59,8 @@ export default function Home() {
   ];
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#f6f8fc] font-sans text-slate-900">
-      <section className="relative isolate flex min-h-[88vh] items-center overflow-hidden pt-20 pb-24 md:min-h-[92vh] md:pt-24 md:pb-28">
+    <div className={`${homeFont.className} flex min-h-screen flex-col bg-[#f6f8fc] text-[#1e4b7a]`}>
+      <section className="relative isolate flex min-h-[88vh] items-center overflow-hidden pt-20 pb-20 sm:pb-24 md:min-h-[92vh] md:pt-24 md:pb-28">
         <div className="absolute inset-0 -z-20">
           <img
             src="/hero-bg.png"
@@ -56,207 +69,332 @@ export default function Home() {
             loading="lazy"
           />
         </div>
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#0e3157]/80 via-[#1e4b7a]/70 to-[#1e4b7a]/25" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#1e4b7a]/88 via-[#1e4b7a]/72 to-[#1e4b7a]/35" />
         <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-b from-transparent to-[#f6f8fc]" />
+        <div className="absolute -left-16 top-24 -z-10 h-56 w-56 rounded-full bg-[#fe6801]/18 blur-3xl" />
+        <div className="absolute -right-16 bottom-10 -z-10 h-64 w-64 rounded-full bg-[#1e4b7a]/35 blur-3xl" />
 
-        <div className="container relative mx-auto px-6 lg:px-12">
-          <div className="mx-auto max-w-4xl text-center">
-            <div className="animate-fade-up mb-8 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-orange-200 backdrop-blur-xl md:px-5 md:text-[11px] md:tracking-[0.18em]">
-              <Zap className="h-3.5 w-3.5 fill-orange-300 text-orange-300" />
+        <div className="container relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:gap-12 xl:gap-16">
+            <div className="max-w-3xl text-center lg:text-left">
+              <div className="animate-fade-up mb-6 inline-flex items-center gap-2 rounded-[20px] border border-white/20 bg-white/10 px-4 py-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#ffd6bd] backdrop-blur-xl sm:mb-8 md:px-5 md:text-[11px] md:tracking-[0.18em]">
+              <Zap className="h-3.5 w-3.5 fill-[#fe6801] text-[#fe6801]" />
               Next-Gen Global Logistics
+              </div>
+
+              <h1 className="animate-fade-up-delay-1 text-balance text-[2.15rem] font-bold leading-[1.04] tracking-[-0.03em] text-white drop-shadow-[0_12px_30px_rgba(3,20,43,0.45)] sm:text-[2.9rem] lg:text-[3.8rem] xl:text-[4.65rem]">
+                <span className="text-white">Global Movement</span>
+                <br />
+                <span className="animate-shimmer bg-gradient-to-r from-[#fe6801] via-[#ff8a39] to-[#ffd8bf] bg-clip-text text-transparent">
+                  Perfected.
+                </span>
+              </h1>
+
+              <p className="animate-fade-up-delay-2 mx-auto mt-5 max-w-3xl px-1 text-[0.9rem] font-normal leading-7 text-slate-100 sm:px-2 md:mt-7 md:px-0 md:text-[0.98rem] md:leading-8 lg:mx-0 lg:text-[1.02rem]">
+                The intelligence layer for international shipping. High-speed air cargo, ocean freight coordination, and complete
+                transparency from pickup to delivery.
+              </p>
+
+              <form
+                action={async (formData) => {
+                  "use server";
+                  const id = formData.get("id");
+                  if (id) {
+                    const { redirect } = await import("next/navigation");
+                    redirect(`/tracking?id=${id}`);
+                  }
+                }}
+                className="animate-fade-up-delay-2 mx-auto mt-10 grid w-full max-w-3xl grid-cols-[1fr_auto] items-center gap-3 rounded-[20px] border border-white/35 bg-white/18 p-3 backdrop-blur-2xl shadow-[0_25px_70px_rgba(5,28,55,0.45)] sm:mt-12 sm:flex sm:items-center lg:mx-0"
+              >
+                <div className="flex h-14 w-full items-center rounded-[20px] bg-white px-4 shadow-lg sm:h-16 sm:flex-1 sm:px-5">
+                  <Search className="mr-3 h-5 w-5 text-slate-400 sm:mr-4 sm:h-6 sm:w-6" />
+                  <input
+                    name="id"
+                    type="text"
+                    placeholder="Enter tracking ID or AWB..."
+                    className="h-full w-full bg-transparent text-sm font-semibold text-[#1e4b7a] outline-none placeholder:text-slate-400 sm:text-base md:text-lg"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="flex h-12 items-center justify-center whitespace-nowrap rounded-[18px] bg-[#fe6801] px-4 text-[11px] font-black tracking-wide text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-[#e65d00] sm:h-16 sm:px-10 sm:text-sm"
+                >
+                  Track Journey
+                </button>
+              </form>
+
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-[11px] font-semibold text-slate-100 sm:mt-10 sm:gap-5 sm:text-xs lg:justify-start">
+                <span className="inline-flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-[#fe6801]" />
+                  Secure Tracking
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-[#fe6801]" />
+                  Real-Time Visibility
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <Truck className="h-4 w-4 text-[#fe6801]" />
+                  19,000+ Pin Codes
+                </span>
+              </div>
+
+              <div className="mt-8 grid grid-cols-2 gap-3 text-left sm:max-w-md lg:mt-10">
+                <div className="rounded-[20px] border border-white/15 bg-white/10 px-4 py-4 backdrop-blur-xl">
+                  <p className="text-[1.12rem] font-bold tracking-[-0.02em] text-white">Air + Ocean</p>
+                  <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-orange-200">Integrated Lanes</p>
+                </div>
+                <div className="rounded-[20px] border border-white/15 bg-[#fe6801]/16 px-4 py-4 backdrop-blur-xl">
+                  <p className="text-[1.12rem] font-bold tracking-[-0.02em] text-white">Customs</p>
+                  <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-orange-100">Digital Clearance</p>
+                </div>
+              </div>
             </div>
 
-            <h1 className="animate-fade-up-delay-1 text-balance text-4xl font-black leading-[1.05] tracking-tight text-white drop-shadow-[0_12px_30px_rgba(3,20,43,0.45)] md:text-7xl [font-family:var(--font-display,var(--font-sans))]">
-              Global Movement
-              <br />
-              <span className="animate-shimmer bg-gradient-to-r from-[#fe6801] to-[#ffd8bf] bg-clip-text text-transparent">
-                Perfected.
-              </span>
-            </h1>
-
-            <p className="animate-fade-up-delay-2 mx-auto mt-6 max-w-3xl text-pretty px-2 text-base font-medium leading-relaxed text-blue-50/95 md:mt-8 md:px-0 md:text-xl">
-              The intelligence layer for international shipping. High-speed air cargo, precision ground networks, and complete
-              transparency from pickup to delivery.
-            </p>
-
-            <form
-              action={async (formData) => {
-                "use server";
-                const id = formData.get("id");
-                if (id) {
-                  const { redirect } = await import("next/navigation");
-                  redirect(`/tracking?id=${id}`);
-                }
-              }}
-              className="animate-fade-up-delay-2 mx-auto mt-10 flex w-full max-w-3xl flex-col gap-2 rounded-[24px] border border-white/40 bg-white/20 p-2 backdrop-blur-2xl shadow-[0_25px_70px_rgba(5,28,55,0.45)] sm:mt-12 sm:flex-row sm:rounded-[30px]"
-            >
-              <div className="flex h-14 w-full flex-1 items-center rounded-2xl bg-white px-5 shadow-lg sm:h-16">
-                <Search className="mr-4 h-6 w-6 text-slate-400" />
-                <input
-                  name="id"
-                  type="text"
-                  placeholder="Enter tracking ID or AWB..."
-                  className="h-full w-full bg-transparent text-sm font-semibold text-slate-800 outline-none placeholder:text-slate-400 sm:text-base md:text-lg"
-                />
+            <div className="relative hidden lg:block">
+              <div className="relative mx-auto h-[440px] max-w-[410px]">
+                <div className="absolute left-0 top-6 w-[58%] overflow-hidden rounded-[28px] border border-white/15 bg-white/10 p-2 shadow-[0_24px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl">
+                  <img
+                    src="https://images.unsplash.com/photo-1494412651409-8963ce7935a7?q=80&w=900&auto=format&fit=crop"
+                    alt="Cargo airplane on runway"
+                    className="h-[240px] w-full rounded-[22px] object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="absolute right-0 top-20 w-[60%] overflow-hidden rounded-[28px] border border-white/15 bg-white/10 p-2 shadow-[0_24px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl">
+                  <img
+                    src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=900&auto=format&fit=crop"
+                    alt="Cargo ship at port"
+                    className="h-[200px] w-full rounded-[22px] object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="absolute bottom-10 left-[16%] w-[68%] overflow-hidden rounded-[28px] border border-white/15 bg-white/10 p-2 shadow-[0_24px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl">
+                  <img
+                    src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?q=80&w=900&auto=format&fit=crop"
+                    alt="Logistics containers and operations"
+                    className="h-[165px] w-full rounded-[22px] object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="absolute right-2 top-4 rounded-[20px] border border-white/15 bg-[#1e4b7a]/82 px-4 py-3 text-white shadow-[0_20px_50px_rgba(0,0,0,0.22)] backdrop-blur-xl">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-orange-200">Brand Lane</p>
+                  <p className="mt-1 text-[1.15rem] font-bold tracking-[-0.02em]">Air. Ocean. Ground.</p>
+                </div>
+                <div className="absolute bottom-0 left-2 rounded-[20px] border border-white/15 bg-[#fe6801] px-4 py-3 text-white shadow-[0_20px_50px_rgba(254,104,1,0.26)]">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-orange-50">Live Operations</p>
+                  <p className="mt-1 text-[1.1rem] font-bold tracking-[-0.02em]">Connected Logistics View</p>
+                </div>
               </div>
-              <button
-                type="submit"
-                className="flex h-14 items-center justify-center whitespace-nowrap rounded-2xl bg-[#1e4b7a] px-8 text-xs font-black tracking-wide text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-[#173e67] sm:h-16 sm:px-10 sm:text-sm"
-              >
-                Track Journey
-              </button>
-            </form>
-
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-[11px] font-semibold text-blue-50/90 sm:mt-10 sm:gap-5 sm:text-xs">
-              <span className="inline-flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-orange-300" />
-                Secure Tracking
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-orange-300" />
-                Real-Time Visibility
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <Truck className="h-4 w-4 text-orange-300" />
-                19,000+ Pin Codes
-              </span>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="relative -mt-8 z-10 pb-12 md:-mt-10 md:pb-14">
-        <div className="container mx-auto px-6 lg:px-16 max-w-7xl">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+      <section className="relative z-10 -mt-8 pb-12 md:-mt-10 md:pb-14">
+        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-16">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:gap-5 md:grid-cols-4">
             {stats.map((s) => (
               <div
                 key={s.label}
-                className="animate-fade-up rounded-2xl border border-[#d8e2ef] bg-white px-4 py-4 shadow-[0_8px_24px_rgba(21,53,89,0.08)] sm:px-5 sm:py-5"
+                className="animate-fade-up rounded-[20px] border border-[#d9e2ec] bg-white px-4 py-4 shadow-[0_10px_24px_rgba(30,75,122,0.08)] sm:px-5 sm:py-5"
               >
-                <p className="text-2xl font-black tracking-tight text-[#1e4b7a] sm:text-3xl">{s.val}</p>
-                <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">{s.label}</p>
+                <p className="text-[1.45rem] font-bold leading-none tracking-[-0.02em] text-[#1e4b7a] sm:text-[1.65rem]">{s.val}</p>
+                <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">{s.label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-[#f6f8fc] py-20 md:py-24">
-        <div className="container mx-auto px-6 lg:px-16 max-w-7xl">
+      <section className="bg-[#f6f8fc] py-16 sm:py-18 md:py-22 lg:py-24">
+        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-16">
           <div className="mb-14 text-center md:mb-16">
-            <h2 className="text-balance text-3xl font-black tracking-tight text-[#1e4b7a] md:text-4xl [font-family:var(--font-display,var(--font-sans))]">Simple Journeys. Extraordinary Logic.</h2>
-            <p className="mx-auto mt-4 max-w-xl text-[15px] font-medium text-slate-500">
+            <h2 className={sectionTitleClass}>
+              <span className="text-[#1e4b7a]">Simple Journeys.</span>{" "}
+              <span className="text-[#fe6801]">Extraordinary Logic.</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-[0.88rem] font-normal leading-7 text-slate-600 sm:text-[0.95rem]">
               We removed complexity from global shipping. One platform, total control.
             </p>
           </div>
 
-          <div className="grid gap-7 md:grid-cols-3">
+          <div className="grid gap-4 sm:gap-5 lg:gap-6 md:grid-cols-3">
             {steps.map((s) => (
               <div
                 key={s.step}
-                className="group animate-fade-up relative overflow-hidden rounded-[24px] border border-[#dbe5f0] bg-white p-7 shadow-[0_6px_20px_rgba(12,37,64,0.06)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_50px_rgba(15,45,76,0.14)] md:rounded-[28px] md:p-9"
+                className={`${cardClass} group animate-fade-up relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_44px_rgba(30,75,122,0.12)]`}
               >
-                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#1e4b7a] via-[#1e4b7a] to-[#fe6801]" />
-                <div className="mb-7 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eef4fb] transition-transform group-hover:scale-110">
+                <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-[20px] bg-[#edf2f7] transition-transform group-hover:scale-105">
                   <s.icon className="h-6 w-6 text-[#1e4b7a]" />
                 </div>
-                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-orange-600">{s.step} {s.label}</p>
-                <h3 className="mb-3 text-2xl font-black text-[#1e4b7a]">{s.title}</h3>
-                <p className="text-sm font-medium leading-relaxed text-slate-500">{s.desc}</p>
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-orange-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#fe6801]">
+                  <s.icon className="h-3.5 w-3.5" />
+                  <span>{s.step} {s.label}</span>
+                </div>
+                <h3 className="mb-3 min-h-[1.4rem] text-[1.12rem] font-bold leading-[1.25] tracking-[-0.02em] text-[#1e4b7a]">{s.title}</h3>
+                <p className="text-[0.88rem] font-normal leading-7 text-slate-600">{s.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-white py-20 md:py-24">
-        <div className="container mx-auto px-6 lg:px-16 max-w-7xl text-center">
-          <h2 className="text-[30px] font-black tracking-tight text-[#1e4b7a] md:text-[34px] [font-family:var(--font-display,var(--font-sans))]">Intelligence in Every Corridor.</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-sm font-medium text-slate-500">
+      <section className="bg-white py-16 sm:py-20 lg:py-24">
+        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-16">
+          <div className="grid items-center gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14">
+            <div>
+              <h2 className={sectionTitleClass}>
+                <span className="text-[#1e4b7a]">Across every mode,</span>{" "}
+                <span className="text-[#fe6801]">with one connected view.</span>
+              </h2>
+              <p className="mt-5 max-w-xl text-[0.9rem] leading-7 text-slate-600 sm:text-[0.96rem]">
+                Air freight, ocean coordination, customs handling, and last-mile execution should feel like one journey, not disconnected systems.
+              </p>
+              <div className="mt-8 space-y-4">
+                {[
+                  "Air cargo planning with faster high-priority handling",
+                  "Ocean movement structured around dependable lane visibility",
+                  "Warehouse and delivery coordination linked to live updates",
+                ].map((item) => (
+                  <div key={item} className="flex items-start gap-3">
+                    <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-100">
+                      <CheckCircle2 className="h-3 w-3 text-[#fe6801]" />
+                    </div>
+                    <p className="text-[0.88rem] leading-7 text-slate-600 sm:text-[0.94rem]">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative mx-auto h-[360px] w-full max-w-[620px] sm:h-[430px]">
+              <div className="absolute left-0 top-0 w-[56%] overflow-hidden rounded-[24px] border border-[#d9e2ec] bg-white p-2 shadow-[0_18px_46px_rgba(30,75,122,0.12)]">
+                <img
+                  src="https://images.unsplash.com/photo-1569154941061-e231b4725ef1?q=80&w=900&auto=format&fit=crop"
+                  alt="Air freight aircraft"
+                  className="h-[180px] w-full rounded-[18px] object-cover sm:h-[220px]"
+                  loading="lazy"
+                />
+              </div>
+              <div className="absolute right-0 top-14 w-[54%] overflow-hidden rounded-[24px] border border-[#d9e2ec] bg-white p-2 shadow-[0_18px_46px_rgba(30,75,122,0.12)]">
+                <img
+                  src="https://images.unsplash.com/photo-1494412519320-aa613dfb7738?q=80&w=900&auto=format&fit=crop"
+                  alt="Ocean freight shipping port"
+                  className="h-[170px] w-full rounded-[18px] object-cover sm:h-[210px]"
+                  loading="lazy"
+                />
+              </div>
+              <div className="absolute bottom-0 left-[14%] w-[60%] overflow-hidden rounded-[24px] border border-[#d9e2ec] bg-white p-2 shadow-[0_18px_46px_rgba(30,75,122,0.12)]">
+                <img
+                  src="https://images.unsplash.com/photo-1553413077-190dd305871c?q=80&w=900&auto=format&fit=crop"
+                  alt="Warehouse and freight operations"
+                  className="h-[160px] w-full rounded-[18px] object-cover sm:h-[200px]"
+                  loading="lazy"
+                />
+              </div>
+              <div className="absolute left-4 top-4 rounded-[20px] bg-[#1e4b7a] px-4 py-3 text-white shadow-[0_18px_40px_rgba(30,75,122,0.16)]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-orange-200">Brand Mode</p>
+                <p className="mt-1 text-[1rem] font-bold tracking-[-0.02em]">Air, Ocean, Delivery</p>
+              </div>
+              <div className="absolute bottom-4 right-4 rounded-[20px] bg-[#fe6801] px-4 py-3 text-white shadow-[0_18px_40px_rgba(254,104,1,0.2)]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-orange-50">Live Visibility</p>
+                <p className="mt-1 text-[1rem] font-bold tracking-[-0.02em]">One Connected Flow</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-16 sm:py-18 md:py-22 lg:py-24">
+        <div className="container mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-16">
+          <h2 className={sectionTitleClass}>
+            <span className="text-[#1e4b7a]">Intelligence in Every</span>{" "}
+            <span className="text-[#fe6801]">Corridor.</span>
+          </h2>
+          <p className={sectionCopyClass}>
             Every shipment path is optimized for speed, predictability, and compliant delivery.
           </p>
 
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            <div className="animate-fade-up group relative overflow-hidden rounded-[30px] border border-[#dbe5f0] bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl md:h-[450px] md:rounded-[36px]">
-              <div className="relative h-40 overflow-hidden">
-                <img src="/hero-bg.png" alt="Air cargo operations" className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#0f3a68]/75 to-[#1e4b7a]/45" />
+          <div className="mt-12 grid gap-4 text-left sm:mt-14 sm:gap-5 lg:gap-6 md:grid-cols-3">
+            <div className="animate-fade-up group relative overflow-hidden rounded-[20px] border border-[#d9e2ec] bg-white text-left shadow-[0_10px_30px_rgba(30,75,122,0.06)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_44px_rgba(30,75,122,0.12)]">
+              <div className="relative h-40 overflow-hidden sm:h-44">
+                <img src="https://images.unsplash.com/photo-1529074963764-98f45c47344b?q=80&w=900&auto=format&fit=crop" alt="Air cargo operations" className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#1e4b7a]/78 to-[#1e4b7a]/45" />
               </div>
-              <div className="flex h-[calc(100%-10rem)] flex-col justify-between p-7 md:p-8">
+              <div className="flex flex-col gap-8 p-5 sm:p-6 lg:p-7">
                 <div>
-                  <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eef4fb]">
+                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-[20px] bg-[#edf2f7]">
                     <Plane className="h-6 w-6 text-[#fe6801]" />
                   </div>
-                  <h3 className="mb-4 text-3xl font-black leading-[1.05] text-[#1e4b7a] md:text-4xl [font-family:var(--font-display,var(--font-sans))]">
+                  <h3 className="mb-4 min-h-[4rem] text-[1.35rem] font-bold leading-[1.15] tracking-[-0.02em] text-[#1e4b7a] sm:text-[1.5rem] lg:text-[1.65rem]">
                     Priority
                     <br />
                     Air Cargo
                   </h3>
-                  <p className="text-sm font-medium leading-relaxed text-slate-500">
+                  <p className="max-w-[32ch] text-[0.88rem] font-normal leading-7 text-slate-600">
                     Fastest path for high-value electronics, personal essentials, and time-critical deliveries.
                   </p>
                 </div>
                 <Link
                   href="/services"
-                  className="w-max rounded-xl bg-[#fe6801] px-7 py-3 text-sm font-black text-white transition-colors hover:bg-orange-500"
+                  className="inline-flex w-max items-center justify-center rounded-[20px] bg-[#fe6801] px-6 py-3 text-sm font-black text-white transition-colors hover:bg-[#e65d00]"
                 >
                   Check Air Rates
                 </Link>
               </div>
             </div>
 
-            <div className="group animate-fade-up relative overflow-hidden rounded-[30px] border border-[#dbe5f0] bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl md:h-[450px] md:rounded-[36px]">
-              <div className="relative h-40 overflow-hidden">
-                <img src="/bg.jpg" alt="Last-mile delivery vehicles" className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#123d6b]/60 to-transparent" />
+            <div className="group animate-fade-up relative overflow-hidden rounded-[20px] border border-[#d9e2ec] bg-white text-left shadow-[0_10px_30px_rgba(30,75,122,0.06)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_44px_rgba(30,75,122,0.12)]">
+              <div className="relative h-40 overflow-hidden sm:h-44">
+                <img src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?q=80&w=900&auto=format&fit=crop" alt="Last-mile delivery vehicles" className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#1e4b7a]/60 to-transparent" />
               </div>
-              <div className="flex h-[calc(100%-10rem)] flex-col justify-between p-7 md:p-8">
+              <div className="flex flex-col gap-8 p-5 sm:p-6 lg:p-7">
                 <div>
-                  <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eef4fb]">
+                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-[20px] bg-[#edf2f7]">
                     <Truck className="h-6 w-6 text-[#1e4b7a]" />
                   </div>
-                  <h3 className="mb-4 text-3xl font-black leading-[1.05] text-[#1e4b7a] md:text-4xl [font-family:var(--font-display,var(--font-sans))]">
+                  <h3 className="mb-4 min-h-[4rem] text-[1.35rem] font-bold leading-[1.15] tracking-[-0.02em] text-[#1e4b7a] sm:text-[1.5rem] lg:text-[1.65rem]">
                     Last-Mile
                     <br />
                     Network
                   </h3>
-                  <p className="mb-6 text-sm font-medium leading-relaxed text-slate-500">
+                  <p className="mb-6 max-w-[32ch] text-[0.88rem] font-normal leading-7 text-slate-600">
                     Delivery reaching 19,000+ pin codes. From Bengaluru tech hubs to Mumbai financial center.
                   </p>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-orange-500" />
-                    <span className="text-xs font-bold text-slate-700">Digital Proof of Delivery</span>
+                    <CheckCircle2 className="h-4 w-4 text-[#fe6801]" />
+                    <span className="text-[0.78rem] font-semibold tracking-[0.02em] text-[#1e4b7a]">Digital Proof of Delivery</span>
                   </div>
                 </div>
                 <Link
                   href="/services"
-                  className="inline-flex w-max items-center gap-2 text-[12px] font-black uppercase tracking-[0.18em] text-[#1e4b7a] transition-transform group-hover:translate-x-1"
+                  className="inline-flex w-max items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.24em] text-[#1e4b7a] transition-transform group-hover:translate-x-1"
                 >
                   Manage Network <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
             </div>
 
-            <div className="animate-fade-up group relative overflow-hidden rounded-[30px] border border-[#dbe5f0] bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl md:h-[450px] md:rounded-[36px]">
-              <div className="relative h-40 overflow-hidden bg-slate-100">
-                <img src="/courier-loop-whiteboard.svg" alt="Customs compliance workflow" className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#173f6e]/15 to-[#fe6801]/10" />
+            <div className="animate-fade-up group relative overflow-hidden rounded-[20px] border border-[#d9e2ec] bg-white text-left shadow-[0_10px_30px_rgba(30,75,122,0.06)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_44px_rgba(30,75,122,0.12)]">
+              <div className="relative h-40 overflow-hidden bg-slate-100 sm:h-44">
+                <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=900&auto=format&fit=crop" alt="Customs compliance workflow" className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#1e4b7a]/12 to-[#fe6801]/12" />
               </div>
-              <div className="flex h-[calc(100%-10rem)] flex-col justify-between p-7 md:p-8">
+              <div className="flex flex-col gap-8 p-5 sm:p-6 lg:p-7">
                 <div>
-                  <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50">
+                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-[20px] bg-orange-50">
                     <BarChart3 className="h-6 w-6 text-[#1e4b7a]" />
                   </div>
-                  <h3 className="mb-4 text-3xl font-black leading-[1.05] text-[#1e4b7a] md:text-4xl [font-family:var(--font-display,var(--font-sans))]">
+                  <h3 className="mb-4 min-h-[4rem] text-[1.35rem] font-bold leading-[1.15] tracking-[-0.02em] text-[#1e4b7a] sm:text-[1.5rem] lg:text-[1.65rem]">
                     Customs
                     <br />
                     Intelligence
                   </h3>
-                  <p className="text-sm font-medium leading-relaxed text-slate-500">
+                  <p className="max-w-[32ch] text-[0.88rem] font-normal leading-7 text-slate-600">
                     Automated duty calculations and digital pre-clearance to minimize landing delays.
                   </p>
                 </div>
-                <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-4">
                   <p className="mb-2 text-center text-[10px] font-black uppercase tracking-widest text-slate-400">Platform Health</p>
                   <div className="flex justify-center gap-1">
                     {[...Array(8)].map((_, i) => (
@@ -274,27 +412,30 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-[#f6f8fc] py-20 md:py-24">
-        <div className="container mx-auto max-w-5xl px-6 lg:px-16">
-          <div className="animate-soft-float relative overflow-hidden rounded-[30px] bg-gradient-to-br from-[#1e4b7a] via-[#1e4b7a] to-[#173e67] p-10 text-center text-white shadow-[0_30px_70px_rgba(16,44,79,0.28)] md:rounded-[44px] md:p-16">
-            <div className="absolute -top-20 -left-16 h-72 w-72 rounded-full bg-orange-500/25 blur-[90px]" />
+      <section className="bg-[#f6f8fc] py-16 sm:py-18 md:py-22 lg:py-24">
+        <div className="container mx-auto max-w-5xl px-4 sm:px-6 lg:px-16">
+          <div className="animate-soft-float relative overflow-hidden rounded-[20px] bg-gradient-to-br from-[#1e4b7a] via-[#1e4b7a] to-[#1a2f45] p-6 text-center text-white shadow-[0_30px_70px_rgba(30,75,122,0.28)] sm:p-8 md:p-12 lg:p-16">
+            <div className="absolute -top-20 -left-16 h-72 w-72 rounded-full bg-[#fe6801]/25 blur-[90px]" />
             <div className="absolute -bottom-20 -right-16 h-72 w-72 rounded-full bg-orange-300/15 blur-[90px]" />
 
             <div className="relative z-10">
-              <h2 className="text-balance text-3xl font-black tracking-tight md:text-5xl [font-family:var(--font-display,var(--font-sans))]">Ready to Ship Globally?</h2>
-              <p className="mx-auto mt-5 max-w-xl text-base font-medium leading-relaxed text-orange-100/90 md:mt-6 md:text-lg">
+              <h2 className="text-balance text-[1.65rem] font-bold tracking-[-0.02em] sm:text-[1.9rem] lg:text-[2.35rem]">
+                <span className="text-white">Ready to Ship</span>{" "}
+                <span className="text-[#fe6801]">Globally?</span>
+              </h2>
+              <p className="mx-auto mt-5 max-w-xl text-[0.9rem] font-normal leading-7 text-orange-100/90 md:mt-6 md:text-[0.98rem] md:leading-8">
                 Join 10,000+ individuals and brands using our intelligence engine for seamless international movement.
               </p>
               <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
                 <Link
                   href="/register"
-                  className="rounded-2xl bg-[#fe6801] px-10 py-4 text-sm font-black text-white transition-all hover:-translate-y-0.5 hover:bg-orange-500"
+                  className="rounded-[20px] bg-[#fe6801] px-8 py-4 text-sm font-black text-white transition-all hover:-translate-y-0.5 hover:bg-[#e65d00]"
                 >
                   Create Free Account
                 </Link>
                 <Link
                   href="/services"
-                  className="rounded-2xl border border-white/30 bg-white/10 px-10 py-4 text-sm font-black text-white transition-all hover:bg-white/20"
+                  className="rounded-[20px] border border-white/30 bg-white/10 px-8 py-4 text-sm font-black text-white transition-all hover:bg-white/20"
                 >
                   Explore Services
                 </Link>

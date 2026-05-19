@@ -1,154 +1,277 @@
-﻿import { Package, Zap, Globe2, BarChart2, Truck, MessageSquare, Check, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { Manrope } from "next/font/google";
+import {
+  ArrowRight,
+  BarChart2,
+  Check,
+  Globe2,
+  MessageSquare,
+  Package,
+  ShieldCheck,
+  Truck,
+  Zap,
+} from "lucide-react";
 import Link from "next/link";
 
+const homeFont = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
+
 const flowSteps = [
-  { num: "01", title: "Premium Pickup", desc: "Our certified pickup agents come to your door on time, verifying cargo weight and packing class." },
-  { num: "02", title: "Smart Transit", desc: "Optimized across our freight network for speed, visibility, and reliable handoffs." },
-  { num: "03", title: "Digital Customs", desc: "All documentation and clearance processed digitally from our centralized intelligence platform." },
-  { num: "04", title: "Final Delivery", desc: "Certified delivery teams complete each shipment with live confirmation and status updates." },
+  {
+    num: "01",
+    title: "Premium Pickup",
+    desc: "Certified pickup teams arrive on time, confirm cargo condition, and log the shipment correctly at origin.",
+    icon: Package,
+    image:
+      "https://images.unsplash.com/photo-1519003722824-194d4455a60c?q=80&w=800&auto=format&fit=crop",
+    imageAlt: "Cargo team preparing a shipment",
+  },
+  {
+    num: "02",
+    title: "Smart Transit",
+    desc: "Routing is optimized for speed, visibility, and reliable operational handoffs across the network.",
+    icon: Zap,
+    image:
+      "https://images.unsplash.com/photo-1489515217757-5fd1be406fef?q=80&w=800&auto=format&fit=crop",
+    imageAlt: "Cargo aircraft in transit",
+  },
+  {
+    num: "03",
+    title: "Digital Customs",
+    desc: "Documents and clearance workflows are handled through a structured, trackable digital process.",
+    icon: Globe2,
+    image:
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=800&auto=format&fit=crop",
+    imageAlt: "Customs paperwork and laptop",
+  },
+  {
+    num: "04",
+    title: "Final Delivery",
+    desc: "Certified delivery teams close the journey with live confirmation and consistent customer communication.",
+    icon: Truck,
+    image:
+      "https://images.unsplash.com/photo-1529070538774-1843cb3265df?q=80&w=800&auto=format&fit=crop",
+    imageAlt: "Last-mile delivery handoff",
+  },
 ];
 
 const intelFeatures = [
-  { title: "Customs Engine", desc: "Advanced algorithms flag compliance risks with 200+ regulatory rules." },
-  { title: "IoT Sensors", desc: "Temperature, humidity, and location sensors streaming live to your dashboard." },
-  { title: "Blockchain Audit Trail", desc: "Immutable audit logs keep shipment documentation secure and traceable." },
-  { title: "Control Desk", desc: "Human experts monitoring high-value or sensitive cargo around the clock." },
+  {
+    title: "Customs Engine",
+    desc: "Rules-based checks surface compliance risks early so the customer sees fewer surprises later.",
+    icon: Globe2,
+    image:
+      "https://images.unsplash.com/photo-1517504734587-2890819debab?q=80&w=800&auto=format&fit=crop",
+    imageAlt: "Global logistics dashboard",
+  },
+  {
+    title: "IoT Sensors",
+    desc: "Temperature, humidity, and movement signals can be monitored for sensitive cargo categories.",
+    icon: BarChart2,
+    image:
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop",
+    imageAlt: "Sensor hardware closeup",
+  },
+  {
+    title: "Audit Trail",
+    desc: "Document actions and route updates remain easier to trace across the shipment lifecycle.",
+    icon: Package,
+    image:
+      "https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=800&auto=format&fit=crop",
+    imageAlt: "Document tracking and analytics",
+  },
+  {
+    title: "Control Desk",
+    desc: "Human specialists stay involved for critical cargo, urgent cases, and service escalations.",
+    icon: MessageSquare,
+    image:
+      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=800&auto=format&fit=crop",
+    imageAlt: "Operations team at workstations",
+  },
 ];
 
 const testimonials = [
   {
-    quote: "We moved medical prototypes from Germany to Italy with complete confidence. ship2sell's reliability insights gave our surgical team the assurance it needed.",
+    quote:
+      "We moved medical prototypes from Germany to Italy with complete confidence. The visibility model gave our operating team the assurance it needed.",
     name: "Arun Mehta",
-    role: "HEAD OF OPS, BIOTECH GLOBAL",
+    role: "Head of Ops, Biotech Global",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1494412651409-8963ce7935a7?q=80&w=900&auto=format&fit=crop",
+    imageAlt: "Warehouse staging area",
   },
   {
-    quote: "Predictive alerts saved us three days during peak distribution. Their alerting workflow improved our tracking accuracy by 8%.",
+    quote:
+      "Predictive alerts saved us several days during peak distribution. Their workflow improved our shipment response accuracy in a measurable way.",
     name: "Sarah Collins",
-    role: "SUPPLY CHAIN DIRECTOR, FINSURE LTD",
+    role: "Supply Chain Director, Finsure Ltd",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1489515217757-5fd1be406fef?q=80&w=900&auto=format&fit=crop",
+    imageAlt: "Air cargo logistics",
   },
 ];
 
+const sectionTitleClass =
+  "text-balance text-[1.7rem] font-bold tracking-[-0.02em] text-[#1e4b7a] sm:text-[1.95rem] lg:text-[2.25rem]";
+const sectionCopyClass =
+  "mx-auto mt-4 max-w-2xl text-[0.92rem] font-normal leading-7 text-slate-600 sm:text-[0.98rem]";
+const cardClass =
+  "flex h-full flex-col rounded-[20px] border border-[#d9e2ec] bg-white p-5 shadow-[0_10px_30px_rgba(30,75,122,0.06)] sm:p-6 lg:p-7";
+
 export default function CustomerExperiencePage() {
   return (
-    <div className="bg-white min-h-screen font-sans">
+    <div className={`${homeFont.className} min-h-screen bg-[#f6f8fc] text-[#1e4b7a]`}>
+      <section className="relative isolate overflow-hidden pb-16 pt-28 sm:pb-20 sm:pt-32">
+        <div className="absolute inset-0 -z-20">
+          <img
+            src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1600&auto=format&fit=crop"
+            alt="Cargo aircraft"
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
+        </div>
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#1e4b7a]/94 via-[#1e4b7a]/86 to-[#1e4b7a]/35" />
+        <div className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-b from-transparent to-[#f6f8fc]" />
 
-      {/* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="pt-32 pb-20 bg-white">
-        <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-14 items-center">
-            <div>
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-orange-700 text-[10px] font-bold tracking-widest uppercase mb-8">
+        <div className="container relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-16">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="max-w-3xl">
+              <div className="mb-6 inline-flex items-center gap-2 rounded-[20px] border border-white/20 bg-white/10 px-4 py-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#ffd6bd] backdrop-blur-xl">
+                <Zap className="h-3.5 w-3.5 fill-[#fe6801] text-[#fe6801]" />
                 Customer Experience
               </div>
-              <h1 className="text-5xl lg:text-6xl font-black text-[#1e4b7a] tracking-tight leading-[1.1] mb-6">
-                Beyond<br />Logistics:<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#fe6801] to-orange-400">An Exceptional<br />Journey</span>
+              <h1 className="text-balance text-[2.45rem] font-bold leading-[1.02] tracking-[-0.03em] text-white sm:text-[3.35rem] lg:text-[4.4rem]">
+                <span className="text-white">A clearer shipment journey from origin to</span>{" "}
+                <span className="text-[#fe6801]">delivery.</span>
               </h1>
-              <p className="text-slate-500 font-medium text-base leading-relaxed mb-10 max-w-md">
-                ship2sell delivers high-value cargo with clarity, control, and consistent communication from origin to destination.
+              <p className="mt-6 max-w-2xl text-[0.98rem] font-normal leading-7 text-slate-100 md:text-[1.06rem] md:leading-8 lg:text-[1.12rem]">
+                ship2sell is built to give customers confidence through visibility, consistent communication, and structured support at every stage.
               </p>
-              <div className="flex gap-4">
-                <Link href="/login?callbackUrl=%2Fcustomer%2Ftrack">
-                  <button className="h-11 px-7 bg-[#1e4b7a] text-white font-bold text-sm rounded-xl hover:bg-[#1e4b7a] transition-colors shadow-md flex items-center gap-2">
-                    Track a Journey <ArrowRight className="w-4 h-4" />
-                  </button>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  href="/login?callbackUrl=%2Fcustomer%2Ftrack"
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-[20px] bg-[#fe6801] px-7 text-sm font-bold text-white transition-colors hover:bg-[#e65d00]"
+                >
+                  Track a Journey
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/contact"
+                  className="inline-flex h-12 items-center justify-center rounded-[20px] border border-white/25 bg-white/10 px-7 text-sm font-semibold text-white transition-colors hover:bg-white/16"
+                >
+                  Speak with Support
                 </Link>
               </div>
             </div>
 
-            {/* Right: airplane photo card */}
-            <div className="relative">
-              <div className="rounded-2xl overflow-hidden h-80 shadow-xl border border-slate-100">
-                <img
-                  src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1200&auto=format&fit=crop"
-                  alt="Cargo Plane"
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              </div>
-              {/* Floating badge */}
-              <div className="absolute -bottom-5 -left-5 bg-white rounded-2xl p-4 shadow-xl border border-slate-100 flex items-center gap-3">
-                <div className="w-9 h-9 bg-green-100 rounded-xl flex items-center justify-center">
-                  <Check className="w-4 h-4 text-green-600" />
-                </div>
-                <div>
-                  <p className="font-black text-[#1e4b7a] text-[12px]">Customs Verified</p>
-                  <p className="text-[10px] text-slate-500 font-medium">Indira Gandhi, August 24</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* â”€â”€ ORIGIN TO DESTINATION FLOW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-20 bg-[#FAFAFD]">
-        <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
-          <div className="text-center mb-14">
-            <h2 className="text-[28px] font-black text-[#1e4b7a] tracking-tight mb-3">The Origin-to-Destination Flow</h2>
-            <p className="text-slate-500 font-medium text-sm">From a single warehouse to a global doorstep, refined at every step of the journey.</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {flowSteps.map((step, i) => (
-              <div key={i} className="rounded-2xl p-7 border border-slate-100 bg-white transition-all hover:shadow-md">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5 bg-orange-50">
-                  {i === 0 && <Package className="w-5 h-5 text-[#1e4b7a]" />}
-                  {i === 1 && <Zap className="w-5 h-5 text-[#1e4b7a]" />}
-                  {i === 2 && <Globe2 className="w-5 h-5 text-[#1e4b7a]" />}
-                  {i === 3 && <Truck className="w-5 h-5 text-[#1e4b7a]" />}
-                </div>
-                <p className="text-[10px] font-bold tracking-widest uppercase mb-2 text-slate-400">{step.num}</p>
-                <h3 className="font-black text-[15px] mb-2 text-[#1e4b7a]">{step.title}</h3>
-                <p className="text-[12px] font-medium leading-relaxed text-slate-500">{step.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* â”€â”€ INTELLIGENCE BEHIND THE TRANSIT â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-
-            {/* Left: 4 mini cards */}
-            <div className="grid grid-cols-2 gap-5">
-              {intelFeatures.map((feat, i) => (
-                <div key={i} className="rounded-2xl p-6 border bg-slate-50 border-slate-100 hover:shadow-md transition-all">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-4 bg-orange-50">
-                    {i === 0 && <Globe2 className="w-4 h-4 text-[#1e4b7a]" />}
-                    {i === 1 && <BarChart2 className="w-4 h-4 text-[#1e4b7a]" />}
-                    {i === 2 && <Package className="w-4 h-4 text-[#1e4b7a]" />}
-                    {i === 3 && <MessageSquare className="w-4 h-4 text-[#1e4b7a]" />}
-                  </div>
-                  <h4 className="font-black text-[13px] mb-1.5 text-[#1e4b7a]">{feat.title}</h4>
-                  <p className="text-[11px] font-medium leading-relaxed text-slate-500">{feat.desc}</p>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+              {[
+                { value: "24/7", label: "Support Coverage" },
+                { value: "Live", label: "Status Visibility" },
+                { value: "Fast", label: "Issue Escalation" },
+                { value: "Global", label: "Delivery Reach" },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-[20px] border border-white/15 bg-white/10 px-5 py-5 text-white shadow-[0_10px_24px_rgba(30,75,122,0.18)] backdrop-blur-xl"
+                >
+                  <p className="text-[1.55rem] font-bold leading-none tracking-[-0.02em] sm:text-[1.8rem]">{item.value}</p>
+                  <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-200">{item.label}</p>
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
 
-            {/* Right: text */}
-            <div>
-              <h2 className="text-[32px] font-black text-[#1e4b7a] tracking-tight leading-tight mb-6">
-                The Intelligence Behind<br />the Transit.
-              </h2>
-              <p className="text-slate-500 font-medium text-base leading-relaxed mb-8">
-                We don't just move boxes. We manage data. Our proprietary technology layer sits above the physical network, ensuring that you are never left wondering about status, conditions or ETA.
-              </p>
-              <div className="space-y-4">
-                {[
-                  { label: "Live ETA Tracking", desc: "Real-time ETA visibility across key milestones and delivery checkpoints." },
-                  { label: "Condition Monitoring", desc: "Ongoing oversight for high-value electronics, healthcare shipments, and sensitive cargo." },
-                ].map((item, i) => (
-                  <div key={i} className="flex gap-3">
-                    <div className="w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center mt-0.5 shrink-0">
-                      <Check className="w-3 h-3 text-orange-600" />
+      <section className="relative z-10 -mt-8 pb-16 sm:-mt-10 sm:pb-20 lg:pb-24">
+        <div className="container mx-auto max-w-[80rem] px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 text-center sm:mb-14">
+            <h2 className={sectionTitleClass}>The Origin-to-Destination Flow</h2>
+            <p className={sectionCopyClass}>
+              A consistent journey model designed to keep customers informed, aligned, and confident at each stage.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4 xl:gap-8">
+            {flowSteps.map((step) => {
+              const Icon = step.icon;
+              return (
+                <article key={step.num} className={cardClass}>
+                  <div className="overflow-hidden rounded-[16px]">
+                    <img
+                      src={step.image}
+                      alt={step.imageAlt}
+                      className="h-40 w-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="mt-5 flex h-11 w-11 items-center justify-center rounded-[20px] bg-orange-50">
+                    <Icon className="h-5 w-5 text-[#1e4b7a]" />
+                  </div>
+                  <h3 className="mt-3 text-[1.15rem] font-bold tracking-[-0.02em] text-[#1e4b7a]">{step.title}</h3>
+                  <p className="mt-3 text-[0.92rem] leading-7 text-slate-600">{step.desc}</p>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-16 sm:py-20 lg:py-24">
+        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:gap-14">
+            <div className="grid gap-6 sm:grid-cols-2">
+              {intelFeatures.map((feature) => {
+                const Icon = feature.icon;
+                return (
+                  <article key={feature.title} className={`${cardClass} gap-4`}>
+                    <div className="overflow-hidden rounded-[16px]">
+                      <img
+                        src={feature.image}
+                        alt={feature.imageAlt}
+                        className="h-32 w-full object-cover"
+                        loading="lazy"
+                      />
                     </div>
-                    <div>
-                      <span className="font-bold text-[#1e4b7a] text-sm">{item.label}</span>
-                      <span className="text-slate-500 text-sm font-medium"> - {item.desc}</span>
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-[20px] bg-orange-50">
+                        <Icon className="h-4 w-4 text-[#1e4b7a]" />
+                      </div>
+                      <h3 className="text-[1rem] font-bold tracking-[-0.02em] text-[#1e4b7a]">{feature.title}</h3>
+                    </div>
+                    <p className="text-[0.88rem] leading-6 text-slate-600">{feature.desc}</p>
+                  </article>
+                );
+              })}
+            </div>
+
+            <div>
+              <h2 className={sectionTitleClass}>The intelligence behind the transit.</h2>
+              <p className="mt-5 max-w-xl text-[0.94rem] leading-7 text-slate-600 sm:text-[1rem]">
+                We do not just move cargo. We manage operational data in a way that helps customers understand status, timing, and next steps more clearly.
+              </p>
+              <div className="mt-8 space-y-4">
+                {[
+                  {
+                    label: "Live ETA Tracking",
+                    desc: "Real-time ETA visibility across key milestones and delivery checkpoints.",
+                  },
+                  {
+                    label: "Condition Monitoring",
+                    desc: "Extra oversight for healthcare, electronics, and other sensitive shipments.",
+                  },
+                ].map((item) => (
+                  <div key={item.label} className="flex gap-3">
+                    <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-100">
+                      <Check className="h-3 w-3 text-[#fe6801]" />
+                    </div>
+                    <div className="text-[0.92rem] leading-7 text-slate-600">
+                      <span className="font-semibold text-[#1e4b7a]">{item.label}</span>
+                      <span>{` - ${item.desc}`}</span>
                     </div>
                   </div>
                 ))}
@@ -158,105 +281,158 @@ export default function CustomerExperiencePage() {
         </div>
       </section>
 
-      {/* â”€â”€ GLOBAL SUPPORT LOCAL EXPERTISE â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-20 bg-[#1e4b7a]">
-        <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-[32px] font-black text-white tracking-tight leading-tight mb-6">
-                Global Support,<br />Local Expertise
-              </h2>
-              <p className="text-orange-200 font-medium text-base leading-relaxed mb-10">
-                When you need support, you need it quickly. Our teams in London, Mumbai, and New York provide informed guidance with local operational context.
-              </p>
-              <div className="grid grid-cols-3 gap-8 mb-8">
-                {[{ val: "24/7", label: "Global Support" }, { val: "15m", label: "Response Time" }, { val: "50+", label: "Specialists" }].map((s, i) => (
-                  <div key={i}>
-                    <p className="text-3xl font-black text-white tracking-tight mb-1">{s.val}</p>
-                    <p className="text-[11px] font-bold text-orange-300 uppercase tracking-widest">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right: Chat UI mockup */}
-            <div className="bg-white/10 rounded-2xl p-6 border border-white/10 backdrop-blur-sm">
-              <div className="space-y-3 mb-5">
-                {[
-                  { label: "Customer Support", msg: "My shipment GN-94821 has reached customs. Can you expedite clearance?", ours: false },
-                  { label: "Mumbai Operations Hub", msg: "This shipment has been escalated to our senior clearance broker. Expected clearance time is 90 minutes.", ours: true },
-                ].map((msg, i) => (
-                  <div key={i} className={`flex items-start gap-3 ${msg.ours ? 'flex-row-reverse' : ''}`}>
-                    <div className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-[9px] font-black ${msg.ours ? 'bg-orange-500 text-white' : 'bg-orange-200 text-[#1e4b7a]'}`}>
-                      {msg.ours ? 'GN' : 'YOU'}
+      <section className="py-16 sm:py-20 lg:py-24">
+        <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-16">
+          <div className="overflow-hidden rounded-[20px] bg-gradient-to-br from-[#1e4b7a] via-[#1e4b7a] to-[#1a2f45] p-6 text-white shadow-[0_30px_70px_rgba(30,75,122,0.20)] sm:p-8 lg:p-10">
+            <div className="grid items-center gap-10 lg:grid-cols-[1fr_0.95fr]">
+              <div>
+                <h2 className="text-balance text-[1.8rem] font-bold tracking-[-0.02em] sm:text-[2.1rem] lg:text-[2.6rem]">
+                  Global support, local expertise
+                </h2>
+                <p className="mt-4 max-w-xl text-[0.96rem] leading-7 text-slate-100">
+                  Teams across key hubs give customers faster answers, stronger route context, and better escalation handling when timing matters.
+                </p>
+                <div className="mt-8 grid grid-cols-3 gap-4">
+                  {[
+                    { val: "24/7", label: "Support Coverage" },
+                    { val: "15m", label: "Response Goal" },
+                    { val: "50+", label: "Specialists" },
+                  ].map((item) => (
+                    <div key={item.label}>
+                      <p className="text-[1.6rem] font-bold tracking-[-0.02em] text-white sm:text-[1.9rem]">{item.val}</p>
+                      <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-orange-200">{item.label}</p>
                     </div>
-                    <div className={`rounded-2xl p-4 max-w-[80%] ${msg.ours ? 'bg-[#1e4b7a] text-white' : 'bg-white text-[#1e4b7a]'}`}>
-                      <p className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${msg.ours ? 'text-orange-300' : 'text-slate-400'}`}>{msg.label}</p>
-                      <p className="text-[12px] font-medium leading-relaxed">{msg.msg}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <button className="w-full h-11 bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm rounded-xl transition-colors flex items-center justify-center gap-2">
-                <MessageSquare className="w-4 h-4" /> Initiate Live Chat
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* â”€â”€ TESTIMONIALS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
-          <div className="text-center mb-12">
-            <h2 className="text-[28px] font-black text-[#1e4b7a] tracking-tight mb-3">Trusted by Global Leaders</h2>
-            <p className="text-slate-500 font-medium text-sm">Hear from businesses that have entrusted their most critical shipments with ship2sell.</p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            {testimonials.map((t, i) => (
-              <div key={i} className="bg-slate-50 border border-slate-100 rounded-2xl p-8 hover:shadow-md transition-all">
-                <p className="text-slate-600 font-medium text-[15px] leading-relaxed mb-8 italic">"{t.quote}"</p>
-                <div className="flex items-center gap-4">
-                  <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" loading="lazy" />
-                  <div>
-                    <p className="font-black text-[#1e4b7a] text-[14px]">{t.name}</p>
-                    <p className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mt-0.5">{t.role}</p>
-                  </div>
+                  ))}
                 </div>
               </div>
+
+              <div className="rounded-[20px] border border-white/10 bg-white/10 p-5 backdrop-blur-sm sm:p-6">
+                <div className="mb-5 overflow-hidden rounded-[16px]">
+                  <img
+                    src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=900&auto=format&fit=crop"
+                    alt="Operations team collaborating"
+                    className="h-28 w-full object-cover sm:h-32"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="space-y-3">
+                  {[
+                    {
+                      label: "Customer Support",
+                      msg: "My shipment GN-94821 has reached customs. Can you expedite clearance?",
+                      ours: false,
+                    },
+                    {
+                      label: "Mumbai Operations Hub",
+                      msg: "This shipment has been escalated to our senior clearance broker. Expected clearance time is about 90 minutes.",
+                      ours: true,
+                    },
+                  ].map((message) => (
+                    <div key={message.label} className={`flex items-start gap-3 ${message.ours ? "flex-row-reverse" : ""}`}>
+                      <div
+                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[9px] font-bold ${
+                          message.ours ? "bg-[#fe6801] text-white" : "bg-orange-200 text-[#1e4b7a]"
+                        }`}
+                      >
+                        {message.ours ? "OPS" : "YOU"}
+                      </div>
+                      <div className={`max-w-[82%] rounded-[20px] p-4 ${message.ours ? "bg-[#1e4b7a] text-white" : "bg-white text-[#1e4b7a]"}`}>
+                        <p className={`mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${message.ours ? "text-orange-200" : "text-slate-400"}`}>
+                          {message.label}
+                        </p>
+                        <p className="text-[0.84rem] leading-6">{message.msg}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-5">
+                  <Link
+                    href="/contact"
+                    className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-[20px] bg-[#fe6801] text-sm font-bold text-white transition-colors hover:bg-[#e65d00]"
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    Contact Support Team
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-16 sm:py-20 lg:py-24">
+        <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-16">
+          <div className="mb-12 text-center">
+            <h2 className={sectionTitleClass}>Trusted by global teams</h2>
+            <p className={sectionCopyClass}>
+              Experience matters most when shipments are urgent, sensitive, or commercially important.
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:gap-6">
+            {testimonials.map((item) => (
+              <article key={item.name} className={cardClass}>
+                <div className="overflow-hidden rounded-[16px]">
+                  <img
+                    src={item.image}
+                    alt={item.imageAlt}
+                    className="h-32 w-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <p className="mt-5 text-[0.98rem] italic leading-8 text-slate-600">"{item.quote}"</p>
+                <div className="mt-8 flex items-center gap-4">
+                  <img
+                    src={item.avatar}
+                    alt={item.name}
+                    className="h-12 w-12 rounded-full border-2 border-white object-cover shadow-sm"
+                    loading="lazy"
+                  />
+                  <div>
+                    <p className="text-[0.96rem] font-semibold text-[#1e4b7a]">{item.name}</p>
+                    <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">{item.role}</p>
+                  </div>
+                </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* â”€â”€ FINAL CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-20 bg-[#1e4b7a] relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
-        <div className="container mx-auto px-6 lg:px-16 max-w-4xl text-center relative z-10">
-          <h2 className="text-5xl font-black text-white tracking-tight mb-6 leading-tight">
-            Experience the<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#fe6801] to-orange-300">Navigator Difference.</span>
-          </h2>
-          <p className="text-orange-200 font-medium text-base mb-12 max-w-lg mx-auto leading-relaxed">
-            Ready to turn your shipping workflow into a strategic advantage?
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register">
-              <button className="px-8 py-4 bg-orange-400 text-[#1e4b7a] font-black text-sm rounded-2xl hover:bg-orange-300 transition-colors shadow-lg">
-                Request a Personalized Demo
-              </button>
-            </Link>
-            <Link href="/contact">
-              <button className="px-8 py-4 bg-white/10 border border-white/20 text-white font-black text-sm rounded-2xl hover:bg-white/20 transition-colors backdrop-blur-sm">
-                Speak with a Specialist
-              </button>
-            </Link>
+      <section className="py-16 sm:py-20 lg:py-24">
+        <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-16">
+          <div className="relative overflow-hidden rounded-[20px] bg-gradient-to-br from-[#1e4b7a] via-[#1e4b7a] to-[#1a2f45] p-6 text-center text-white shadow-[0_30px_70px_rgba(30,75,122,0.20)] sm:p-8 lg:p-12">
+            <div className="absolute -left-16 -top-16 h-64 w-64 rounded-full bg-[#fe6801]/20 blur-3xl" />
+            <div className="absolute -bottom-16 -right-16 h-64 w-64 rounded-full bg-[#fe6801]/10 blur-3xl" />
+            <div className="relative z-10">
+              <h2 className="text-balance text-[1.8rem] font-bold tracking-[-0.02em] sm:text-[2.1rem] lg:text-[2.7rem]">
+                Ready to improve the shipment experience?
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-[0.96rem] leading-7 text-slate-100">
+                Turn logistics communication, tracking visibility, and customer confidence into a real operational advantage.
+              </p>
+              <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+                <Link
+                  href="/register"
+                  className="inline-flex h-12 items-center justify-center rounded-[20px] bg-[#fe6801] px-7 text-sm font-bold text-white transition-colors hover:bg-[#e65d00]"
+                >
+                  Request a Personalized Demo
+                </Link>
+                <Link
+                  href="/contact"
+                  className="inline-flex h-12 items-center justify-center rounded-[20px] border border-white/20 bg-white/10 px-7 text-sm font-semibold text-white transition-colors hover:bg-white/18"
+                >
+                  Speak with a Specialist
+                </Link>
+              </div>
+              <div className="mt-6 inline-flex items-center gap-2 text-[12px] text-orange-100">
+                <ShieldCheck className="h-4 w-4" />
+                Customer-first visibility with operational support behind it
+              </div>
+            </div>
           </div>
         </div>
       </section>
-
     </div>
   );
 }
-

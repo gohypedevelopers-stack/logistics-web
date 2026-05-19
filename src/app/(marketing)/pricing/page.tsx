@@ -1,270 +1,489 @@
-﻿"use client";
+"use client";
 
-import { useState } from "react";
-import { ChevronDown, ChevronRight, FileText, Activity, ShieldCheck, ArrowRight, Check } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Manrope } from "next/font/google";
+import {
+  Activity,
+  ArrowRight,
+  Check,
+  ChevronDown,
+  FileText,
+  ShieldCheck,
+  Zap,
+} from "lucide-react";
 import Link from "next/link";
 
-const carriers = [
-  { name: "SkyCargo", sub: "Premium Air Freight", initials: "SC", bg: "bg-green-100 text-green-700", level: "Priority", levelColor: "bg-orange-500 text-white", transit: "2-4 Business Days", rate: "$12.40", rateNote: "" },
-  { name: "Maersk", sub: "LCL Container Service", initials: "MK", bg: "bg-blue-100 text-blue-700", level: "Economy", levelColor: "bg-slate-200 text-slate-700", transit: "18-24 Business Days", rate: "$3.85", rateNote: "" },
-  { name: "FedEx", sub: "Direct Door Courier", initials: "FX", bg: "bg-red-100 text-red-700", level: "Express", levelColor: "bg-[#1e4b7a] text-white", transit: "3-5 Business Days", rate: "$15.90", rateNote: "" },
-];
+const homeFont = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const carrierMatrix = {
+  "United Kingdom (UK)": [
+    {
+      name: "SkyCargo",
+      sub: "Premium Air Freight",
+      initials: "SC",
+      bg: "bg-green-100 text-green-700",
+      level: "Priority",
+      levelColor: "bg-orange-100 text-orange-700",
+      transit: "2-4 Business Days",
+      rate: "$12.40",
+    },
+    {
+      name: "Maersk",
+      sub: "LCL Container Service",
+      initials: "MK",
+      bg: "bg-blue-100 text-blue-700",
+      level: "Economy",
+      levelColor: "bg-slate-200 text-slate-700",
+      transit: "18-24 Business Days",
+      rate: "$3.85",
+    },
+    {
+      name: "FedEx",
+      sub: "Direct Door Courier",
+      initials: "FX",
+      bg: "bg-red-100 text-red-700",
+      level: "Express",
+      levelColor: "bg-[#1e4b7a] text-white",
+      transit: "3-5 Business Days",
+      rate: "$15.90",
+    },
+  ],
+  "United States (US)": [
+    {
+      name: "Delta Cargo",
+      sub: "Priority Air Network",
+      initials: "DC",
+      bg: "bg-sky-100 text-sky-700",
+      level: "Priority",
+      levelColor: "bg-orange-100 text-orange-700",
+      transit: "3-5 Business Days",
+      rate: "$13.10",
+    },
+    {
+      name: "MSC",
+      sub: "Ocean Consolidation",
+      initials: "MS",
+      bg: "bg-indigo-100 text-indigo-700",
+      level: "Economy",
+      levelColor: "bg-slate-200 text-slate-700",
+      transit: "20-28 Business Days",
+      rate: "$4.25",
+    },
+    {
+      name: "UPS",
+      sub: "Door Courier Express",
+      initials: "UP",
+      bg: "bg-amber-100 text-amber-700",
+      level: "Express",
+      levelColor: "bg-[#1e4b7a] text-white",
+      transit: "4-6 Business Days",
+      rate: "$16.75",
+    },
+  ],
+  "Germany (DE)": [
+    {
+      name: "Lufthansa Cargo",
+      sub: "Air Freight Connect",
+      initials: "LH",
+      bg: "bg-cyan-100 text-cyan-700",
+      level: "Priority",
+      levelColor: "bg-orange-100 text-orange-700",
+      transit: "3-4 Business Days",
+      rate: "$11.95",
+    },
+    {
+      name: "Hapag-Lloyd",
+      sub: "Ocean LCL Service",
+      initials: "HL",
+      bg: "bg-blue-100 text-blue-700",
+      level: "Economy",
+      levelColor: "bg-slate-200 text-slate-700",
+      transit: "19-25 Business Days",
+      rate: "$4.05",
+    },
+    {
+      name: "DHL Express",
+      sub: "Commercial Courier",
+      initials: "DH",
+      bg: "bg-yellow-100 text-yellow-700",
+      level: "Express",
+      levelColor: "bg-[#1e4b7a] text-white",
+      transit: "3-5 Business Days",
+      rate: "$15.60",
+    },
+  ],
+  "France (FR)": [
+    {
+      name: "Air France KLM",
+      sub: "Priority Cargo Routing",
+      initials: "AF",
+      bg: "bg-blue-100 text-blue-700",
+      level: "Priority",
+      levelColor: "bg-orange-100 text-orange-700",
+      transit: "3-5 Business Days",
+      rate: "$12.20",
+    },
+    {
+      name: "CMA CGM",
+      sub: "Ocean Freight Option",
+      initials: "CM",
+      bg: "bg-purple-100 text-purple-700",
+      level: "Economy",
+      levelColor: "bg-slate-200 text-slate-700",
+      transit: "18-23 Business Days",
+      rate: "$3.95",
+    },
+    {
+      name: "TNT",
+      sub: "Fast Parcel Network",
+      initials: "TN",
+      bg: "bg-rose-100 text-rose-700",
+      level: "Express",
+      levelColor: "bg-[#1e4b7a] text-white",
+      transit: "4-6 Business Days",
+      rate: "$15.20",
+    },
+  ],
+} as const;
 
 const faqs = [
   {
     q: "How are rates calculated?",
-    a: "Rates are calculated based on 'Dimensional Weight' - a calculation of actual weight plus the volume your cargo occupies. We also factor in current fuel surcharges and seasonal demand peaks.",
+    a: "Rates are calculated from dimensional weight, actual weight, route availability, fuel conditions, and service speed.",
   },
   {
     q: "Are there hidden fees?",
-    a: "Absolutely not. Our quotes are all-inclusive, including terminal handling and fees, destination customs clearance, local taxes or duties at the destination and the one optional variables.",
+    a: "No. We aim to present transparent pricing guidance. Final customs duties and destination taxes depend on shipment type and receiving country rules.",
   },
   {
     q: "Can I lock in a rate for future shipments?",
-    a: "Yes, for enterprise clients, we offer 'fixed rates' up to 90 days in advance to help you manage your supply chain budget with absolute certainty.",
+    a: "Yes. Fixed-rate arrangements are available for higher-volume and recurring business lanes after route review.",
   },
 ];
 
 const included = [
-  { icon: FileText, title: "Customs Documentation", desc: "Automated generation of Bill of Lading, Commercial Invoices, and Packing Lists." },
-  { icon: Activity, title: "Real-Time Tracking", desc: "First-class GPS monitoring from factory floor to final destination port." },
-  { icon: ShieldCheck, title: "Standard Insurance", desc: "Shipment protection covering up to $50,000 in value on all standard routes." },
+  {
+    icon: FileText,
+    title: "Customs Documentation",
+    desc: "Structured support for invoices, packing lists, and key export paperwork.",
+    image:
+      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=900&auto=format&fit=crop",
+    imageAlt: "Customs paperwork and documents",
+  },
+  {
+    icon: Activity,
+    title: "Real-Time Tracking",
+    desc: "Live milestone visibility from pickup through customs and final delivery.",
+    image:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=900&auto=format&fit=crop",
+    imageAlt: "Tracking analytics on a screen",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Standard Protection",
+    desc: "Baseline shipment protection and guided support for sensitive cargo flows.",
+    image:
+      "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?q=80&w=900&auto=format&fit=crop",
+    imageAlt: "Secured logistics containers",
+  },
 ];
 
+const sectionTitleClass =
+  "text-balance text-[1.7rem] font-bold tracking-[-0.02em] text-[#1e4b7a] sm:text-[1.95rem] lg:text-[2.25rem]";
+const sectionCopyClass =
+  "mx-auto mt-4 max-w-2xl text-[0.92rem] font-normal leading-7 text-slate-600 sm:text-[0.98rem]";
+const cardClass =
+  "rounded-[20px] border border-[#d9e2ec] bg-white p-5 shadow-[0_10px_30px_rgba(30,75,122,0.06)] sm:p-6 lg:p-7";
+
 export default function PricingPage() {
-  const [origin, setOrigin] = useState("United Kingdom (UK)");
-  const [dest] = useState("India");
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [origin, setOrigin] = useState<keyof typeof carrierMatrix>("United Kingdom (UK)");
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  const carriers = useMemo(() => carrierMatrix[origin], [origin]);
 
   return (
-    <div className="bg-[#F8F9FC] min-h-screen font-sans">
+    <div className={`${homeFont.className} min-h-screen bg-[#f6f8fc] text-[#1e4b7a]`}>
+      <section className="relative isolate overflow-hidden pb-16 pt-28 sm:pb-20 sm:pt-32">
+        <div className="absolute inset-0 -z-20">
+          <img
+            src="https://images.unsplash.com/photo-1493946740644-2d8a1f1a6aff?q=80&w=1600&auto=format&fit=crop"
+            alt="Container port"
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
+        </div>
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#1e4b7a]/94 via-[#1e4b7a]/86 to-[#1e4b7a]/35" />
+        <div className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-b from-transparent to-[#f6f8fc]" />
 
-      {/* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="bg-white pt-28 pb-16 border-b border-slate-100">
-        <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-14 items-center">
-
-            {/* Left */}
-            <div>
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-orange-700 text-[10px] font-bold tracking-widest uppercase mb-8">
-                Global Logistics
+        <div className="container relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-16">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="max-w-3xl">
+              <div className="mb-6 inline-flex items-center gap-2 rounded-[20px] border border-white/20 bg-white/10 px-4 py-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#ffd6bd] backdrop-blur-xl">
+                <Zap className="h-3.5 w-3.5 fill-[#fe6801] text-[#fe6801]" />
+                Pricing Intelligence
               </div>
-              <h1 className="text-5xl font-black text-[#1e4b7a] tracking-tight leading-[1.1] mb-6">
-                Transparent<br />Pricing for <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#fe6801] to-orange-400">Global<br />Logistics</span>
+              <h1 className="text-balance text-[2.45rem] font-bold leading-[1.02] tracking-[-0.03em] text-white sm:text-[3.35rem] lg:text-[4.4rem]">
+                <span className="text-white">Clear pricing for</span>{" "}
+                <span className="text-[#fe6801]">global shipping decisions.</span>
               </h1>
-              <p className="text-slate-500 font-medium text-base leading-relaxed mb-10 max-w-md">
-                Navigate the complexities of international trade with real-time rate intelligence. No hidden surcharges - just clarity across every border.
+              <p className="mt-6 max-w-2xl text-[0.98rem] font-normal leading-7 text-slate-100 md:text-[1.06rem] md:leading-8 lg:text-[1.12rem]">
+                Compare route options, review estimated cost per kilogram, and understand what is included before you commit to a shipping lane.
               </p>
-              <div className="flex gap-4 flex-wrap">
-                <Link href="/register">
-                  <button className="h-11 px-7 bg-[#1e4b7a] text-white font-bold text-sm rounded-xl hover:bg-[#1e4b7a] transition-colors shadow-md flex items-center gap-2">
-                    Start Shipping <ArrowRight className="w-4 h-4" />
-                  </button>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  href="/register"
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-[20px] bg-[#fe6801] px-7 text-sm font-bold text-white transition-colors hover:bg-[#e65d00]"
+                >
+                  Start Shipping
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
-                <button className="h-11 px-7 bg-white border border-slate-200 text-slate-700 font-bold text-sm rounded-xl hover:bg-slate-50 transition-colors shadow-sm">
-                  View API Documentation
-                </button>
+                <Link
+                  href="/contact"
+                  className="inline-flex h-12 items-center justify-center rounded-[20px] border border-white/25 bg-white/10 px-7 text-sm font-semibold text-white transition-colors hover:bg-white/16"
+                >
+                  Contact Sales
+                </Link>
               </div>
             </div>
 
-            {/* Right - port photo */}
-            <div className="rounded-2xl overflow-hidden h-64 lg:h-80 shadow-xl border border-slate-100">
-              <img
-                src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=1200&auto=format&fit=crop"
-                alt="Container port"
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+              {[
+                { value: "Live", label: "Rate Visibility" },
+                { value: "Air / Ocean / Express", label: "Mode Comparison" },
+                { value: "130+", label: "Country Coverage" },
+                { value: "24/7", label: "Support Access" },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-[20px] border border-white/15 bg-white/10 px-5 py-5 text-white shadow-[0_10px_24px_rgba(30,75,122,0.18)] backdrop-blur-xl"
+                >
+                  <p className="text-[1.55rem] font-bold leading-none tracking-[-0.02em] sm:text-[1.8rem]">{item.value}</p>
+                  <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-200">{item.label}</p>
+                </div>
+              ))}
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* â”€â”€ INSTANT RATE CALCULATOR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-12">
-        <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
-                <Activity className="w-4 h-4 text-[#1e4b7a]" />
-              </div>
-              <h2 className="text-[16px] font-black text-[#1e4b7a]">Instant Rate Calculator</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+      <section className="relative z-10 -mt-8 pb-8 sm:-mt-10 sm:pb-12">
+        <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-16">
+          <div className={cardClass}>
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Origin Country</label>
-                <select
-                  value={origin}
-                  onChange={e => setOrigin(e.target.value)}
-                  className="w-full h-11 bg-slate-50 border border-slate-200 rounded-xl px-4 text-sm font-bold text-slate-800 outline-none focus:ring-2 ring-orange-500/20 appearance-none"
-                >
-                  <option>United Kingdom (UK)</option>
-                  <option>United States (US)</option>
-                  <option>Germany (DE)</option>
-                  <option>France (FR)</option>
-                </select>
+                <div className="flex h-10 w-10 items-center justify-center rounded-[20px] bg-orange-50">
+                  <Activity className="h-4 w-4 text-[#1e4b7a]" />
+                </div>
+                <h2 className="mt-4 text-[1.3rem] font-bold tracking-[-0.02em] text-[#1e4b7a]">Instant Rate Calculator</h2>
+                <p className="mt-2 max-w-xl text-[0.92rem] leading-7 text-slate-600">
+                  Select an origin country to view current comparative pricing for routes into India.
+                </p>
               </div>
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Destination</label>
-                <div className="relative">
-                  <div className="w-full h-11 bg-slate-50 border border-slate-200 rounded-xl px-4 flex items-center text-sm font-bold text-slate-500 cursor-not-allowed">
-                    India
-                  </div>
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center">
-                    <span className="text-[9px] font-black text-slate-500">IN</span>
+
+              <div className="grid gap-4 sm:grid-cols-2 lg:min-w-[540px]">
+                <div>
+                  <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">Origin Country</label>
+                  <select
+                    value={origin}
+                    onChange={(e) => setOrigin(e.target.value as keyof typeof carrierMatrix)}
+                    className="h-12 w-full rounded-[20px] border border-[#d9e2ec] bg-[#f8fafc] px-4 text-sm font-medium text-[#1e4b7a] outline-none transition-shadow focus:shadow-[0_0_0_4px_rgba(254,104,1,0.12)]"
+                  >
+                    {Object.keys(carrierMatrix).map((country) => (
+                      <option key={country}>{country}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">Destination</label>
+                  <div className="flex h-12 items-center justify-between rounded-[20px] border border-[#d9e2ec] bg-[#f8fafc] px-4 text-sm font-medium text-[#1e4b7a]">
+                    <span>India</span>
+                    <span className="rounded-full bg-slate-200 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-600">
+                      IN
+                    </span>
                   </div>
                 </div>
               </div>
-              <button className="h-11 bg-[#1e4b7a] text-white font-bold text-sm rounded-xl hover:bg-[#1e4b7a] transition-colors shadow-md">
-                Update Results â†—
-              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* â”€â”€ COMPARISON TABLE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-6 pb-16">
-        <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
+      <section className="pb-16 sm:pb-20 lg:pb-24">
+        <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-16">
           <div className="mb-8">
-            <h2 className="text-[26px] font-black text-[#1e4b7a] tracking-tight mb-2">Market Comparative Rates</h2>
-            <p className="text-slate-500 font-medium text-sm">Live calculations based on current network demand at full tailoring.</p>
+            <h2 className={sectionTitleClass}>Market Comparative Rates</h2>
+            <p className="mt-3 max-w-2xl text-[0.92rem] leading-7 text-slate-600">
+              Comparative guidance for <span className="font-semibold text-[#1e4b7a]">{origin}</span> to India based on current network conditions.
+            </p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="hidden overflow-hidden rounded-[20px] border border-[#d9e2ec] bg-white shadow-[0_10px_30px_rgba(30,75,122,0.06)] lg:block">
             <div className="overflow-x-auto">
               <table className="w-full text-left">
-                <thead className="bg-[#F4F5F9] border-b border-slate-100">
+                <thead className="border-b border-slate-200 bg-[#f8fafc]">
                   <tr>
-                    <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Logistics Provider</th>
-                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Service Level</th>
-                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Transit Time</th>
-                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Cost Per KG</th>
-                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Action</th>
+                    <th className="px-8 py-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">Provider</th>
+                    <th className="px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">Service Level</th>
+                    <th className="px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">Transit Time</th>
+                    <th className="px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">Cost Per KG</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {carriers.map((c, i) => (
-                    <tr key={i} className="hover:bg-slate-50/50 transition-colors">
+                <tbody className="divide-y divide-slate-100">
+                  {carriers.map((carrier) => (
+                    <tr key={carrier.name} className="transition-colors hover:bg-slate-50/70">
                       <td className="px-8 py-5">
                         <div className="flex items-center gap-3">
-                          <div className={`w-9 h-9 rounded-xl text-[11px] font-black flex items-center justify-center shrink-0 ${c.bg}`}>
-                            {c.initials}
+                          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px] text-[11px] font-bold ${carrier.bg}`}>
+                            {carrier.initials}
                           </div>
                           <div>
-                            <p className="font-bold text-[#1e4b7a] text-[13px]">{c.name}</p>
-                            <p className="text-[11px] font-medium text-slate-400 mt-0.5">{c.sub}</p>
+                            <p className="text-[0.95rem] font-semibold text-[#1e4b7a]">{carrier.name}</p>
+                            <p className="mt-0.5 text-[0.82rem] text-slate-500">{carrier.sub}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-5">
-                        <span className={`px-3 py-1 rounded-lg text-[10px] font-black tracking-widest ${c.levelColor}`}>{c.level}</span>
+                        <span className={`rounded-[20px] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] ${carrier.levelColor}`}>
+                          {carrier.level}
+                        </span>
                       </td>
-                      <td className="px-6 py-5">
-                        <span className="text-[13px] font-semibold text-slate-600">{c.transit}</span>
-                      </td>
-                      <td className="px-6 py-5">
-                        <span className="text-[18px] font-black text-[#1e4b7a] tracking-tight">{c.rate}</span>
-                      </td>
-                      <td className="px-6 py-5">
-                        <button className="h-9 px-5 rounded-xl bg-slate-100 hover:bg-[#1e4b7a] hover:text-white text-slate-700 font-bold text-[12px] transition-colors">
-                          Select
-                        </button>
-                      </td>
+                      <td className="px-6 py-5 text-[0.92rem] font-medium text-slate-600">{carrier.transit}</td>
+                      <td className="px-6 py-5 text-[1.1rem] font-bold tracking-[-0.02em] text-[#1e4b7a]">{carrier.rate}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <div className="px-8 py-4 border-t border-slate-50 bg-slate-50/50">
-              <p className="text-[11px] font-medium text-slate-400">Showing top results for Singapore routing. For other periods, please see our <span className="text-[#1e4b7a] font-bold cursor-pointer underline underline-offset-2">detailed matrix</span>.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* â”€â”€ COMPREHENSIVE VALUE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-20 bg-white border-y border-slate-100">
-        <div className="container mx-auto px-6 lg:px-16 max-w-6xl">
-          <div className="text-center mb-12">
-            <h2 className="text-[28px] font-black text-[#1e4b7a] tracking-tight mb-3">Comprehensive Value</h2>
-            <p className="text-slate-500 font-medium text-sm">Every rate includes our full-service intelligence suite as standard. No surprise add-ons.</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {included.map(({ icon: Icon, title, desc }, i) => (
-              <div key={i} className="bg-slate-50 border border-slate-100 rounded-2xl p-8 hover:bg-white hover:shadow-md transition-all">
-                <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center mb-5">
-                  <Icon className="w-5 h-5 text-[#1e4b7a]" />
-                </div>
-                <h3 className="font-black text-[#1e4b7a] text-[15px] mb-2">{title}</h3>
-                <p className="text-slate-500 font-medium text-sm leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* â”€â”€ FAQ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-20">
-        <div className="container mx-auto px-6 lg:px-16 max-w-3xl">
-          <div className="text-center mb-12">
-            <h2 className="text-[28px] font-black text-[#1e4b7a] tracking-tight mb-3">Frequently Asked Questions</h2>
-          </div>
-          <div className="space-y-3">
-            {faqs.map((faq, i) => (
-              <div
-                key={i}
-                className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden"
-              >
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between p-6 text-left"
-                >
-                  <span className="font-bold text-[#1e4b7a] text-[14px]">{faq.q}</span>
-                  <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform shrink-0 ml-4 ${openFaq === i ? 'rotate-180' : ''}`} />
-                </button>
-                {openFaq === i && (
-                  <div className="px-6 pb-6 border-t border-slate-50">
-                    <p className="text-slate-500 text-sm font-medium leading-relaxed pt-4">{faq.a}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* â”€â”€ CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-6 lg:px-16 max-w-4xl">
-          <div className="bg-gradient-to-br from-[#1e4b7a] to-[#1e4b7a] rounded-3xl p-14 text-center text-white relative overflow-hidden shadow-2xl">
-            <div className="absolute top-0 left-0 w-64 h-64 bg-orange-500/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-            <div className="absolute bottom-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
-            <div className="relative z-10">
-              <h2 className="text-4xl font-black tracking-tight mb-4">Ready for precise logistics?</h2>
-              <p className="text-orange-100/80 font-medium text-base mb-10 max-w-lg mx-auto leading-relaxed">
-                Join 2,500+ global businesses operating their trade routes with our all-in price platform.
+            <div className="border-t border-slate-100 bg-[#f8fafc] px-8 py-4">
+              <p className="text-[0.82rem] text-slate-500">
+                These are indicative planning rates. Final pricing depends on shipment dimensions, commodity type, and route availability.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/register">
-                  <button className="px-8 py-4 bg-orange-400 text-[#1e4b7a] font-black text-sm rounded-2xl hover:bg-orange-300 transition-colors shadow-lg">
-                    Get a Custom Quote
-                  </button>
+            </div>
+          </div>
+
+          <div className="grid gap-4 lg:hidden">
+            {carriers.map((carrier) => (
+              <article key={carrier.name} className={cardClass}>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px] text-[11px] font-bold ${carrier.bg}`}>
+                      {carrier.initials}
+                    </div>
+                    <div>
+                      <p className="text-[0.96rem] font-semibold text-[#1e4b7a]">{carrier.name}</p>
+                      <p className="text-[0.84rem] text-slate-500">{carrier.sub}</p>
+                    </div>
+                  </div>
+                  <span className={`rounded-[20px] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] ${carrier.levelColor}`}>
+                    {carrier.level}
+                  </span>
+                </div>
+
+                <div className="mt-5 grid gap-3 rounded-[20px] border border-[#d9e2ec] bg-[#f8fafc] p-4">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-[0.86rem] text-slate-500">Transit Time</span>
+                    <span className="text-[0.9rem] font-medium text-[#1e4b7a]">{carrier.transit}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-[0.86rem] text-slate-500">Cost Per KG</span>
+                    <span className="text-[1.05rem] font-bold tracking-[-0.02em] text-[#1e4b7a]">{carrier.rate}</span>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-16 sm:py-20 lg:py-24">
+        <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-16">
+          <div className="mb-12 text-center">
+            <h2 className={sectionTitleClass}>Comprehensive Value</h2>
+            <p className={sectionCopyClass}>
+              Every estimate is positioned as part of a broader logistics service, not just a transport line item.
+            </p>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+            {included.map(({ icon: Icon, title, desc, image, imageAlt }) => (
+              <article key={title} className={cardClass}>
+                <div className="overflow-hidden rounded-[16px]">
+                  <img src={image} alt={imageAlt} className="h-36 w-full object-cover" loading="lazy" />
+                </div>
+                <h3 className="mt-5 text-[1.2rem] font-bold tracking-[-0.02em] text-[#1e4b7a]">{title}</h3>
+                <p className="mt-3 text-[0.92rem] leading-7 text-slate-600">{desc}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 sm:py-20 lg:py-24">
+        <div className="container mx-auto max-w-3xl px-4 sm:px-6 lg:px-16">
+          <div className="mb-12 text-center">
+            <h2 className={sectionTitleClass}>Frequently Asked Questions</h2>
+          </div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <div key={faq.q} className="overflow-hidden rounded-[20px] border border-[#d9e2ec] bg-white shadow-[0_8px_24px_rgba(30,75,122,0.05)]">
+                <button
+                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                  className="flex w-full items-center justify-between gap-4 p-5 text-left sm:p-6"
+                >
+                  <span className="text-[0.98rem] font-semibold text-[#1e4b7a]">{faq.q}</span>
+                  <ChevronDown
+                    className={`h-5 w-5 shrink-0 text-slate-400 transition-transform ${openFaq === index ? "rotate-180" : ""}`}
+                  />
+                </button>
+                {openFaq === index ? (
+                  <div className="border-t border-slate-100 px-5 pb-5 pt-4 sm:px-6 sm:pb-6">
+                    <p className="text-[0.92rem] leading-7 text-slate-600">{faq.a}</p>
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-16 sm:py-20 lg:py-24">
+        <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-16">
+          <div className="relative overflow-hidden rounded-[20px] bg-gradient-to-br from-[#1e4b7a] via-[#1e4b7a] to-[#1a2f45] p-6 text-center text-white shadow-[0_30px_70px_rgba(30,75,122,0.20)] sm:p-8 lg:p-12">
+            <div className="absolute -left-16 -top-16 h-64 w-64 rounded-full bg-[#fe6801]/20 blur-3xl" />
+            <div className="absolute -bottom-16 -right-16 h-64 w-64 rounded-full bg-[#fe6801]/10 blur-3xl" />
+            <div className="relative z-10">
+              <h2 className="text-balance text-[1.8rem] font-bold tracking-[-0.02em] sm:text-[2.1rem] lg:text-[2.7rem]">
+                Ready for precise logistics pricing?
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-[0.96rem] leading-7 text-slate-100">
+                Talk to us about your route, shipment profile, and expected volume. We will help you shape the right service and pricing approach.
+              </p>
+              <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+                <Link
+                  href="/register"
+                  className="inline-flex h-12 items-center justify-center rounded-[20px] bg-[#fe6801] px-7 text-sm font-bold text-white transition-colors hover:bg-[#e65d00]"
+                >
+                  Get a Custom Quote
                 </Link>
-                <Link href="/contact">
-                  <button className="px-8 py-4 bg-white/10 border border-white/20 text-white font-black text-sm rounded-2xl hover:bg-white/20 transition-colors backdrop-blur-sm">
-                    Contact Sales
-                  </button>
+                <Link
+                  href="/contact"
+                  className="inline-flex h-12 items-center justify-center rounded-[20px] border border-white/20 bg-white/10 px-7 text-sm font-semibold text-white transition-colors hover:bg-white/18"
+                >
+                  Contact Sales
                 </Link>
+              </div>
+              <div className="mt-6 inline-flex items-center gap-2 text-[12px] text-orange-100">
+                <Check className="h-4 w-4" />
+                Transparent pricing guidance with route-based support
               </div>
             </div>
           </div>
         </div>
       </section>
-
     </div>
   );
 }
-
-

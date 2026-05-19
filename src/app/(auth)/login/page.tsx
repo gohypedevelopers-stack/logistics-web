@@ -5,7 +5,13 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Network, TrendingUp, Headphones, ArrowRight, ShieldCheck } from "lucide-react";
+import { ArrowRight, ShieldCheck, Zap, Globe2, Plane } from "lucide-react";
+import { Manrope } from "next/font/google";
+
+const homeFont = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
 
 function LoginForm() {
   const router = useRouter();
@@ -101,73 +107,112 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white font-sans selection:bg-orange-100">
-      
-      {/* LEFT PANEL - Gradient Brand Area */}
-      <div className="hidden lg:flex w-5/12 relative flex-col justify-between p-12 overflow-hidden bg-gradient-to-br from-[#1e4b7a] via-[#1e4b7a] to-[#fe6801]">
-         {/* Branding Header */}
-         <Link href="/" className="flex items-center gap-3 relative z-10 w-max rounded-xl bg-white/10 px-3 py-2 backdrop-blur-md border border-white/20">
-            <Image src="/logo.png" alt="ship2sell logo" width={42} height={42} className="h-10 w-10 object-contain" />
-            <span className="text-xl font-bold text-white tracking-tight">ship2sell</span>
-         </Link>
+    <div className={`${homeFont.className} min-h-screen bg-[#f6f8fc] selection:bg-orange-100`}>
+      <div className="grid min-h-screen lg:grid-cols-[0.95fr_1.05fr]">
+        <div className="relative hidden overflow-hidden lg:flex">
+          <div className="absolute inset-0">
+            <img
+              src="https://images.unsplash.com/photo-1494412651409-8963ce7935a7?q=80&w=1600&auto=format&fit=crop"
+              alt="Air cargo operations"
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1e4b7a]/94 via-[#1e4b7a]/90 to-[#fe6801]/48" />
+          <div className="absolute -left-10 top-20 h-56 w-56 rounded-full bg-[#fe6801]/20 blur-3xl" />
+          <div className="absolute bottom-8 right-0 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
 
-         {/* Middle Content */}
-         <div className="relative z-10 mt-16 max-w-lg">
-            <h1 className="text-5xl font-bold text-white leading-[1.15] mb-6 tracking-tight">
-               Welcome back to<br/>
-               your global<br/>
-               <span className="text-[#ffd1ad]">logistics hub.</span>
-            </h1>
-            <p className="text-[#a4b4e5] text-lg font-medium leading-relaxed max-w-md">
-               Securely manage your parcels, track milestones in real-time, and access your documentation from anywhere in the world.
-            </p>
-         </div>
+          <div className="relative z-10 flex w-full flex-col justify-between p-10 xl:p-12">
+            <div>
+              <Link href="/" className="inline-flex w-max items-center gap-3 rounded-[20px] border border-white/20 bg-white/10 px-4 py-3 backdrop-blur-xl">
+                <Image src="/logo.png" alt="ship2sell logo" width={42} height={42} className="h-10 w-10 object-contain" />
+                <span className="text-lg font-bold tracking-tight text-white">ship2sell</span>
+              </Link>
 
-         {/* Bottom Cards */}
-         <div className="relative z-10 mt-20 grid grid-cols-1 gap-6 max-w-sm">
-            <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-6 flex items-center gap-5">
-               <div className="w-10 h-10 rounded-xl bg-[#fe6801]/20 flex items-center justify-center shrink-0">
-                  <ShieldCheck className="w-5 h-5 text-[#ffd1ad]" />
-               </div>
-               <div>
-                  <h3 className="text-white font-bold text-sm mb-0.5">Secure Dashboard</h3>
-                  <p className="text-[#a4b4e5] text-xs font-medium leading-tight">Your data is protected by enterprise-grade encryption.</p>
-               </div>
+              <div className="mt-16 max-w-xl">
+                <div className="mb-6 inline-flex items-center gap-2 rounded-[20px] border border-white/20 bg-white/10 px-4 py-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#ffd6bd] backdrop-blur-xl">
+                  <Zap className="h-3.5 w-3.5 fill-[#fe6801] text-[#fe6801]" />
+                  Secure Access
+                </div>
+                <h1 className="text-balance text-[3rem] font-bold leading-[1.04] tracking-[-0.03em] text-white xl:text-[4rem]">
+                  <span className="text-white">Welcome back to your</span>{" "}
+                  <span className="text-[#ffd1ad]">logistics hub.</span>
+                </h1>
+                <p className="mt-6 max-w-lg text-[1rem] leading-8 text-slate-100">
+                  Securely manage shipments, check live milestones, and access your delivery data from one connected dashboard.
+                </p>
+              </div>
             </div>
-         </div>
 
-         <p className="relative z-10 text-[#677abf] text-xs font-medium mt-16">
-            © {new Date().getFullYear()} ship2sell Logistics. All rights reserved.
-         </p>
-      </div>
-
-      {/* RIGHT PANEL - Login Form */}
-      <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-24 bg-[#FAFAFA] relative">
-         
-         <div className="w-full max-w-md mx-auto">
-            {registered && (
-               <div className="mb-4 p-4 bg-green-50 border border-green-100 rounded-2xl flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center shrink-0">
-                     <ArrowRight className="w-4 h-4 text-white" />
+            <div className="grid max-w-md gap-4">
+              <div className="rounded-[20px] border border-white/15 bg-white/10 p-5 backdrop-blur-xl">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[20px] bg-[#fe6801]/18">
+                    <ShieldCheck className="h-5 w-5 text-[#ffd1ad]" />
                   </div>
-                  <p className="text-green-700 text-sm font-bold">Registration successful. Verify OTP from your email before signing in.</p>
-               </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-white">Secure Dashboard</h3>
+                    <p className="mt-1 text-sm leading-6 text-slate-200">Enterprise-grade access for shipments, documents, and account activity.</p>
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-[20px] border border-white/15 bg-white/10 p-4 backdrop-blur-xl">
+                  <Globe2 className="h-5 w-5 text-[#ffd1ad]" />
+                  <p className="mt-3 text-[1.05rem] font-bold text-white">Global</p>
+                  <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-orange-100">Tracking Access</p>
+                </div>
+                <div className="rounded-[20px] border border-white/15 bg-white/10 p-4 backdrop-blur-xl">
+                  <Plane className="h-5 w-5 text-[#ffd1ad]" />
+                  <p className="mt-3 text-[1.05rem] font-bold text-white">Live</p>
+                  <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-orange-100">Route Visibility</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-center px-4 py-10 sm:px-6 lg:px-10 xl:px-16">
+          <div className="w-full max-w-[560px]">
+            {registered && (
+              <div className="mb-4 flex items-center gap-3 rounded-[20px] border border-green-100 bg-green-50 p-4">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-500">
+                  <ArrowRight className="h-4 w-4 text-white" />
+                </div>
+                <p className="text-sm font-bold text-green-700">Registration successful. Verify OTP from your email before signing in.</p>
+              </div>
             )}
             {verified && (
-               <div className="mb-4 p-4 bg-blue-50 border border-blue-100 rounded-2xl">
-                  <p className="text-blue-700 text-sm font-bold">Email verified successfully. You can sign in now.</p>
-               </div>
+              <div className="mb-4 rounded-[20px] border border-blue-100 bg-blue-50 p-4">
+                <p className="text-sm font-bold text-blue-700">Email verified successfully. You can sign in now.</p>
+              </div>
             )}
 
-            <h2 className="text-3xl font-bold text-[#1e4b7a] tracking-tight mb-2">Login</h2>
-            <p className="text-slate-500 font-medium mb-10">Enter your credentials to access your parcel console.</p>
+            <div className="mb-8 lg:hidden">
+              <Link href="/" className="inline-flex w-max items-center gap-3 rounded-[20px] border border-[#d9e2ec] bg-white px-4 py-3 shadow-[0_8px_24px_rgba(30,75,122,0.05)]">
+                <Image src="/logo.png" alt="ship2sell logo" width={42} height={42} className="h-10 w-10 object-contain" />
+                <span className="text-lg font-bold tracking-tight text-[#1e4b7a]">ship2sell</span>
+              </Link>
+            </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-               {error && (
-                 <div className="bg-red-50 text-red-700 p-4 rounded-xl text-sm font-bold border border-red-100">
-                   {error}
-                   {unverifiedEmail && (
-                     <div className="mt-2">
+            <div className="rounded-[24px] border border-[#d9e2ec] bg-white p-6 shadow-[0_18px_44px_rgba(30,75,122,0.08)] sm:p-8 lg:p-10">
+              <div className="mb-8">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-[20px] bg-orange-50 px-4 py-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#fe6801]">
+                  <Zap className="h-3.5 w-3.5" />
+                  Account Login
+                </div>
+                <h2 className="text-[2rem] font-bold tracking-[-0.03em] text-[#1e4b7a] sm:text-[2.25rem]">
+                  <span className="text-[#1e4b7a]">Login to your</span>{" "}
+                  <span className="text-[#fe6801]">parcel console.</span>
+                </h2>
+                <p className="mt-3 text-[0.95rem] leading-7 text-slate-600">Enter your credentials to access tracking, shipment history, and account operations.</p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {error && (
+                  <div className="rounded-[20px] border border-red-100 bg-red-50 p-4 text-sm font-bold text-red-700">
+                    {error}
+                    {unverifiedEmail && (
+                      <div className="mt-2">
                        <Link
                          href={`/verify-email?email=${encodeURIComponent(unverifiedEmail)}`}
                          className="underline font-extrabold"
@@ -177,56 +222,74 @@ function LoginForm() {
                      </div>
                    )}
                  </div>
-               )}
+                )}
 
-               {/* Email Address */}
-               <div>
-                  <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-2 ml-1">Email Address</label>
+                <div>
+                  <label className="mb-2 ml-1 block text-[10px] font-bold uppercase tracking-widest text-slate-700">Email Address</label>
                   <input
-                    type="email" required
+                    type="email"
+                    required
                     placeholder="you@example.com"
-                    className="w-full h-12 bg-slate-100 hover:bg-slate-200/50 focus:bg-white rounded-xl px-4 text-sm font-bold text-slate-900 outline-none focus:ring-2 ring-[#1e4b7a]/20 border border-transparent transition-all placeholder:text-slate-400 placeholder:font-medium shadow-sm"
-                    value={email} onChange={(e) => setEmail(e.target.value)}
+                    className="h-13 w-full rounded-[20px] border border-[#d9e2ec] bg-[#f8fafc] px-4 text-sm font-medium text-slate-900 outline-none transition-shadow focus:bg-white focus:shadow-[0_0_0_4px_rgba(254,104,1,0.12)] placeholder:text-slate-400"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
-               </div>
+                </div>
 
-               {/* Password */}
-               <div>
-                  <div className="flex items-center justify-between mb-2 ml-1">
-                     <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-widest">Password</label>
-                     <Link href={`/forgot-password${email ? `?email=${encodeURIComponent(email)}` : ""}`} className="text-[10px] font-bold text-[#1e4b7a] hover:underline uppercase tracking-widest">Forgot Password?</Link>
+                <div>
+                  <div className="mb-2 ml-1 flex items-center justify-between">
+                    <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-700">Password</label>
+                    <Link
+                      href={`/forgot-password${email ? `?email=${encodeURIComponent(email)}` : ""}`}
+                      className="text-[10px] font-bold uppercase tracking-widest text-[#1e4b7a] hover:underline"
+                    >
+                      Forgot Password?
+                    </Link>
                   </div>
                   <input
-                    type="password" required
+                    type="password"
+                    required
                     placeholder="********"
-                    className="w-full h-12 bg-slate-100 hover:bg-slate-200/50 focus:bg-white rounded-xl px-4 text-sm font-bold text-slate-900 outline-none focus:ring-2 ring-[#1e4b7a]/20 border border-transparent transition-all placeholder:text-slate-400 placeholder:font-medium shadow-sm"
-                    value={password} onChange={(e) => setPassword(e.target.value)}
+                    className="h-13 w-full rounded-[20px] border border-[#d9e2ec] bg-[#f8fafc] px-4 text-sm font-medium text-slate-900 outline-none transition-shadow focus:bg-white focus:shadow-[0_0_0_4px_rgba(254,104,1,0.12)] placeholder:text-slate-400"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
-               </div>
+                </div>
 
-               {/* Submit Button */}
-               <div className="pt-4">
-                  <button type="submit" disabled={loading} className="w-full h-14 bg-[#1e4b7a] hover:bg-[#173e67] text-white font-bold text-sm rounded-xl transition-colors shadow-md flex items-center justify-center gap-2 group">
-                    {loading ? "Logging in..." : "Login"} 
-                    {!loading && <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="group flex h-14 w-full items-center justify-center gap-2 rounded-[20px] bg-[#1e4b7a] text-sm font-bold text-white shadow-md transition-colors hover:bg-[#295989]"
+                  >
+                    {loading ? "Logging in..." : "Login"}
+                    {!loading && <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />}
                   </button>
-               </div>
-            </form>
+                </div>
+              </form>
 
-            <div className="mt-10 text-center">
-               <span className="text-sm font-medium text-slate-500">New to ship2sell? </span>
-               <Link href="/register" className="text-sm font-bold text-[#1e4b7a] hover:underline">
+              <div className="mt-8 rounded-[20px] border border-[#d9e2ec] bg-[#f8fafc] p-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[20px] bg-orange-50">
+                    <ShieldCheck className="h-4 w-4 text-[#1e4b7a]" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[#1e4b7a]">Protected access</p>
+                    <p className="mt-1 text-[0.88rem] leading-6 text-slate-600">Use your registered business email to access your logistics dashboard securely.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 text-center">
+                <span className="text-sm font-medium text-slate-500">New to ship2sell? </span>
+                <Link href="/register" className="text-sm font-bold text-[#1e4b7a] hover:underline">
                   Create a free account
-               </Link>
+                </Link>
+              </div>
             </div>
-         </div>
-
-         {/* Floating Support Button */}
-         <div className="absolute bottom-8 right-8 w-14 h-14 bg-white rounded-2xl shadow-xl flex items-center justify-center cursor-pointer hover:-translate-y-1 transition-transform border border-slate-50">
-            <Headphones className="w-6 h-6 text-[#1e4b7a]" />
-         </div>
+          </div>
+        </div>
       </div>
-
     </div>
   );
 }
