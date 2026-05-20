@@ -83,10 +83,10 @@ export default function Home() {
               </div>
 
               <h1 className="animate-fade-up-delay-1 text-balance text-[2.15rem] font-bold leading-[1.04] tracking-[-0.03em] text-white drop-shadow-[0_12px_30px_rgba(3,20,43,0.45)] sm:text-[2.9rem] lg:text-[3.8rem] xl:text-[4.65rem]">
-                <span className="text-white">Global Movement</span>
+                <span className="text-white">Worldwide Delivery</span>
                 <br />
                 <span className="animate-shimmer bg-gradient-to-r from-[#fe6801] via-[#ff8a39] to-[#ffd8bf] bg-clip-text text-transparent">
-                  Perfected.
+                  Experts.
                 </span>
               </h1>
 
@@ -421,7 +421,7 @@ export default function Home() {
             <div className="relative z-10">
               <h2 className="text-balance text-[1.65rem] font-bold tracking-[-0.02em] sm:text-[1.9rem] lg:text-[2.35rem]">
                 <span className="text-white">Ready to Ship</span>{" "}
-                <span className="text-[#fe6801]">Globally?</span>
+                <span className="text-[#fe6801]">International?</span>
               </h2>
               <p className="mx-auto mt-5 max-w-xl text-[0.9rem] font-normal leading-7 text-orange-100/90 md:mt-6 md:text-[0.98rem] md:leading-8">
                 Join 10,000+ individuals and brands using our intelligence engine for seamless international movement.
