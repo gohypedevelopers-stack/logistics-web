@@ -1,15 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, MapPin, PackageSearch, PlusSquare, Contact, Calculator } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function CustomerSidebar({ userName }: { userName?: string | null }) {
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
   const resolvedUserName = userName || "Customer Account";
   const initials = resolvedUserName
     .split(" ")
@@ -18,9 +17,15 @@ export function CustomerSidebar({ userName }: { userName?: string | null }) {
     .substring(0, 2)
     .toUpperCase();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const isActiveRoute = (href: string) => {
+    if (pathname === href) return true;
+
+    if (href === "/customer/shipments") {
+      return pathname.startsWith("/customer/shipments/") && pathname !== "/customer/shipments/new";
+    }
+
+    return pathname.startsWith(`${href}/`);
+  };
 
   const navItems = [
     { name: "Overview", href: "/customer/dashboard", icon: LayoutDashboard },
@@ -44,21 +49,9 @@ export function CustomerSidebar({ userName }: { userName?: string | null }) {
       </div>
       
       <nav className="flex-1 px-4 py-6 space-y-1.5">
-        {(mounted ? navItems : navItems.map(({ name, href }) => ({ name, href, icon: null as any }))).map((item) => {
-          if (!mounted) {
-            return (
-              <div
-                key={item.href}
-                className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-slate-400"
-              >
-                <span className="h-5 w-5 rounded-md bg-slate-100" />
-                <span className="tracking-tight">{item.name}</span>
-              </div>
-            );
-          }
-
-          const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/customer/dashboard");
-          const Icon = item.icon;
+        {navItems.map((item) => {
+          const isActive = isActiveRoute(item.href);
+          const Icon = item.icon as LucideIcon;
 
           return (
             <Link
@@ -72,7 +65,7 @@ export function CustomerSidebar({ userName }: { userName?: string | null }) {
               )}
             >
               {isActive ? (
-                <span className="absolute bottom-2 left-0 top-2 w-1 rounded-r-full bg-blue-600" />
+                <span className="pointer-events-none absolute bottom-2 left-0 top-2 w-1 rounded-r-full bg-blue-600" />
               ) : null}
               <Icon className={cn("h-5 w-5 transition-colors", isActive ? "text-blue-800" : "text-slate-400 group-hover:text-slate-700")} />
               <span className="tracking-tight">{item.name}</span>

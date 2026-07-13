@@ -5,7 +5,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ShieldCheck, Zap, Globe2, Plane } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, ShieldCheck, Zap, Globe2, Plane } from "lucide-react";
 import { Manrope } from "next/font/google";
 
 const homeFont = Manrope({
@@ -23,6 +23,7 @@ function LoginForm() {
   const [registered, setRegistered] = useState(false);
   const [verified, setVerified] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("registered")) {
@@ -246,14 +247,24 @@ function LoginForm() {
                       Forgot Password?
                     </Link>
                   </div>
-                  <input
-                    type="password"
-                    required
-                    placeholder="********"
-                    className="h-13 w-full rounded-[20px] border border-[#d9e2ec] bg-[#f8fafc] px-4 text-sm font-medium text-slate-900 outline-none transition-shadow focus:bg-white focus:shadow-[0_0_0_4px_rgba(254,104,1,0.12)] placeholder:text-slate-400"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      placeholder="********"
+                      className="h-13 w-full rounded-[20px] border border-[#d9e2ec] bg-[#f8fafc] px-4 pr-12 text-sm font-medium text-slate-900 outline-none transition-shadow focus:bg-white focus:shadow-[0_0_0_4px_rgba(254,104,1,0.12)] placeholder:text-slate-400"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 transition-colors hover:text-[#1e4b7a]"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="pt-2">

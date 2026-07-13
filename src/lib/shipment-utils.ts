@@ -300,9 +300,7 @@ export function buildShipmentTimeline(
 }
 
 export function buildShipmentTrackingId() {
-  const stamp = Date.now().toString(36).toUpperCase();
-  const suffix = Math.random().toString(36).slice(2, 6).toUpperCase();
-  return `TRK-${stamp}-${suffix}`;
+  return `SS${Date.now()}`;
 }
 
 export function buildReferenceNumber() {

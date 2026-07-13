@@ -44,17 +44,25 @@ export default async function CustomerDashboard({
 
   const customer = await prisma.customerProfile.findUnique({
     where: { userId: session.user.id },
-    include: {
-      shipments: {
-        orderBy: { updatedAt: "desc" },
-        take: 5,
-        include: {
-          country: true,
-          pickupAddress: true,
-          receiverAddress: true,
+      include: {
+        shipments: {
+          orderBy: { updatedAt: "desc" },
+          take: 5,
+          include: {
+            country: true,
+            pickupAddress: {
+              include: {
+                country: true,
+              },
+            },
+            receiverAddress: {
+              include: {
+                country: true,
+              },
+            },
+          },
         },
-      },
-      invoices: true,
+        invoices: true,
     },
   });
 
@@ -66,7 +74,7 @@ export default async function CustomerDashboard({
             customerId: customer.id,
             status: {
               in: [...WAITING_STATUS_QUERY_VALUES, ...TRANSIT_STATUS_QUERY_VALUES],
-            } as any,
+            },
           },
         }),
         prisma.shipment.count({
@@ -121,11 +129,12 @@ export default async function CustomerDashboard({
 
   const featuredShipment = shipments[0] ?? null;
   const recentShipments = shipments.slice(0, 3);
+  const orderChoices = shipments.slice(0, 5);
   const selectedOrderId = Array.isArray(resolvedSearchParams?.order)
     ? resolvedSearchParams?.order[0]
     : resolvedSearchParams?.order;
   const selectedShipment =
-    shipments.find((shipment) => shipment.id === selectedOrderId) ?? null;
+    shipments.find((shipment) => shipment.id === selectedOrderId) ?? featuredShipment;
 
   return (
     <div className="mx-auto min-h-full max-w-[1460px] p-5 lg:p-6">
@@ -356,7 +365,9 @@ export default async function CustomerDashboard({
             </div>
             <div>
               <h2 className="text-xl font-semibold text-slate-900">Order Details</h2>
-              <p className="text-sm text-slate-500">Select a shipment to view its order details here.</p>
+              <p className="text-sm text-slate-500">
+                Select a shipment to inspect its route, package, and delivery information.
+              </p>
             </div>
           </div>
 
@@ -364,7 +375,7 @@ export default async function CustomerDashboard({
             <div className="space-y-4">
               <div className="rounded-[5px] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] p-5">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                       Selected Order
                     </p>
@@ -375,46 +386,119 @@ export default async function CustomerDashboard({
                       Updated {formatDistanceToNow(new Date(selectedShipment.updatedAt), { addSuffix: true })}
                     </p>
                   </div>
-                  <StatusBadge status={selectedShipment.status} />
+                  <div className="flex shrink-0 items-center gap-3">
+                    <StatusBadge status={selectedShipment.status} />
+                    <Link
+                      href={`/customer/shipments/${selectedShipment.id}`}
+                      className="app-button-secondary inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold"
+                    >
+                      Open Shipment <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-[5px] border border-slate-200 bg-white p-4">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                    Quick Select
+                  </p>
+                  <span className="text-xs text-slate-500">Showing your latest shipments</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {orderChoices.map((shipment) => {
+                    const active = shipment.id === selectedShipment.id;
+
+                    return (
+                      <Link
+                        key={shipment.id}
+                        href={`/customer/dashboard?order=${shipment.id}#order-details`}
+                        className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-colors ${
+                          active
+                            ? "border-blue-300 bg-blue-50 text-blue-700"
+                            : "border-slate-200 bg-white text-slate-600 hover:border-blue-200 hover:text-blue-700"
+                        }`}
+                      >
+                        <span className="max-w-[160px] truncate">{shipment.trackingId}</span>
+                        <span className="text-[10px] uppercase tracking-[0.14em] text-slate-400">
+                          {shipment.status}
+                        </span>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
 
               <div className="overflow-hidden rounded-[5px] border border-slate-200 bg-white">
                 <div className="border-b border-slate-200 bg-slate-50 px-4 py-3">
                   <p className="text-sm font-extrabold uppercase tracking-[0.16em] text-slate-800">
-                    Order Details
+                    Shipment Snapshot
                   </p>
                 </div>
 
-                <div className="divide-y divide-slate-200">
-                  <div className="grid grid-cols-[140px_minmax(0,1fr)] gap-4 px-4 py-3 text-sm">
-                    <p className="font-semibold uppercase tracking-[0.12em] text-slate-500">PCS</p>
-                    <p className="font-medium text-slate-900">{selectedShipment.pcs ?? "-"}</p>
+                <div className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="rounded-[5px] border border-slate-200 bg-slate-50/90 px-4 py-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">AWB</p>
+                    <p className="mt-1 font-semibold text-slate-900">{selectedShipment.awb || "Pending assignment"}</p>
                   </div>
-                  <div className="grid grid-cols-[140px_minmax(0,1fr)] gap-4 px-4 py-3 text-sm">
-                    <p className="font-semibold uppercase tracking-[0.12em] text-slate-500">Weight</p>
-                    <p className="font-medium text-slate-900">
+                  <div className="rounded-[5px] border border-slate-200 bg-slate-50/90 px-4 py-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Reference</p>
+                    <p className="mt-1 font-semibold text-slate-900">
+                      {selectedShipment.referenceNo || "Not assigned"}
+                    </p>
+                  </div>
+                  <div className="rounded-[5px] border border-slate-200 bg-slate-50/90 px-4 py-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Collection</p>
+                    <p className="mt-1 font-semibold text-slate-900">
+                      {selectedShipment.collectionType === "WAREHOUSE_DROP" ? "Warehouse Drop" : "Pickup"}
+                    </p>
+                  </div>
+                  <div className="rounded-[5px] border border-slate-200 bg-slate-50/90 px-4 py-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">PCS</p>
+                    <p className="mt-1 font-semibold text-slate-900">{selectedShipment.pcs ?? "-"}</p>
+                  </div>
+                  <div className="rounded-[5px] border border-slate-200 bg-slate-50/90 px-4 py-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Weight</p>
+                    <p className="mt-1 font-semibold text-slate-900">
                       {selectedShipment.weight ? `${selectedShipment.weight} KG` : "-"}
                     </p>
                   </div>
-                  <div className="grid grid-cols-[140px_minmax(0,1fr)] gap-4 px-4 py-3 text-sm">
-                    <p className="font-semibold uppercase tracking-[0.12em] text-slate-500">Description</p>
-                    <p className="font-medium leading-6 text-slate-900">
-                      {selectedShipment.content || "No description"}
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-[140px_minmax(0,1fr)] gap-4 px-4 py-3 text-sm">
-                    <p className="font-semibold uppercase tracking-[0.12em] text-slate-500">Value</p>
-                    <p className="font-medium text-slate-900">
+                  <div className="rounded-[5px] border border-slate-200 bg-slate-50/90 px-4 py-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Value</p>
+                    <p className="mt-1 font-semibold text-slate-900">
                       {selectedShipment.amount != null ? `$${selectedShipment.amount}` : "-"}
                     </p>
                   </div>
-                  <div className="grid grid-cols-[140px_minmax(0,1fr)] gap-4 px-4 py-3 text-sm">
-                    <p className="font-semibold uppercase tracking-[0.12em] text-slate-500">
-                      Pickup / Warehouse Drop
+                  <div className="rounded-[5px] border border-slate-200 bg-slate-50/90 px-4 py-3 sm:col-span-2 xl:col-span-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      Route
                     </p>
-                    <p className="font-medium text-slate-900">
-                      {selectedShipment.collectionType === "WAREHOUSE_DROP" ? "Warehouse Drop" : "Pickup"}
+                    <p className="mt-1 font-semibold text-slate-900">
+                      {selectedShipment.pickupAddress?.city || "Pickup"} to{" "}
+                      {selectedShipment.receiverAddress?.city || "Destination"}
+                    </p>
+                    <p className="mt-1 text-sm text-slate-600">
+                      {selectedShipment.pickupAddress?.country?.name || "Pickup country"} to{" "}
+                      {selectedShipment.receiverAddress?.country?.name || selectedShipment.country?.name || "Destination country"}
+                    </p>
+                  </div>
+                  <div className="rounded-[5px] border border-slate-200 bg-slate-50/90 px-4 py-3 sm:col-span-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      Receiver
+                    </p>
+                    <p className="mt-1 font-semibold text-slate-900">
+                      {selectedShipment.receiverName || selectedShipment.receiverAddress?.name || "Receiver"}
+                    </p>
+                    <p className="mt-1 text-sm text-slate-600">
+                      {selectedShipment.receiverPhone || selectedShipment.receiverAddress?.phone || "No phone"}
+                    </p>
+                  </div>
+                  <div className="rounded-[5px] border border-slate-200 bg-slate-50/90 px-4 py-3 sm:col-span-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      Description
+                    </p>
+                    <p className="mt-1 leading-6 text-slate-900">
+                      {selectedShipment.content || "No description"}
                     </p>
                   </div>
                 </div>

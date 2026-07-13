@@ -59,29 +59,29 @@ export async function updateShipmentAction(formData: FormData) {
   const previousStatus = normalizeShipmentStatus(shipment.status);
   const hasStatusChanged = nextStatus !== previousStatus;
   const shouldWriteHistory = hasStatusChanged || Boolean(notes) || Boolean(location);
+  const shipmentUpdateData = {
+    status: nextStatus as typeof shipment.status,
+    paymentStatus: (paymentStatus ?? shipment.paymentStatus) as typeof shipment.paymentStatus,
+    ...(awb ? { awb } : {}),
+    ...(referenceNo ? { referenceNo } : {}),
+    ...(formData.has("rejectionReason")
+      ? {
+          rejectionReason: nextStatus === "REJECTED" ? rejectionReason : null,
+        }
+      : {}),
+  };
 
   await prisma.$transaction(async (tx) => {
     await tx.shipment.update({
       where: { id: shipmentId },
-      data: {
-        status: nextStatus as any,
-        paymentStatus: (paymentStatus ?? shipment.paymentStatus) as any,
-        ...(formData.has("awb") ? { awb } : {}),
-        ...(formData.has("referenceNo") ? { referenceNo } : {}),
-        ...(formData.has("rejectionReason")
-          ? {
-              rejectionReason:
-                nextStatus === "REJECTED" ? rejectionReason : null,
-            }
-          : {}),
-      },
+      data: shipmentUpdateData,
     });
 
     if (shouldWriteHistory) {
       await tx.shipmentStatusHistory.create({
         data: {
           shipmentId,
-          status: nextStatus as any,
+          status: nextStatus as typeof shipment.status,
           location,
           notes: notes ?? createTrackingSummary(nextStatus),
         },
@@ -144,14 +144,14 @@ export async function addTrackingEventAction(formData: FormData) {
       await tx.shipment.update({
         where: { id: shipmentId },
         data: {
-          status: nextStatus as any,
+          status: nextStatus as typeof shipment.status,
         },
       });
 
       await tx.shipmentStatusHistory.create({
         data: {
           shipmentId,
-          status: nextStatus as any,
+          status: nextStatus as typeof shipment.status,
           location,
           notes: note ?? createTrackingSummary(nextStatus),
         },
@@ -163,7 +163,7 @@ export async function addTrackingEventAction(formData: FormData) {
         data: {
           shipmentId,
           title: title ?? createTrackingTitle(effectiveStatus),
-          status: effectiveStatus as any,
+          status: effectiveStatus as typeof shipment.status,
           location,
           note: note ?? createTrackingSummary(effectiveStatus),
         },

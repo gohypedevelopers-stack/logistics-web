@@ -8,111 +8,60 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  CREATOR
-  ADMIN
-  MANAGER
-  OPERATIONS_MANAGER
-  ACCOUNTANT
-  CUSTOMER
-}
-
-enum ShipmentStatus {
-  CREATED
-  WAITING
-  SUBMITTED
-  ACCEPTED
-  PICKUP_SCHEDULED
-  PICKED_UP
-  AT_WAREHOUSE
-  PROCESSING
-  IN_TRANSIT
-  OUT_FOR_DELIVERY
-  DELIVERED
-  CANCELLED
-  REJECTED
-  ON_HOLD
-}
-
-enum PaymentStatus {
-  UNPAID
-  PARTIAL
-  PAID
-  REFUNDED
-  OVERDUE
-}
-
-enum QuotationStatus {
-  DRAFT
-  SENT
-  APPROVED
-  REJECTED
-  EXPIRED
-  CONVERTED
-}
-
-enum ShipmentCollectionType {
-  PICKUP
-  WAREHOUSE_DROP
-}
-
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  passwordHash  String
-  name          String?
-  role          Role      @default(CUSTOMER)
-  emailVerified Boolean   @default(false)
-  emailVerificationOtpHash String?
+  id                            String                  @id @default(cuid())
+  email                         String                  @unique
+  passwordHash                  String
+  name                          String?
+  role                          Role                    @default(CUSTOMER)
+  createdAt                     DateTime                @default(now())
+  updatedAt                     DateTime                @updatedAt
+  emailVerified                 Boolean                 @default(false)
+  emailVerificationOtpHash      String?
   emailVerificationOtpExpiresAt DateTime?
-  emailVerificationLastSentAt DateTime?
-  passwordResetOtpHash String?
-  passwordResetOtpExpiresAt DateTime?
-  passwordResetLastSentAt DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  customerProfile CustomerProfile?
-  staffProfile    StaffProfile?
-
-  createdShipments Shipment[] @relation("CreatedBy")
-  auditLogs        AuditLog[]
+  emailVerificationLastSentAt   DateTime?
+  passwordResetOtpHash          String?
+  passwordResetOtpExpiresAt     DateTime?
+  passwordResetLastSentAt       DateTime?
+  auditLogs                     AuditLog[]
+  customerProfile               CustomerProfile?
+  createdShipments              Shipment[]              @relation("CreatedBy")
+  ShipmentStatusHistory         ShipmentStatusHistory[]
+  staffProfile                  StaffProfile?
 }
 
 model CustomerProfile {
-  id             String    @id @default(cuid())
-  userId         String    @unique
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  companyName    String?
-  phone          String?
-  taxId          String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  shipments      Shipment[]
-  addresses      Address[]
-  invoices       Invoice[]
-  quotations     Quotation[]
-  rateOverrides  CustomerRateOverride[]
+  id                     String                          @id @default(cuid())
+  userId                 String                          @unique
+  companyName            String?
+  phone                  String?
+  taxId                  String?
+  createdAt              DateTime                        @default(now())
+  updatedAt              DateTime                        @updatedAt
+  addresses              Address[]
+  user                   User                            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rateOverrides          CustomerRateOverride[]
   warehouseRateOverrides CustomerWarehouseRateOverride[]
+  invoices               Invoice[]
+  quotations             Quotation[]
+  shipments              Shipment[]
 }
 
 model StaffProfile {
-  id             String    @id @default(cuid())
-  userId         String    @unique
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  department     String?
-  position       String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  department String?
+  position   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Address {
   id                String          @id @default(cuid())
   customerProfileId String
-  customerProfile   CustomerProfile @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
-  label             String?         // e.g., "Home", "Warehouse"
-  name              String          // Contact person
+  label             String?
+  name              String
   phone             String?
   street1           String
   street2           String?
@@ -120,11 +69,11 @@ model Address {
   state             String?
   postalCode        String?
   countryId         String
-  country           Country         @relation(fields: [countryId], references: [id])
   isDefault         Boolean         @default(false)
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
-
+  country           Country         @relation(fields: [countryId], references: [id])
+  customerProfile   CustomerProfile @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
   pickupShipments   Shipment[]      @relation("PickupAddress")
   receiverShipments Shipment[]      @relation("ReceiverAddress")
 }
@@ -136,22 +85,20 @@ model LogisticsCompany {
   isActive    Boolean    @default(true)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-
   shipments   Shipment[]
 }
 
 model Country {
-  id        String   @id @default(cuid())
-  code      String   @unique // ISO code e.g. "US", "IN"
-  name      String
-  isActive  Boolean  @default(true)
-  displayOrder Int   @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  routesOrigin      Route[]   @relation("OriginCountry")
-  routesDestination Route[]   @relation("DestinationCountry")
+  id                String      @id @default(cuid())
+  code              String      @unique
+  name              String
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  displayOrder      Int         @default(0)
+  isActive          Boolean     @default(true)
   addresses         Address[]
+  routesDestination Route[]     @relation("DestinationCountry")
+  routesOrigin      Route[]     @relation("OriginCountry")
   shipments         Shipment[]
   warehouses        Warehouse[]
 
@@ -161,18 +108,17 @@ model Country {
 model Route {
   id                   String     @id @default(cuid())
   originCountryId      String
-  originCountry        Country    @relation("OriginCountry", fields: [originCountryId], references: [id])
   destinationCountryId String
-  destinationCountry   Country    @relation("DestinationCountry", fields: [destinationCountryId], references: [id])
-  name                 String?
-  serviceLevel         String?
-  transitDays          Int?
-  notes                String?
   isActive             Boolean    @default(true)
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
-
+  name                 String?
+  notes                String?
+  serviceLevel         String?
+  transitDays          Int?
   rateCards            RateCard[]
+  destinationCountry   Country    @relation("DestinationCountry", fields: [destinationCountryId], references: [id])
+  originCountry        Country    @relation("OriginCountry", fields: [originCountryId], references: [id])
   shipments            Shipment[]
 
   @@index([isActive])
@@ -180,50 +126,48 @@ model Route {
 }
 
 model Warehouse {
-  id          String   @id @default(cuid())
-  name        String
-  code        String   @unique
-  phone       String?
-  street1     String
-  street2     String?
-  city        String
-  state       String?
-  postalCode  String?
-  countryId   String
-  country     Country  @relation(fields: [countryId], references: [id])
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  shipments   Shipment[]
+  id                    String                          @id @default(cuid())
+  name                  String
+  code                  String                          @unique
+  phone                 String?
+  street1               String
+  street2               String?
+  city                  String
+  state                 String?
+  postalCode            String?
+  countryId             String
+  isActive              Boolean                         @default(true)
+  createdAt             DateTime                        @default(now())
+  updatedAt             DateTime                        @updatedAt
   customerRateOverrides CustomerWarehouseRateOverride[]
+  shipments             Shipment[]
+  country               Country                         @relation(fields: [countryId], references: [id])
 
   @@index([countryId, isActive])
 }
 
 model RateCard {
-  id        String   @id @default(cuid())
-  routeId   String
-  route     Route    @relation(fields: [routeId], references: [id])
-  weightMin Float
-  weightMax Float
-  basePrice Float
-  currency  String   @default("USD")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id                String                 @id @default(cuid())
+  routeId           String
+  weightMin         Float
+  weightMax         Float
+  basePrice         Float
+  currency          String                 @default("USD")
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
   customerOverrides CustomerRateOverride[]
+  route             Route                  @relation(fields: [routeId], references: [id])
 }
 
 model CustomerRateOverride {
   id         String          @id @default(cuid())
   customerId String
-  customer   CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
   rateCardId String
-  rateCard   RateCard        @relation(fields: [rateCardId], references: [id], onDelete: Cascade)
   price      Float
   createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
+  updatedAt  DateTime        @default(now()) @updatedAt
+  customer   CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  rateCard   RateCard        @relation(fields: [rateCardId], references: [id], onDelete: Cascade)
 
   @@unique([customerId, rateCardId])
   @@index([customerId])
@@ -231,15 +175,15 @@ model CustomerRateOverride {
 }
 
 model CustomerWarehouseRateOverride {
-  id         String          @id @default(cuid())
-  customerId String
-  customer   CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  id          String          @id @default(cuid())
+  customerId  String
   warehouseId String
-  warehouse   Warehouse      @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
-  price      Float
-  currency   String          @default("USD")
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
+  price       Float
+  currency    String          @default("USD")
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @default(now()) @updatedAt
+  customer    CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  warehouse   Warehouse       @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
 
   @@unique([customerId, warehouseId])
   @@index([customerId])
@@ -247,56 +191,48 @@ model CustomerWarehouseRateOverride {
 }
 
 model Shipment {
-  id                  String         @id @default(cuid())
-  trackingId          String         @unique
-  awb                 String?        @unique
-  referenceNo         String?
-  pcs                 Int?
-  collectionType      ShipmentCollectionType @default(PICKUP)
-  
-  customerId          String
-  customer            CustomerProfile @relation(fields: [customerId], references: [id])
-
-  countryId           String?
-  country             Country?       @relation(fields: [countryId], references: [id])
-  
-  createdById         String?
-  createdBy           User?          @relation("CreatedBy", fields: [createdById], references: [id])
-
-  logisticsCompanyId  String?
-  logisticsCompany    LogisticsCompany? @relation(fields: [logisticsCompanyId], references: [id])
-
-  routeId             String?
-  route               Route?          @relation(fields: [routeId], references: [id])
-
-  warehouseId         String?
-  warehouse           Warehouse?      @relation(fields: [warehouseId], references: [id])
-
-  pickupAddressId     String?
-  pickupAddress       Address?        @relation("PickupAddress", fields: [pickupAddressId], references: [id])
-  
-  receiverAddressId   String?
-  receiverAddress     Address?        @relation("ReceiverAddress", fields: [receiverAddressId], references: [id])
-  receiverName        String?
-  receiverPhone       String?
-
-  pickupDate          DateTime?
-  weight              Float?
-  content             String?
-  amount              Float?
-  paymentStatus       PaymentStatus   @default(UNPAID)
-  status              ShipmentStatus  @default(CREATED)
-  rejectionReason     String?
-  
-  expectedArrivalDate DateTime?
-  remarks             String?
-  
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
-
-  statusHistory       ShipmentStatusHistory[]
-  events              ShipmentEvent[]
-  invoice             Invoice?
+  id                     String                  @id @default(cuid())
+  trackingId             String                  @unique
+  awb                    String                  @unique
+  referenceNo            String?
+  customerId             String
+  createdById            String?
+  logisticsCompanyId     String?
+  routeId                String?
+  pickupAddressId        String?
+  receiverAddressId      String?
+  weight                 Float?
+  content                String?
+  amount                 Float?
+  paymentStatus          PaymentStatus           @default(UNPAID)
+  status                 ShipmentStatus          @default(CREATED)
+  rejectionReason        String?
+  expectedArrivalDate    DateTime?
+  remarks                String?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  countryId              String?
+  pcs                    Int?
+  pickupDate             DateTime?
+  receiverName           String?
+  receiverPhone          String?
+  collectionType         ShipmentCollectionType  @default(PICKUP)
+  warehouseId            String?
+  destinationAddressText String?
+  destinationCountry     String?
+  originCountry          String?
+  pickupAddressText      String?
+  invoice                Invoice?
+  country                Country?                @relation(fields: [countryId], references: [id])
+  createdBy              User?                   @relation("CreatedBy", fields: [createdById], references: [id])
+  customer               CustomerProfile         @relation(fields: [customerId], references: [id])
+  logisticsCompany       LogisticsCompany?       @relation(fields: [logisticsCompanyId], references: [id])
+  pickupAddress          Address?                @relation("PickupAddress", fields: [pickupAddressId], references: [id])
+  receiverAddress        Address?                @relation("ReceiverAddress", fields: [receiverAddressId], references: [id])
+  route                  Route?                  @relation(fields: [routeId], references: [id])
+  warehouse              Warehouse?              @relation(fields: [warehouseId], references: [id])
+  events                 ShipmentEvent[]
+  statusHistory          ShipmentStatusHistory[]
 
   @@index([customerId])
   @@index([countryId])
@@ -311,75 +247,130 @@ model Shipment {
 }
 
 model ShipmentStatusHistory {
-  id          String         @id @default(cuid())
-  shipmentId  String
-  shipment    Shipment       @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
-  status      ShipmentStatus
-  location    String?
-  notes       String?
-  createdAt   DateTime       @default(now())
+  id              String          @id @default(cuid())
+  shipmentId      String
+  status          ShipmentStatus
+  location        String?
+  notes           String?
+  createdAt       DateTime        @default(now())
+  changedByUserId String?
+  oldStatus       ShipmentStatus?
+  User            User?           @relation(fields: [changedByUserId], references: [id])
+  shipment        Shipment        @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
 
   @@index([shipmentId])
   @@index([createdAt])
 }
 
 model ShipmentEvent {
-  id          String    @id @default(cuid())
-  shipmentId  String
-  shipment    Shipment  @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
-  title       String
-  status      ShipmentStatus?
-  location    String?
-  note        String?   @map("description")
-  createdAt   DateTime  @default(now())
+  id         String          @id @default(cuid())
+  shipmentId String
+  title      String
+  note       String?         @map("description")
+  createdAt  DateTime        @default(now())
+  location   String?
+  status     ShipmentStatus?
+  eventTime  DateTime        @default(now())
+  shipment   Shipment        @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
 
   @@index([shipmentId])
   @@index([createdAt])
   @@index([status])
+  @@index([eventTime])
 }
 
 model Invoice {
-  id            String        @id @default(cuid())
-  invoiceNumber String        @unique
-  shipmentId    String        @unique
-  shipment      Shipment      @relation(fields: [shipmentId], references: [id])
+  id            String          @id @default(cuid())
+  invoiceNumber String          @unique
+  shipmentId    String          @unique
   customerId    String
-  customer      CustomerProfile @relation(fields: [customerId], references: [id])
   amount        Float
   dueDate       DateTime?
-  status        PaymentStatus @default(UNPAID)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  status        PaymentStatus   @default(UNPAID)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  customer      CustomerProfile @relation(fields: [customerId], references: [id])
+  shipment      Shipment        @relation(fields: [shipmentId], references: [id])
 
   @@index([customerId, status])
 }
 
 model Quotation {
-  id           String          @id @default(cuid())
-  quoteNumber  String          @unique
-  customerId   String
-  customer     CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  description  String?
-  weight       Float?
-  amount       Float?
-  status       QuotationStatus @default(DRAFT)
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  id                 String          @id @default(cuid())
+  quoteNumber        String          @unique
+  customerId         String
+  description        String?
+  weight             Float?
+  amount             Float?
+  status             QuotationStatus @default(PENDING)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  adminResponse      String?
+  destinationCountry String?
+  originCountry      String?
+  pcs                Int?
+  customer           CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
   @@index([customerId, status])
+  @@index([customerId])
+  @@index([status])
 }
 
 model AuditLog {
   id        String   @id @default(cuid())
   userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
   action    String
   entity    String
   entityId  String
   details   String?
   createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([entityId])
   @@index([createdAt])
+}
+
+enum Role {
+  CREATOR
+  ADMIN
+  MANAGER
+  OPERATIONS_MANAGER
+  ACCOUNTANT
+  CUSTOMER
+}
+
+enum ShipmentStatus {
+  CREATED
+  WAITING
+  ACCEPTED
+  PICKUP_SCHEDULED
+  PICKED_UP
+  AT_WAREHOUSE
+  PROCESSING
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  REJECTED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PARTIAL
+  PAID
+  REFUNDED
+  OVERDUE
+}
+
+enum QuotationStatus {
+  PENDING
+  RESPONDED
+  APPROVED
+  REJECTED
+}
+
+enum ShipmentCollectionType {
+  PICKUP
+  WAREHOUSE_DROP
 }

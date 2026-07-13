@@ -49,6 +49,11 @@ export function AdminSidebar({ userName }: { userName?: string | null }) {
     .substring(0, 2)
     .toUpperCase();
 
+  const isActiveRoute = (href: string) => {
+    if (pathname === href) return true;
+    return pathname.startsWith(`${href}/`);
+  };
+
   return (
     <aside className="hidden h-full w-[278px] flex-col border-r border-slate-200/80 bg-white/80 backdrop-blur-xl lg:flex">
       <div className="border-b border-slate-200/80 px-6 pb-6 pt-7">
@@ -69,7 +74,7 @@ export function AdminSidebar({ userName }: { userName?: string | null }) {
             </p>
             <div className="space-y-1.5">
               {group.items.map((item) => {
-                const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/admin/dashboard");
+                const isActive = isActiveRoute(item.href);
                 const Icon = item.icon;
 
                 return (

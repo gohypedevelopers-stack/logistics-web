@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Globe2, ShieldCheck, Truck, Zap } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Globe2, ShieldCheck, Truck, Zap } from "lucide-react";
 import { Manrope } from "next/font/google";
 
 const homeFont = Manrope({
@@ -24,6 +24,8 @@ export default function RegisterPage() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,27 +205,47 @@ export default function RegisterPage() {
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
                     <label className="mb-2 ml-1 block text-[10px] font-bold uppercase tracking-widest text-slate-700">Password</label>
-                    <input
-                      type="password"
-                      required
-                      minLength={8}
-                      placeholder="********"
-                      className="h-13 w-full rounded-[20px] border border-[#d9e2ec] bg-[#f8fafc] px-4 text-sm font-medium text-slate-900 outline-none transition-shadow focus:bg-white focus:shadow-[0_0_0_4px_rgba(254,104,1,0.12)] placeholder:text-slate-400"
-                      value={formData.password}
-                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    />
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        required
+                        minLength={8}
+                        placeholder="********"
+                        className="h-13 w-full rounded-[20px] border border-[#d9e2ec] bg-[#f8fafc] px-4 pr-12 text-sm font-medium text-slate-900 outline-none transition-shadow focus:bg-white focus:shadow-[0_0_0_4px_rgba(254,104,1,0.12)] placeholder:text-slate-400"
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 transition-colors hover:text-[#1e4b7a]"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                      >
+                        {showPassword ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <label className="mb-2 ml-1 block text-[10px] font-bold uppercase tracking-widest text-slate-700">Confirm Password</label>
-                    <input
-                      type="password"
-                      required
-                      minLength={8}
-                      placeholder="********"
-                      className="h-13 w-full rounded-[20px] border border-[#d9e2ec] bg-[#f8fafc] px-4 text-sm font-medium text-slate-900 outline-none transition-shadow focus:bg-white focus:shadow-[0_0_0_4px_rgba(254,104,1,0.12)] placeholder:text-slate-400"
-                      value={formData.confirmPassword}
-                      onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    />
+                    <div className="relative">
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        required
+                        minLength={8}
+                        placeholder="********"
+                        className="h-13 w-full rounded-[20px] border border-[#d9e2ec] bg-[#f8fafc] px-4 pr-12 text-sm font-medium text-slate-900 outline-none transition-shadow focus:bg-white focus:shadow-[0_0_0_4px_rgba(254,104,1,0.12)] placeholder:text-slate-400"
+                        value={formData.confirmPassword}
+                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                        className="absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 transition-colors hover:text-[#1e4b7a]"
+                        aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                      >
+                        {showConfirmPassword ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -239,8 +261,15 @@ export default function RegisterPage() {
                     />
                   </div>
                   <label htmlFor="terms" className="cursor-pointer select-none text-xs leading-relaxed text-slate-600">
-                    By creating an account, you agree to our <span className="font-bold text-[#1e4b7a]">Terms of Service</span> and{" "}
-                    <span className="font-bold text-[#1e4b7a]">Privacy Policy</span>.
+                    By creating an account, you agree to our{" "}
+                    <Link href="/terms" className="font-bold text-[#1e4b7a] underline">
+                      Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link href="/privacy" className="font-bold text-[#1e4b7a] underline">
+                      Privacy Policy
+                    </Link>
+                    .
                   </label>
                 </div>
 

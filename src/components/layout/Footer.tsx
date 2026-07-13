@@ -34,6 +34,7 @@ export function Footer() {
               <li><Link href="/pricing" className="transition-colors hover:text-[#1e4b7a]">Pricing</Link></li>
               <li><Link href="/privacy" className="transition-colors hover:text-[#1e4b7a]">Privacy Policy</Link></li>
               <li><Link href="/terms" className="transition-colors hover:text-[#1e4b7a]">Terms of Service</Link></li>
+              <li><Link href="/fraud-awareness" className="transition-colors hover:text-[#1e4b7a]">Fraud Awareness</Link></li>
             </ul>
           </div>
 
@@ -77,6 +78,7 @@ export function Footer() {
           <div className="flex items-center justify-center gap-5 sm:justify-end">
             <Link href="/privacy" className="transition-colors hover:text-[#1e4b7a]">Privacy</Link>
             <Link href="/terms" className="transition-colors hover:text-[#1e4b7a]">Terms</Link>
+            <Link href="/fraud-awareness" className="transition-colors hover:text-[#1e4b7a]">Fraud</Link>
             <Link href="/contact" className="transition-colors hover:text-[#1e4b7a]">Contact</Link>
           </div>
         </div>

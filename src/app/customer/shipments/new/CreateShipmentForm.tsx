@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   ArrowRight,
   Box,
@@ -56,13 +57,17 @@ export function CreateShipmentForm({
 }: CreateShipmentFormProps) {
   const router = useRouter();
   const isScheduleMode = mode === "schedule";
+  const pickupCountryOptions = countries.filter((country) => country.code !== "IN");
+  const defaultPickupCountryId = pickupCountryOptions[0]?.id ?? countries[0]?.id ?? "";
   const [loading, setLoading] = useState(false);
   const [collectionType, setCollectionType] = useState<"PICKUP" | "WAREHOUSE_DROP">("PICKUP");
-  const [pickupCountryId, setPickupCountryId] = useState(countries[0]?.id ?? "");
+  const [pickupCountryId, setPickupCountryId] = useState(defaultPickupCountryId);
   const [destinationCountryId, setDestinationCountryId] = useState(
     countries[1]?.id ?? countries[0]?.id ?? "",
   );
   const [pickupDate, setPickupDate] = useState("");
+  const [pickupPhone, setPickupPhone] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const availableWarehouses = warehouses;
   const [warehouseId, setWarehouseId] = useState(availableWarehouses[0]?.id ?? "");
@@ -94,9 +99,11 @@ export function CreateShipmentForm({
     ? "border-blue-200 bg-gradient-to-r from-blue-50 via-white to-orange-50"
     : "border-orange-200 bg-gradient-to-r from-orange-50 via-white to-slate-50";
   const heroIconTone = isScheduleMode ? "bg-blue-600 text-white" : "bg-orange-600 text-white";
+  const isPickupDateRequired = collectionType === "PICKUP" || isScheduleMode;
 
   const canSubmit =
-    Boolean(pickupDate) &&
+    Boolean(acceptedTerms) &&
+    (!isPickupDateRequired || Boolean(pickupDate)) &&
     (collectionType === "PICKUP" || (collectionType === "WAREHOUSE_DROP" && Boolean(warehouseId)));
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -110,6 +117,7 @@ export function CreateShipmentForm({
       destinationCountryId: formData.get("destinationCountryId"),
       warehouseId: formData.get("warehouseId"),
       pickupDate: formData.get("pickupDate"),
+      pickupPhone: formData.get("pickupPhone"),
       pickupLocation: formData.get("pickupLocation"),
       pickupCity: formData.get("pickupCity"),
       destinationLocation: formData.get("destinationLocation"),
@@ -150,56 +158,62 @@ export function CreateShipmentForm({
   }
 
   return (
-    <div className="mx-auto min-h-full max-w-[1520px] p-6 lg:p-8">
-      <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-semibold tracking-tight text-slate-900 lg:text-[2.1rem]">
+    <div className="mx-auto min-h-full max-w-[1520px] p-4 sm:p-6 lg:p-8">
+      <div className="mb-8 rounded-[28px] border border-slate-200/80 bg-gradient-to-r from-white via-[#fbfcff] to-[#f4f8ff] px-6 py-5 shadow-[0_16px_42px_rgba(15,23,42,0.06)]">
+        <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#1e4b7a]">Customer Workspace</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 lg:text-[2.1rem]">
           {isScheduleMode ? "Schedule Shipment" : "Create New Shipment"}
         </h1>
-        <p className="max-w-2xl text-sm leading-6 text-slate-500">
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
           {isScheduleMode
             ? "Plan a pickup slot or warehouse drop, then review upcoming schedules from the Overview panel."
             : "Book your international delivery with enterprise-grade intelligence."}
         </p>
       </div>
 
-      <div className={`app-card mb-6 border ${heroTone} p-5 lg:p-6`}>
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-start gap-4">
-            <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${heroIconTone}`}>
-              {isScheduleMode ? <CalendarDays className="h-5 w-5" /> : <Truck className="h-5 w-5" />}
+      <div className={`app-card mb-6 overflow-hidden border ${heroTone} shadow-[0_18px_44px_rgba(30,75,122,0.08)]`}>
+        <div className="h-1 bg-gradient-to-r from-[#1e4b7a] via-[#7fb0ff] to-[#fe6801]" />
+        <div className="p-5 lg:p-6">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-start gap-4">
+              <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${heroIconTone}`}>
+                {isScheduleMode ? <CalendarDays className="h-5 w-5" /> : <Truck className="h-5 w-5" />}
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+                  {isScheduleMode ? "Plan an upcoming shipment slot" : "Create a shipment request"}
+                </h2>
+                <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-600">
+                  {isScheduleMode
+                    ? "Choose pickup or warehouse drop, set the shipment date, and let the dashboard track upcoming scheduled requests."
+                    : "Create a shipment entry with route, package, and receiver details so operations can start processing it."}
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-lg font-semibold tracking-tight text-slate-900">
-                {isScheduleMode ? "Plan an upcoming shipment slot" : "Create a shipment request"}
-              </h2>
-              <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-600">
-                {isScheduleMode
-                  ? "Choose pickup or warehouse drop, set the shipment date, and let the dashboard track upcoming scheduled requests."
-                  : "Create a shipment entry with route, package, and receiver details so operations can start processing it."}
-              </p>
-            </div>
-          </div>
 
-          <div className="grid gap-2 text-sm text-slate-600 sm:grid-cols-2 lg:min-w-[380px]">
-            <div className="rounded-2xl border border-white/80 bg-white/80 px-4 py-3">
-              <p className="font-semibold text-slate-900">
-                {isScheduleMode ? "Best for future pickups" : "Best for immediate requests"}
-              </p>
-              <p className="mt-1 text-xs leading-5 text-slate-500">
-                {isScheduleMode
-                  ? "Shows directly in Overview under upcoming shipment dates."
-                  : "Sends a full shipment request into the customer and admin shipment lists."}
-              </p>
-            </div>
-            <div className="rounded-2xl border border-white/80 bg-white/80 px-4 py-3">
-              <p className="font-semibold text-slate-900">
-                {isScheduleMode ? "Requires schedule date" : "Includes full shipment details"}
-              </p>
-              <p className="mt-1 text-xs leading-5 text-slate-500">
-                {isScheduleMode
-                  ? "Pickup or warehouse drop date is required before submit."
-                  : "Receiver, package, and route data are collected in one flow."}
-              </p>
+            <div className="grid gap-3 text-sm text-slate-600 sm:grid-cols-2 lg:min-w-[420px]">
+              <div className="rounded-[22px] border border-white/80 bg-white/80 px-4 py-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
+                <p className="font-semibold text-slate-900">
+                  {isScheduleMode ? "Best for future pickups" : "Best for immediate requests"}
+                </p>
+                <p className="mt-1 text-xs leading-5 text-slate-500">
+                  {isScheduleMode
+                    ? "Shows directly in Overview under upcoming shipment dates."
+                    : "Sends a full shipment request into the customer and admin shipment lists."}
+                </p>
+              </div>
+              <div className="rounded-[22px] border border-white/80 bg-white/80 px-4 py-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
+                <p className="font-semibold text-slate-900">
+                  {isScheduleMode ? "Requires schedule date" : "Includes full shipment details"}
+                </p>
+                <p className="mt-1 text-xs leading-5 text-slate-500">
+                  {isScheduleMode
+                    ? "Pickup or warehouse drop date is required before submit."
+                    : collectionType === "WAREHOUSE_DROP"
+                      ? "Warehouse drop date is optional in create mode."
+                      : "Receiver, package, and route data are collected in one flow."}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -207,22 +221,29 @@ export function CreateShipmentForm({
 
       <form onSubmit={handleSubmit} className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-start">
         <div className="space-y-6">
-          <section className="app-card p-7 lg:p-8">
-            <div className="mb-6 flex items-center gap-4">
-              <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${isScheduleMode ? "bg-blue-100" : "bg-orange-100"}`}>
-                <Globe2 className={`h-5 w-5 ${isScheduleMode ? "text-blue-700" : "text-orange-700"}`} />
+          <section className="app-card overflow-hidden rounded-[28px] border border-slate-200/80 shadow-[0_18px_44px_rgba(15,23,42,0.06)]">
+            <div className="h-1.5 bg-gradient-to-r from-[#1e4b7a] via-[#7fb0ff] to-[#fe6801]" />
+            <div className="p-7 lg:p-8">
+              <div className="mb-6 flex items-start gap-4">
+                <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${isScheduleMode ? "bg-blue-100" : "bg-orange-100"}`}>
+                  <Globe2 className={`h-5 w-5 ${isScheduleMode ? "text-blue-700" : "text-orange-700"}`} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+                    {isScheduleMode ? "1. Route & Schedule" : "1. Route & Order Details"}
+                  </h2>
+                  <p className="mt-1 text-sm leading-6 text-slate-500">
+                    Choose route, collection mode, and shipment timing.
+                  </p>
+                </div>
               </div>
-              <h2 className="text-lg font-semibold tracking-tight text-slate-900">
-                {isScheduleMode ? "1. Route & Schedule" : "1. Route & Order Details"}
-              </h2>
-            </div>
 
             <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
               <label
-                className={`cursor-pointer rounded-[18px] border px-5 py-4 transition-colors ${
+                className={`cursor-pointer rounded-[22px] border px-5 py-5 transition-all ${
                   collectionType === "PICKUP"
-                    ? "border-blue-300 bg-blue-50"
-                    : "border-slate-200 bg-slate-50"
+                    ? "border-blue-300 bg-blue-50 shadow-[0_12px_28px_rgba(30,75,122,0.08)]"
+                    : "border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-slate-100"
                 }`}
               >
                 <input
@@ -240,10 +261,10 @@ export function CreateShipmentForm({
               </label>
 
               <label
-                className={`cursor-pointer rounded-[18px] border px-5 py-4 transition-colors ${
+                className={`cursor-pointer rounded-[22px] border px-5 py-5 transition-all ${
                   collectionType === "WAREHOUSE_DROP"
-                    ? "border-orange-300 bg-orange-50"
-                    : "border-slate-200 bg-slate-50"
+                    ? "border-orange-300 bg-orange-50 shadow-[0_12px_28px_rgba(254,104,1,0.10)]"
+                    : "border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-slate-100"
                 }`}
               >
                 <input
@@ -279,7 +300,7 @@ export function CreateShipmentForm({
                     onChange={(event) => setPickupCountryId(event.target.value)}
                     className="app-input w-full px-4 text-sm font-medium"
                   >
-                    {countries.map((country) => (
+                    {pickupCountryOptions.map((country) => (
                       <option key={country.id} value={country.id}>
                         {country.name} ({country.code})
                       </option>
@@ -317,7 +338,7 @@ export function CreateShipmentForm({
                     value={selectedWarehouse?.countryId || pickupCountryId}
                   />
                   {availableWarehouses.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">
+                    <div className="rounded-[18px] border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-500">
                       No active warehouses are available for this country.
                     </div>
                   ) : (
@@ -368,36 +389,53 @@ export function CreateShipmentForm({
               </div>
             )}
 
-            <div className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                  {collectionType === "WAREHOUSE_DROP" ? "Drop Date" : "Pickup Date"}
-                </label>
-                <input
-                  name="pickupDate"
-                  type="date"
-                  required
-                  value={pickupDate}
-                  onChange={(event) => setPickupDate(event.target.value)}
-                  className="app-input w-full px-4 text-sm font-medium"
-                />
-              </div>
+              <div className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                    {collectionType === "WAREHOUSE_DROP" ? "Drop Date (Optional)" : "Pickup Date"}
+                  </label>
+                  <input
+                    name="pickupDate"
+                    type="date"
+                    required={isPickupDateRequired}
+                    value={pickupDate}
+                    onChange={(event) => setPickupDate(event.target.value)}
+                    className="app-input w-full px-4 text-sm font-medium"
+                  />
+                </div>
 
-              <div>
-                <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                  Reference Number
-                </label>
-                <input
-                  name="referenceNo"
-                  type="text"
-                  placeholder="Optional client reference"
-                  className="app-input w-full px-4 text-sm font-medium"
-                />
-              </div>
+                <div>
+                  <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                    Reference Number
+                  </label>
+                  <input
+                    name="referenceNo"
+                    type="text"
+                    placeholder="Optional client reference"
+                    className="app-input w-full px-4 text-sm font-medium"
+                  />
+                </div>
             </div>
 
             {collectionType === "PICKUP" ? (
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <div className="md:col-span-2">
+                  <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                    Pickup Contact Number
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <input
+                      name="pickupPhone"
+                      required
+                      placeholder="Pickup contact number"
+                      className="app-input w-full pl-11 pr-4 text-sm font-medium"
+                      value={pickupPhone}
+                      onChange={(event) => setPickupPhone(event.target.value)}
+                    />
+                  </div>
+                </div>
+
                 <div>
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
                     Pickup City
@@ -431,65 +469,75 @@ export function CreateShipmentForm({
                 <input type="hidden" name="destinationLocation" value="" />
               </>
             )}
+            </div>
           </section>
 
-          <section className="app-card p-8">
-            <div className="mb-6 flex items-center gap-4">
-              <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${isScheduleMode ? "bg-blue-100" : "bg-orange-100"}`}>
-                <Box className={`h-5 w-5 ${isScheduleMode ? "text-blue-700" : "text-orange-700"}`} />
+          <section className="app-card overflow-hidden rounded-[28px] border border-orange-200/70 shadow-[0_18px_44px_rgba(254,104,1,0.08)]">
+            <div className="h-1.5 bg-gradient-to-r from-[#fe6801] via-[#ffb76b] to-[#1e4b7a]" />
+            <div className="p-7 lg:p-8">
+              <div className="mb-6 flex items-start gap-4">
+                <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${isScheduleMode ? "bg-blue-100" : "bg-orange-100"}`}>
+                  <Box className={`h-5 w-5 ${isScheduleMode ? "text-blue-700" : "text-orange-700"}`} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+                    2. Package Details
+                  </h2>
+                  <p className="mt-1 text-sm leading-6 text-slate-500">
+                    Quantity, weight, declared value, and content notes.
+                  </p>
+                </div>
               </div>
-              <h2 className="text-lg font-semibold tracking-tight text-slate-900">
-                2. Package Details
-              </h2>
-            </div>
 
             <div className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-3">
-              <div>
-                <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                  PCS
-                </label>
-                <input
+                <div className="rounded-[20px] border border-slate-100 bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
+                  <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                    PCS
+                  </label>
+                  <input
                   name="pcs"
                   type="number"
                   min="1"
                   required
                   placeholder="1"
                   className="app-input w-full px-4 text-sm font-medium"
-                />
-              </div>
+                  />
+                </div>
 
-              <div>
-                <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                  Weight (KG)
-                </label>
-                <input
-                  name="weight"
-                  type="number"
-                  min="0.1"
-                  step="0.01"
-                  required
-                  placeholder="0.00"
-                  className="app-input w-full px-4 text-sm font-medium"
-                />
-              </div>
+                <div className="rounded-[20px] border border-slate-100 bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
+                  <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                    Weight (KG)
+                  </label>
+                  <input
+                    name="weight"
+                    type="number"
+                    min="0.1"
+                    step="0.01"
+                    placeholder="0.00"
+                    className="app-input w-full px-4 text-sm font-medium"
+                  />
+                  <p className="mt-2 text-[11px] leading-5 text-slate-500">
+                    Actual weight is optional when booking. You can add it later if needed.
+                  </p>
+                </div>
 
-              <div>
-                <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                  Declared Value
-                </label>
-                <input
-                  name="declaredValue"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  required
-                  placeholder="0.00"
-                  className="app-input w-full px-4 text-sm font-medium"
-                />
-              </div>
+                <div className="rounded-[20px] border border-slate-100 bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
+                  <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                    Declared Value
+                  </label>
+                  <input
+                    name="declaredValue"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    required
+                    placeholder="0.00"
+                    className="app-input w-full px-4 text-sm font-medium"
+                  />
+                </div>
             </div>
 
-            <div>
+            <div className="rounded-[20px] border border-slate-100 bg-white p-5 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
               <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
                 Contents Description
               </label>
@@ -501,21 +549,29 @@ export function CreateShipmentForm({
                 className="app-textarea min-h-[136px] w-full resize-none p-4 text-sm font-medium"
               />
             </div>
+            </div>
           </section>
 
           {collectionType === "PICKUP" ? (
-            <section className="app-card p-7 lg:p-8">
-              <div className="mb-6 flex items-center gap-4">
-                <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${isScheduleMode ? "bg-blue-100" : "bg-orange-100"}`}>
-                  <User className={`h-5 w-5 ${isScheduleMode ? "text-blue-700" : "text-orange-700"}`} />
+            <section className="app-card overflow-hidden rounded-[28px] border border-blue-200/70 shadow-[0_18px_44px_rgba(30,75,122,0.06)]">
+              <div className="h-1.5 bg-gradient-to-r from-[#1e4b7a] via-[#7fb0ff] to-[#fe6801]" />
+              <div className="p-7 lg:p-8">
+                <div className="mb-6 flex items-start gap-4">
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${isScheduleMode ? "bg-blue-100" : "bg-orange-100"}`}>
+                    <User className={`h-5 w-5 ${isScheduleMode ? "text-blue-700" : "text-orange-700"}`} />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+                      3. Receiver Details
+                    </h2>
+                    <p className="mt-1 text-sm leading-6 text-slate-500">
+                      Receiver details are required for pickup bookings and shipment handoff.
+                    </p>
+                  </div>
                 </div>
-                <h2 className="text-lg font-semibold tracking-tight text-slate-900">
-                  3. Receiver Details
-                </h2>
-              </div>
 
-              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-                <div>
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <div className="rounded-[20px] border border-slate-100 bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
                     Receiver Name
                   </label>
@@ -527,7 +583,7 @@ export function CreateShipmentForm({
                   />
                 </div>
 
-                <div>
+                <div className="rounded-[20px] border border-slate-100 bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
                     Receiver Phone
                   </label>
@@ -541,20 +597,54 @@ export function CreateShipmentForm({
                     />
                   </div>
                 </div>
+                </div>
               </div>
             </section>
           ) : (
             <>
               <input type="hidden" name="receiverName" value="" />
               <input type="hidden" name="receiverPhone" value="" />
+              <input type="hidden" name="pickupPhone" value={selectedWarehouse?.phone || ""} />
             </>
           )}
 
-          <div className="flex items-center justify-between border-t border-slate-200/80 px-1 pb-2 pt-6">
+          <section className="app-card overflow-hidden rounded-[28px] border border-slate-200/80 shadow-[0_18px_44px_rgba(15,23,42,0.05)]">
+            <div className="h-1 bg-gradient-to-r from-slate-300 via-blue-200 to-orange-300" />
+            <div className="p-6 lg:p-7">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center">
+                  <input
+                    id="termsAcceptance"
+                    type="checkbox"
+                    checked={acceptedTerms}
+                    onChange={(event) => setAcceptedTerms(event.target.checked)}
+                    className="h-4 w-4 rounded border-slate-300 text-[#1e4b7a] focus:ring-[#1e4b7a]"
+                  />
+                </div>
+                <label htmlFor="termsAcceptance" className="cursor-pointer text-sm leading-6 text-slate-600">
+                  By booking this shipment, I agree to the{" "}
+                  <Link href="/terms" className="font-semibold text-[#1e4b7a] underline">
+                    Terms of Service
+                  </Link>
+                  ,{" "}
+                  <Link href="/privacy" className="font-semibold text-[#1e4b7a] underline">
+                    Privacy Policy
+                  </Link>
+                  , and{" "}
+                  <Link href="/fraud-awareness" className="font-semibold text-[#1e4b7a] underline">
+                    Fraud Awareness and Security Disclaimer
+                  </Link>
+                  .
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <div className="app-card flex flex-col gap-3 rounded-[28px] border border-slate-200/80 px-5 py-4 shadow-[0_16px_36px_rgba(15,23,42,0.05)] sm:flex-row sm:items-center sm:justify-between">
             <button
               type="button"
               onClick={() => router.back()}
-              className="flex items-center gap-2 text-sm font-semibold text-slate-500 transition-colors hover:text-slate-800"
+              className="app-button-secondary inline-flex h-12 items-center justify-center gap-2 px-5 text-sm font-semibold text-slate-600 transition-all hover:-translate-y-0.5 hover:text-slate-900"
             >
               <X className="h-4 w-4" /> Cancel
             </button>
@@ -562,7 +652,7 @@ export function CreateShipmentForm({
             <button
               type="submit"
               disabled={loading || !canSubmit}
-              className="app-button-primary flex h-14 items-center gap-3 px-8 text-sm font-semibold disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="app-button-primary flex h-12 items-center justify-center gap-3 px-6 text-sm font-semibold shadow-[0_14px_30px_rgba(30,75,122,0.18)] disabled:cursor-not-allowed disabled:bg-slate-300"
             >
               {loading ? (
                 <>
@@ -641,7 +731,9 @@ export function CreateShipmentForm({
                 <p className="text-sm font-medium text-slate-900">
                   {pickupDate
                     ? `${collectionType === "WAREHOUSE_DROP" ? "Drop" : "Pickup"} planned for ${pickupDate}`
-                    : "Choose a shipment date"}
+                    : collectionType === "WAREHOUSE_DROP" && !isScheduleMode
+                      ? "Drop date is optional for warehouse drop"
+                      : "Choose a shipment date"}
                 </p>
               </div>
 

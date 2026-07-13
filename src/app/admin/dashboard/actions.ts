@@ -71,68 +71,76 @@ export async function updateQuotationStatusAction(formData: FormData) {
       throw new Error("Quotation request not found.");
     }
 
-    if (quotation.weight == null) {
-      throw new Error("Quotation weight is required before assigning a customer price.");
-    }
-
     const routeCodes = parseQuotationRouteCodes(quotation.description);
-    if (!routeCodes) {
-      throw new Error("Unable to match this quotation to a route.");
-    }
+    let matchedRateCard: { id: string } | null = null;
 
-    const matchedRateCard = await prisma.rateCard.findFirst({
-      where: {
-        weightMin: {
-          lte: quotation.weight,
-        },
-        weightMax: {
-          gte: quotation.weight,
-        },
-        route: {
-          isActive: true,
-          originCountry: {
-            code: routeCodes.originCode,
-          },
-          destinationCountry: {
-            code: routeCodes.destinationCode,
-          },
-        },
-      },
-      orderBy: [{ weightMin: "asc" }, { weightMax: "asc" }],
-      select: {
-        id: true,
-      },
-    });
-
-    if (!matchedRateCard) {
-      throw new Error("No matching route rate band was found for this quotation.");
-    }
-
-    await prisma.$transaction([
-      prisma.customerRateOverride.upsert({
+    if (quotation.weight == null || !routeCodes) {
+      console.warn(
+        `[updateQuotationStatusAction] Quotation ${quotation.id} is missing weight or route details. Approval will continue without a customer rate override.`,
+      );
+    } else {
+      matchedRateCard = await prisma.rateCard.findFirst({
         where: {
-          customerId_rateCardId: {
+          weightMin: {
+            lte: quotation.weight,
+          },
+          weightMax: {
+            gte: quotation.weight,
+          },
+          route: {
+            isActive: true,
+            originCountry: {
+              code: routeCodes.originCode,
+            },
+            destinationCountry: {
+              code: routeCodes.destinationCode,
+            },
+          },
+        },
+        orderBy: [{ weightMin: "asc" }, { weightMax: "asc" }],
+        select: {
+          id: true,
+        },
+      });
+    }
+
+    const approvalOperations: Prisma.PrismaPromise<unknown>[] = [];
+
+    if (matchedRateCard) {
+      approvalOperations.push(
+        prisma.customerRateOverride.upsert({
+          where: {
+            customerId_rateCardId: {
+              customerId: quotation.customerId,
+              rateCardId: matchedRateCard.id,
+            },
+          },
+          update: {
+            price: approvedPrice,
+          },
+          create: {
             customerId: quotation.customerId,
             rateCardId: matchedRateCard.id,
+            price: approvedPrice,
           },
-        },
-        update: {
-          price: approvedPrice,
-        },
-        create: {
-          customerId: quotation.customerId,
-          rateCardId: matchedRateCard.id,
-          price: approvedPrice,
-        },
-      }),
+        }),
+      );
+    } else {
+      console.warn(
+        `[updateQuotationStatusAction] No matching route rate band found for quotation ${quotation.id}. Approval will continue without a customer rate override.`,
+      );
+    }
+
+    approvalOperations.push(
       prisma.$executeRaw(Prisma.sql`
         UPDATE "Quotation"
         SET "status" = ${nextStatus}::"QuotationStatus",
             "updatedAt" = NOW()
         WHERE "id" = ${quotationId}
       `),
-    ]);
+    );
 
+    await prisma.$transaction(approvalOperations);
     revalidatePath(`/admin/customers/${quotation.customerId}`);
   } else {
     await prisma.$executeRaw(Prisma.sql`

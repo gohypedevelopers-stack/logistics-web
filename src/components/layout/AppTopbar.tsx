@@ -4,6 +4,16 @@ import { Bell, Search } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 function getPageLabel(pathname: string, variant: "admin" | "customer") {
+  if (variant === "customer") {
+    if (pathname === "/customer/shipments/new") return "Create Shipment";
+    if (pathname === "/customer/shipments" || pathname.startsWith("/customer/shipments/")) return "Total Orders";
+  }
+
+  if (variant === "admin") {
+    if (pathname === "/admin/shipments/new") return "Create Shipment";
+    if (pathname === "/admin/shipments" || pathname.startsWith("/admin/shipments/")) return "Shipments";
+  }
+
   const map: Array<[string, string]> = [
     [`/${variant}/dashboard`, "Overview"],
     [`/${variant}/shipments/new`, variant === "admin" ? "Create Shipment" : "Create Shipment"],

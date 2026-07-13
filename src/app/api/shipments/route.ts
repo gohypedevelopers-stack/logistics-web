@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import {
@@ -22,7 +23,11 @@ const createShipmentSchema = z.object({
   destinationCity: z.string().trim().optional().nullable(),
   pickupDate: z.string().optional().nullable(),
   pcs: z.coerce.number().int().positive("PCS must be greater than zero."),
-  weight: z.coerce.number().positive("Weight must be greater than zero."),
+  pickupPhone: z.string().trim().optional().nullable(),
+  weight: z.preprocess(
+    (value) => (value === "" || value == null ? undefined : value),
+    z.coerce.number().positive("Weight must be greater than zero.").optional(),
+  ),
   description: z.string().trim().min(3, "Description is required."),
   declaredValue: z.coerce.number().min(0, "Declared value cannot be negative."),
   referenceNo: z.string().trim().optional().nullable(),
@@ -73,6 +78,13 @@ export async function POST(request: Request) {
       if (!payload.pickupCity || payload.pickupCity.trim().length < 2) {
         return NextResponse.json(
           { error: "Pickup city is required." },
+          { status: 400 },
+        );
+      }
+
+      if (!payload.pickupPhone || payload.pickupPhone.trim().length < 5) {
+        return NextResponse.json(
+          { error: "Pickup contact number is required." },
           { status: 400 },
         );
       }
@@ -147,6 +159,15 @@ export async function POST(request: Request) {
     const pickupDate = payload.pickupDate ? new Date(payload.pickupDate) : null;
     const trackingId = buildShipmentTrackingId();
     const referenceNo = payload.referenceNo || buildReferenceNumber();
+    const awb = `AWB-${Date.now()}`;
+    const originCountry = pickupCountry.code;
+    const destinationCountryCode = destinationCountry.code;
+    const pickupAddressText =
+      payload.collectionType === "WAREHOUSE_DROP" && warehouse
+        ? `${warehouse.name}, ${warehouse.city}`
+        : payload.pickupLocation || payload.pickupCity || pickupCountry.name;
+    const destinationAddressText =
+      payload.destinationLocation || `${destinationCountry.name} delivery details pending`;
     const status = "CREATED";
 
     const shipment = await prisma.$transaction(async (tx) => {
@@ -169,6 +190,7 @@ export async function POST(request: Request) {
                 customerProfileId: customerProfile.id,
                 label: "Shipment Pickup",
                 name: dbUser.name || customerProfile.companyName || "Sender",
+                phone: payload.pickupPhone || null,
                 street1: payload.pickupLocation!,
                 city: payload.pickupCity!,
                 countryId: pickupCountry.id,
@@ -187,40 +209,35 @@ export async function POST(request: Request) {
         },
       });
 
-      return tx.shipment.create({
-        data: {
-          trackingId,
-          referenceNo,
-          collectionType: payload.collectionType,
-          customerId: customerProfile.id,
-          createdById: dbUser.id,
-          routeId: route?.id,
-          warehouseId: warehouse?.id,
-          countryId: destinationCountry.id,
-          pickupAddressId: pickupAddress.id,
-          receiverAddressId: receiverAddress.id,
-          receiverName: payload.receiverName || null,
-          receiverPhone: payload.receiverPhone || null,
-          pickupDate,
-          pcs: payload.pcs,
-          weight: payload.weight,
-          content: payload.description,
-          amount: payload.declaredValue,
-          status,
-          paymentStatus: "UNPAID",
-          statusHistory: {
-            create: {
-              status,
-              location: warehouse?.city ?? payload.pickupCity ?? pickupCountry.name,
-              notes:
-                payload.collectionType === "WAREHOUSE_DROP" && warehouse
-                  ? `${createTrackingSummary(status)} Warehouse drop selected at ${warehouse.name}.`
-                  : !route
-                    ? `${createTrackingSummary(status)} Route assignment is pending review by operations.`
-                    : createTrackingSummary(status),
-            },
-          },
-        },
+      const shipmentData: Prisma.ShipmentUncheckedCreateInput = {
+        trackingId,
+        awb,
+        referenceNo,
+        collectionType: payload.collectionType,
+        customerId: customerProfile.id,
+        createdById: dbUser.id,
+        routeId: route?.id,
+        warehouseId: warehouse?.id,
+        countryId: destinationCountry.id,
+        originCountry,
+        destinationCountry: destinationCountryCode,
+        pickupAddressText,
+        destinationAddressText,
+        pickupAddressId: pickupAddress.id,
+        receiverAddressId: receiverAddress.id,
+        receiverName: payload.receiverName || null,
+        receiverPhone: payload.receiverPhone || null,
+        pcs: payload.pcs,
+        content: payload.description,
+        amount: payload.declaredValue,
+        status,
+        paymentStatus: "UNPAID",
+        ...(pickupDate ? { pickupDate } : {}),
+        ...(payload.weight !== undefined && payload.weight !== null ? { weight: payload.weight } : {}),
+      };
+
+      const shipment = await tx.shipment.create({
+        data: shipmentData,
         include: {
           country: true,
           route: {
@@ -231,6 +248,22 @@ export async function POST(request: Request) {
           },
         },
       });
+
+      await tx.shipmentStatusHistory.create({
+        data: {
+          shipmentId: shipment.id,
+          status,
+          location: warehouse?.city ?? payload.pickupCity ?? pickupCountry.name,
+          notes:
+            payload.collectionType === "WAREHOUSE_DROP" && warehouse
+              ? `${createTrackingSummary(status)} Warehouse drop selected at ${warehouse.name}.`
+              : !route
+                ? `${createTrackingSummary(status)} Route assignment is pending review by operations.`
+                : createTrackingSummary(status),
+        },
+      });
+
+      return shipment;
     });
 
     revalidatePath("/customer/dashboard");
