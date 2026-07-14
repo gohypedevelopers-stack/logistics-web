@@ -58,6 +58,78 @@ export default function Home() {
     },
   ];
 
+  const processFlow = [
+    {
+      step: "01",
+      label: "Search",
+      icon: Search,
+      title: "Log on or enter your tracking ID",
+      desc: "Customers can start from the home page, open tracking, and immediately search for the shipment they want to follow.",
+    },
+    {
+      step: "02",
+      label: "Book",
+      icon: PackageCheck,
+      title: "Create the shipment request",
+      desc: "The booking flow stays short so users can add origin, destination, and package details without friction.",
+    },
+    {
+      step: "03",
+      label: "Pickup",
+      icon: Truck,
+      title: "Confirm the pickup arrangement",
+      desc: "Once the request is in, our team confirms the collection point and validates cargo details before dispatch.",
+    },
+    {
+      step: "04",
+      label: "Waiting",
+      icon: Activity,
+      title: "Waiting means the shipment is not dispatched yet",
+      desc: "If a shipment shows waiting, the order is registered and being prepared for the next movement stage.",
+    },
+    {
+      step: "05",
+      label: "Transit",
+      icon: Globe2,
+      title: "In transit means it has left the origin point",
+      desc: "Customers can follow live progress as the shipment moves through the logistics network.",
+    },
+    {
+      step: "06",
+      label: "Complete",
+      icon: CheckCircle2,
+      title: "Delivered means the journey is complete",
+      desc: "The final status confirms the shipment has reached the destination and the process is closed.",
+    },
+  ];
+
+  const processNotes = [
+    {
+      label: "Minimum Booking",
+      body: "Please share complete shipment details before dispatch so the status flow stays accurate.",
+    },
+    {
+      label: "No Merging",
+      body: "Each booking is processed exactly as received. Shipments are not consolidated into a single status entry.",
+    },
+    {
+      label: "Billing",
+      body: "Every package is reviewed against the confirmed weight and service lane before final billing is prepared.",
+    },
+    {
+      label: "Weight Billing",
+      body: "Weight is rounded to the nearest billing slab before the order is finalized.",
+    },
+    {
+      label: "B2C Support",
+      body: "For personal shipments, use the contact page for help with tracking, pickup, or delivery questions.",
+    },
+    {
+      label: "B2B Rates",
+      body: "For business accounts and monthly movement plans, speak with our operations team for route-based pricing.",
+    },
+  ];
+
   return (
     <div className={`${homeFont.className} flex min-h-screen flex-col bg-[#f6f8fc] text-[#1e4b7a]`}>
       <section className="relative isolate flex min-h-[88vh] items-center overflow-hidden pt-20 pb-20 sm:pb-24 md:min-h-[92vh] md:pt-24 md:pb-28">
@@ -405,6 +477,67 @@ export default function Home() {
                       />
                     ))}
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#f6f8fc] py-16 sm:py-18 md:py-22 lg:py-24">
+        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-16">
+          <div className="rounded-[30px] border border-[#d9e2ec] bg-white p-5 shadow-[0_24px_60px_rgba(30,75,122,0.08)] sm:p-7 lg:p-10">
+            <div className="grid gap-8 lg:grid-cols-[1.12fr_0.88fr] lg:gap-12">
+              <div>
+                <div className="mb-4 inline-flex items-center gap-2 rounded-[20px] border border-[#d9e2ec] bg-[#f8fbff] px-4 py-2 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#1e4b7a]">
+                  <PackageCheck className="h-3.5 w-3.5 text-[#fe6801]" />
+                  Order Status Process
+                </div>
+                <h2 className="text-balance text-[1.45rem] font-bold tracking-[-0.03em] text-[#1e4b7a] sm:text-[1.75rem] lg:text-[2rem]">
+                  To check the status of your shipment, follow these steps:
+                </h2>
+
+                <ol className="mt-8 space-y-4">
+                  {processFlow.map((item) => (
+                    <li
+                      key={item.step}
+                      className="relative rounded-[24px] border border-[#e6edf5] bg-[#fbfdff] p-5 pl-16 shadow-[0_8px_22px_rgba(30,75,122,0.04)] sm:pl-18"
+                    >
+                      <span className="absolute left-5 top-5 flex h-8 w-8 items-center justify-center rounded-full bg-[#1e4b7a] text-[0.8rem] font-extrabold text-white shadow-[0_8px_18px_rgba(30,75,122,0.18)]">
+                        {item.step}
+                      </span>
+                      <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-orange-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#fe6801]">
+                        <item.icon className="h-3.5 w-3.5" />
+                        <span>{item.label}</span>
+                      </div>
+                      <h3 className="text-[1rem] font-bold leading-[1.35] tracking-[-0.02em] text-[#1e4b7a] sm:text-[1.05rem]">
+                        {item.title}
+                      </h3>
+                      <p className="mt-2 text-[0.88rem] leading-7 text-slate-600 sm:text-[0.95rem]">{item.desc}</p>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+
+              <div>
+                <h3 className="text-[1.4rem] font-bold tracking-[-0.03em] text-[#1e4b7a] sm:text-[1.65rem]">
+                  Additional Notes & Pricing
+                </h3>
+
+                <div className="mt-6 space-y-4">
+                  {processNotes.map((note) => (
+                    <div key={note.label} className="rounded-[22px] border border-[#e6edf5] bg-[#fbfdff] p-4 sm:p-5">
+                      <p className="text-[0.78rem] font-extrabold uppercase tracking-[0.2em] text-[#fe6801]">{note.label}</p>
+                      <p className="mt-2 text-[0.88rem] leading-7 text-slate-600 sm:text-[0.94rem]">{note.body}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-5 rounded-[24px] bg-[#1e4b7a] px-5 py-5 text-white shadow-[0_18px_40px_rgba(30,75,122,0.18)]">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-orange-200">Support</p>
+                  <p className="mt-2 text-[0.92rem] leading-7 text-slate-100">
+                    For live shipment help, use the tracking page or contact page to get status guidance from the team.
+                  </p>
                 </div>
               </div>
             </div>
