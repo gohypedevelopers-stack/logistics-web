@@ -11,6 +11,9 @@ import {
   Contact,
   BadgeDollarSign,
   Settings, 
+  Route,
+  ShieldCheck,
+  Boxes,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,13 +31,16 @@ const navigation = [
     items: [
       { name: "Customers", href: "/admin/customers", icon: Users },
       { name: "Addresses", href: "/admin/addresses", icon: Contact },
+      { name: "Routes & Warehouses", href: "/admin/routes", icon: Route },
       { name: "Rates", href: "/admin/rates", icon: BadgeDollarSign },
+      // { name: "Inventory", href: "/admin/inventory", icon: Boxes },
     ]
   },
   {
     title: "System",
     items: [
       { name: "Settings", href: "/admin/settings", icon: Settings },
+      // { name: "Staff Access", href: "/admin/settings/staff", icon: ShieldCheck },
     ]
   }
 ];
