@@ -12,6 +12,16 @@ import {
 } from "@/lib/shipment-utils";
 import { sendShipmentBookedEmail } from "@/lib/email";
 
+const optionalTextField = z.preprocess(
+  (value) => (typeof value === "string" && value.trim().length === 0 ? undefined : value),
+  z.string().trim().optional().nullable(),
+);
+
+const optionalNumberField = z.preprocess(
+  (value) => (value === "" || value == null ? undefined : value),
+  z.coerce.number().min(0, "Declared value cannot be negative.").optional().nullable(),
+);
+
 const createShipmentSchema = z.object({
   collectionType: z.enum(["PICKUP", "WAREHOUSE_DROP"]).default("PICKUP"),
   pickupCountryId: z.string().min(1, "Pickup country is required."),
@@ -28,8 +38,8 @@ const createShipmentSchema = z.object({
     (value) => (value === "" || value == null ? undefined : value),
     z.coerce.number().positive("Weight must be greater than zero.").optional(),
   ),
-  description: z.string().trim().min(3, "Description is required."),
-  declaredValue: z.coerce.number().min(0, "Declared value cannot be negative."),
+  description: optionalTextField,
+  declaredValue: optionalNumberField,
   referenceNo: z.string().trim().optional().nullable(),
   receiverName: z.string().trim().optional().nullable(),
   receiverPhone: z.string().trim().optional().nullable(),
@@ -228,8 +238,8 @@ export async function POST(request: Request) {
         receiverName: payload.receiverName || null,
         receiverPhone: payload.receiverPhone || null,
         pcs: payload.pcs,
-        content: payload.description,
-        amount: payload.declaredValue,
+        content: payload.description || null,
+        amount: payload.declaredValue ?? null,
         status,
         paymentStatus: "UNPAID",
         ...(pickupDate ? { pickupDate } : {}),
@@ -284,7 +294,7 @@ export async function POST(request: Request) {
           collectionType: payload.collectionType,
           weight: payload.weight,
           pcs: payload.pcs,
-          description: payload.description,
+          description: payload.description || null,
         });
       } catch (error) {
         console.error("[SHIPMENTS_POST] Non-blocking email failure", error);

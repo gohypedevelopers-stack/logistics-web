@@ -59,12 +59,15 @@ export function CreateShipmentForm({
   const isScheduleMode = mode === "schedule";
   const pickupCountryOptions = countries.filter((country) => country.code !== "IN");
   const defaultPickupCountryId = pickupCountryOptions[0]?.id ?? countries[0]?.id ?? "";
+  const defaultDestinationCountryId =
+    countries.find((country) => country.code === "IN")?.id ??
+    countries.find((country) => country.id !== defaultPickupCountryId)?.id ??
+    countries[0]?.id ??
+    "";
   const [loading, setLoading] = useState(false);
   const [collectionType, setCollectionType] = useState<"PICKUP" | "WAREHOUSE_DROP">("PICKUP");
   const [pickupCountryId, setPickupCountryId] = useState(defaultPickupCountryId);
-  const [destinationCountryId, setDestinationCountryId] = useState(
-    countries[1]?.id ?? countries[0]?.id ?? "",
-  );
+  const [destinationCountryId, setDestinationCountryId] = useState(defaultDestinationCountryId);
   const [pickupDate, setPickupDate] = useState("");
   const [pickupPhone, setPickupPhone] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -83,6 +86,19 @@ export function CreateShipmentForm({
       setWarehouseId(availableWarehouses[0]?.id ?? "");
     }
   }, [collectionType, availableWarehouses, warehouseId]);
+
+  useEffect(() => {
+    if (!pickupCountryId || !destinationCountryId || pickupCountryId !== destinationCountryId) {
+      return;
+    }
+
+    const nextDestinationCountryId =
+      countries.find((country) => country.id !== pickupCountryId)?.id ?? "";
+
+    if (nextDestinationCountryId && nextDestinationCountryId !== destinationCountryId) {
+      setDestinationCountryId(nextDestinationCountryId);
+    }
+  }, [countries, destinationCountryId, pickupCountryId]);
 
   const hasSupportedLane = routes.some(
     (route) =>
@@ -292,12 +308,24 @@ export function CreateShipmentForm({
               <div className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    Pickup Country
+                    Pickup Country *
                   </label>
                   <select
                     name="pickupCountryId"
                     value={pickupCountryId}
-                    onChange={(event) => setPickupCountryId(event.target.value)}
+                    onChange={(event) => {
+                      const nextPickupCountryId = event.target.value;
+                      setPickupCountryId(nextPickupCountryId);
+
+                      if (nextPickupCountryId === destinationCountryId) {
+                        const nextDestinationCountryId =
+                          countries.find((country) => country.id !== nextPickupCountryId)?.id ?? "";
+
+                        if (nextDestinationCountryId) {
+                          setDestinationCountryId(nextDestinationCountryId);
+                        }
+                      }
+                    }}
                     className="app-input w-full px-4 text-sm font-medium"
                   >
                     {pickupCountryOptions.map((country) => (
@@ -310,12 +338,20 @@ export function CreateShipmentForm({
 
                 <div>
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    Destination Country
+                    Destination Country *
                   </label>
                   <select
                     name="destinationCountryId"
                     value={destinationCountryId}
-                    onChange={(event) => setDestinationCountryId(event.target.value)}
+                    onChange={(event) => {
+                      const nextDestinationCountryId = event.target.value;
+
+                      if (nextDestinationCountryId === pickupCountryId) {
+                        return;
+                      }
+
+                      setDestinationCountryId(nextDestinationCountryId);
+                    }}
                     className="app-input w-full px-4 text-sm font-medium"
                   >
                     {countries.map((country) => (
@@ -330,7 +366,7 @@ export function CreateShipmentForm({
               <div className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    Warehouse
+                    Warehouse *
                   </label>
                   <input
                     type="hidden"
@@ -371,12 +407,20 @@ export function CreateShipmentForm({
 
                 <div>
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    Destination Country
+                    Destination Country *
                   </label>
                   <select
                     name="destinationCountryId"
                     value={destinationCountryId}
-                    onChange={(event) => setDestinationCountryId(event.target.value)}
+                    onChange={(event) => {
+                      const nextDestinationCountryId = event.target.value;
+
+                      if (nextDestinationCountryId === pickupCountryId) {
+                        return;
+                      }
+
+                      setDestinationCountryId(nextDestinationCountryId);
+                    }}
                     className="app-input w-full px-4 text-sm font-medium"
                   >
                     {countries.map((country) => (
@@ -392,7 +436,11 @@ export function CreateShipmentForm({
               <div className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    {collectionType === "WAREHOUSE_DROP" ? "Drop Date (Optional)" : "Pickup Date"}
+                    {collectionType === "WAREHOUSE_DROP"
+                      ? "Drop Date (Optional)"
+                      : isScheduleMode
+                        ? "Pickup Date *"
+                        : "Pickup Date *"}
                   </label>
                   <input
                     name="pickupDate"
@@ -406,7 +454,7 @@ export function CreateShipmentForm({
 
                 <div>
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    Reference Number
+                    Reference Number (Optional)
                   </label>
                   <input
                     name="referenceNo"
@@ -421,7 +469,7 @@ export function CreateShipmentForm({
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    Pickup Contact Number
+                    Pickup Contact Number *
                   </label>
                   <div className="relative">
                     <Phone className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -438,7 +486,7 @@ export function CreateShipmentForm({
 
                 <div>
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    Pickup City
+                    Pickup City *
                   </label>
                   <input
                     name="pickupCity"
@@ -450,7 +498,7 @@ export function CreateShipmentForm({
 
                 <div>
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    Full Pickup Address
+                    Full Pickup Address *
                   </label>
                   <textarea
                     name="pickupLocation"
@@ -492,7 +540,7 @@ export function CreateShipmentForm({
             <div className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-3">
                 <div className="rounded-[20px] border border-slate-100 bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    PCS
+                    PCS *
                   </label>
                   <input
                   name="pcs"
@@ -506,7 +554,7 @@ export function CreateShipmentForm({
 
                 <div className="rounded-[20px] border border-slate-100 bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    Weight (KG)
+                    Weight (KG) (Optional)
                   </label>
                   <input
                     name="weight"
@@ -523,14 +571,13 @@ export function CreateShipmentForm({
 
                 <div className="rounded-[20px] border border-slate-100 bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    Declared Value
+                    Declared Value (Optional)
                   </label>
                   <input
                     name="declaredValue"
                     type="number"
                     min="0"
                     step="0.01"
-                    required
                     placeholder="0.00"
                     className="app-input w-full px-4 text-sm font-medium"
                   />
@@ -539,11 +586,10 @@ export function CreateShipmentForm({
 
             <div className="rounded-[20px] border border-slate-100 bg-white p-5 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
               <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                Contents Description
+                Contents Description (Optional)
               </label>
               <textarea
                 name="description"
-                required
                 rows={4}
                 placeholder="e.g. Electronics, cotton garments, handling notes"
                 className="app-textarea min-h-[136px] w-full resize-none p-4 text-sm font-medium"
@@ -573,7 +619,7 @@ export function CreateShipmentForm({
                 <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                 <div className="rounded-[20px] border border-slate-100 bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    Receiver Name
+                    Receiver Name *
                   </label>
                   <input
                     name="receiverName"
@@ -585,7 +631,7 @@ export function CreateShipmentForm({
 
                 <div className="rounded-[20px] border border-slate-100 bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
                   <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    Receiver Phone
+                    Receiver Phone *
                   </label>
                   <div className="relative">
                     <Phone className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
